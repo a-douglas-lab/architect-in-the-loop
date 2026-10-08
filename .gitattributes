@@ -6,6 +6,11 @@
 *.cmd text eol=crlf
 *.sh  text eol=lf
 
+# Spec Kit hashes the files it installs (SHA-256) to detect local edits.
+# Keep its PowerShell scripts byte-identical to how it writes them (LF),
+# or every checkout looks like a modification and blocks upgrades.
+.specify/scripts/powershell/*.ps1 text eol=lf
+
 *.png binary
 *.jpg binary
 *.gif binary
