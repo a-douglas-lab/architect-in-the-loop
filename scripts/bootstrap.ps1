@@ -34,6 +34,22 @@ if (-not (Test-Tool 'dotnet' '--version' 'install the SDK named in subject/eshop
 if (-not (Test-Tool 'docker' '--version' 'Aspire needs a container runtime (Docker or Podman) to run eShop')) { $missing = $true }
 if (-not (Test-Tool 'node' '--version' "needed for the capability's React frontend")) { $missing = $true }
 
+$speckitPin = '1.1.2'
+if (Get-Command specify -ErrorAction SilentlyContinue) {
+    $env:NO_COLOR = '1'
+    $speckitOut = (specify version 2>&1 | Out-String)
+    $speckitV = if ($speckitOut -match 'CLI Version\D*([0-9][0-9.]*)') { $Matches[1] } else { 'unknown' }
+    if ($speckitV -eq $speckitPin) {
+        Write-Host "ok       specify (Spec Kit $speckitV)"
+    } else {
+        Write-Host "MISMATCH specify: found $speckitV, pinned $speckitPin (see README)"
+        $missing = $true
+    }
+} else {
+    Write-Host "MISSING  specify: Spec Kit CLI $speckitPin; see README (needs uv)"
+    $missing = $true
+}
+
 if (Get-Command dotnet -ErrorAction SilentlyContinue) {
     $required = (Get-Content subject/eshop/global.json -Raw | ConvertFrom-Json).sdk.version
     $band = $required.Substring(0, $required.Length - 2)   # e.g. 10.0.302 -> 10.0.3 (feature band)

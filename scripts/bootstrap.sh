@@ -31,6 +31,20 @@ check dotnet "dotnet --version" "install the SDK named in subject/eshop/global.j
 check docker "docker --version" "Aspire needs a container runtime (Docker or Podman) to run eShop"
 check node   "node --version"   "needed for the capability's React frontend"
 
+speckit_pin="1.1.2"
+if command -v specify >/dev/null 2>&1; then
+  speckit_v="$(NO_COLOR=1 specify version 2>&1 | sed -n 's/.*CLI Version[^0-9]*\([0-9][0-9.]*\).*/\1/p' | head -n 1)"
+  if [ "$speckit_v" = "$speckit_pin" ]; then
+    echo "ok       specify (Spec Kit $speckit_v)"
+  else
+    echo "MISMATCH specify: found ${speckit_v:-unknown}, pinned $speckit_pin (see README)"
+    missing=1
+  fi
+else
+  echo "MISSING  specify: Spec Kit CLI $speckit_pin; see README (needs uv)"
+  missing=1
+fi
+
 if command -v dotnet >/dev/null 2>&1; then
   required="$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' subject/eshop/global.json | head -n 1)"
   if dotnet --list-sdks | grep -q "^${required%??}"; then
