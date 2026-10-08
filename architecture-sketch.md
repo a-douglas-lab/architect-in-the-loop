@@ -89,8 +89,8 @@ Proposed principle: **human involvement scales with risk.** Two points are alway
 
 | Rung | Example | Confirm impact set | Approve plan | Other human decisions | Merge review |
 | --- | --- | --- | --- | --- | --- |
-| 1. Happy path, one domain | Cancel unpaid orders after 24 hours (D3) | Notify only | No | None | Light |
-| 2. Add a field | Order note at checkout (D1) | Notify only | Only if a contract changes; always if the change is breaking | None | Light |
+| 1. Happy path, one domain | Cancel unpaid orders after 24 hours (DEV-3) | Notify only | No | None | Light |
+| 2. Add a field | Order note at checkout (DEV-1) | Notify only | Only if a contract changes; always if the change is breaking | None | Light |
 | 3. Complex, several domains | Customers edit their delivery address before dispatch | **Yes** | Only if a cross-cutting steward is involved | None | Deep |
 | 4. Sub-domain in an existing context | Product bundles inside catalogue | **Yes** | **Yes**: structure changes | Where the sub-domain's boundary sits | Deep |
 | 5. New domain | Loyalty | **Yes** | **Yes** | **Domain charter**: purpose, boundary, ownership, ADR scope; this also creates a new steward | Deep |
@@ -126,12 +126,12 @@ One trace per stage, linked by span links and carrying the outcome ID, because a
 
 ## Questions this sketch raises
 
-1. **Durable workflow engine.** Outcomes wait hours or days at approval points, so the orchestrator needs durable state. Options for .NET include Dapr Workflow, the Durable Task framework and Temporal's .NET SDK. A new backlog candidate.
+1. **Durable workflow engine.** Now backlog T9.
 2. **Steward instantiation.** Proposed: stewards are configurations (instructions, knowledge scope, tools, model tier) created per outcome, not running services. Cheaper, and adding a domain means adding a configuration.
 3. **Is Evidence its own context,** or a responsibility of Coordination?
 4. **Where risk scoring lives:** which context decides the rung, and therefore the approval points?
 5. **Sandboxing:** one git worktree or container per coding task; how changes from several domains combine on one branch.
-6. **Walk the E5 scenarios through this sketch** to find what breaks.
+6. **Walk the E5 scenarios through this sketch** to find what breaks. Done: walkthroughs 1 and 2 below.
 
 ---
 
@@ -143,7 +143,7 @@ Status: 5 Oct 2026 · paper walkthrough of seven use cases. One passes as sketch
 
 | # | Use case | Result | Gap found |
 | --- | --- | --- | --- |
-| W1 | Add a field: order note at checkout (D1, rung 2) | **Passes** | None |
+| W1 | Add a field: order note at checkout (DEV-1, rung 2) | **Passes** | None |
 | W2 | "New arrival" badge on recently added products (rung 1) | Gaps | G1 contracts between stewards; G2 the storefront distorts the risk rung |
 | W3 | Loyalty points (rung 5, the worked example from B2) | Gaps | G3 nobody can propose a domain that doesn't exist yet |
 | W4 | Synchronous fraud check at checkout (ADR conflict) | Gap | G4 the repair loop can quietly abandon the outcome |
@@ -204,26 +204,24 @@ Saving a basket for later touches the basket domain, which hasn't been brought t
 | G6 | Knowledge snapshot pinned per outcome; re-check before merge | Subject knowledge, verification |
 | G7 | Differential checks with a ratchet on legacy domains | Governance, verification (Q1) |
 
-Next walkthrough: the remaining E5 scenarios (retries exhausted; a cross-cutting concern as part of the change set; new domain adopting platform conventions), once these changes are agreed.
-
 ---
 
 # Walkthrough 2: remaining E5 scenarios
 
-Status: 5 Oct 2026 · four use cases run through the sketch as amended by G1 to G7. None passes cleanly; seven further gaps (G8 to G14). **All proposed changes accepted on 5 Oct.** Whether splits (G11) can be automatic depends on the split scenarios, analysed in backlog A4.
+Status: 5 Oct 2026 · four use cases run through the sketch as amended by G1 to G7. None passes cleanly; seven further gaps (G8 to G14). **All proposed changes accepted on 5 Oct.** When splits (G11) can be automatic is decided in backlog A4.
 
 ## Results at a glance
 
 | # | Use case | Gaps found |
 | --- | --- | --- |
-| W8 | Retries run out (D1's acceptance test keeps failing) | G8 failures aren't triaged, and budgets are per task only |
+| W8 | Retries run out (DEV-1's acceptance test keeps failing) | G8 failures aren't triaged, and budgets are per task only |
 | W9 | A cross-cutting concern inside the change set (customers edit their delivery address) | G9 the impact set can only be set once; G10 pre-existing security defects in touched code; G11 no partial delivery |
 | W10 | A domain steward conflicts with a cross-cutting steward | G12 no exceptions mechanism |
 | W11 | A new domain adopts platform conventions (loyalty, after its charter is accepted) | G13 new domains are generated freehand; G14 the pinned snapshot can't see a domain created in the same outcome |
 
 ## W8. Retries run out
 
-The implementer for D1 fails the visible acceptance test three times; the repair loop is exhausted and the outcome escalates.
+The implementer for DEV-1 fails the visible acceptance test three times; the repair loop is exhausted and the outcome escalates.
 
 - **G8. Failures aren't triaged, and budgets are per task.** The repair loop only retries implementation. But the cause might be a flawed plan (go back to the steward), a defective test (only a human can rule on it, and during a scored run only under the pre-registered withdrawal rule), or a genuine implementation fault (retry). Retrying the wrong stage wastes the budget. Also, several tasks can each stay within their own retry limit while the outcome's total cost runs away. Proposed: classify each failure before retrying and send it back to the stage that caused it; budgets are hierarchical (task within stage within outcome), for both attempts and tokens. An escalation always carries the evidence and the options: raise the budget, revise the plan, amend the outcome or abandon it.
 
@@ -233,7 +231,7 @@ Impact analysis finds Ordering and the storefront. The Ordering steward proposes
 
 - **G9. The impact set can't grow after impact analysis.** Nothing in the outcome's wording mentions security, so the router doesn't pull in the security steward. Security only becomes relevant once a proposal touches an endpoint that acts on a user's own data. Proposed: cross-cutting stewards are also triggered by what proposals touch (new or changed endpoints, events, personal data, authorisation rules), using ADR scope tags. The impact set can grow during stewardship; if growth raises the risk rung, the approval points for the higher rung apply again.
 - **G10. Pre-existing security defects in touched code.** Suppose the security steward, reviewing the code the change touches, finds that an existing endpoint accepts input of unlimited length. Q4 says improve touched code, but improvements must be behaviour-preserving, and this fix changes behaviour (some requests that used to succeed are now rejected). Proposed: a security defect found in touched code is never ratcheted silently. It is fixed as its own behavioural change with its own test and flagged to the coordinator, or escalated if fixing it is out of scope.
-- **G11. No partial delivery.** Address changes before dispatch can proceed, but changes after dispatch would need a carrier integration nobody has decided on. The sketch can only complete or stop a whole outcome. Proposed: an outcome can split into sub-outcomes. The unblocked part continues; the blocked part waits on its proposed ADR. Open: is splitting automatic, or does the coordinator approve each split?
+- **G11. No partial delivery.** Address changes before dispatch can proceed, but changes after dispatch would need a carrier integration nobody has decided on. The sketch can only complete or stop a whole outcome. Proposed: an outcome can split into sub-outcomes. The unblocked part continues; the blocked part waits on its proposed ADR. When a split is automatic, and when the coordinator decides, is settled in backlog A4 (deliver dark).
 
 ## W10. A domain steward conflicts with a cross-cutting steward
 

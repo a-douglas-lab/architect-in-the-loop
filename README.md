@@ -1,13 +1,14 @@
-# [Name TBD]
+# Architect in the Loop
 
 Status: draft · design phase, no code yet
 
-From business outcome to governed, deployed change. *(Working description; the name and line are being decided, see [backlog.md](backlog.md) P1.)*
+From business outcome to governed, deployed change. *(Working title and description; the product name is parked, see [backlog.md](backlog.md) P1.)*
 
 This repository is a portfolio project. It is not a live service with real users and does not claim to be. It is built to production-grade standards of design, code quality, testing, security, observability and governance, so that every part of it can be inspected, run and questioned.
 
 - **What it is, who it is for and why:** [product.md](product.md)
-- **Open questions and decisions in progress:** [backlog.md](backlog.md)
+- **Open questions and decisions, with status:** [backlog.md](backlog.md)
+- **Order of work:** [roadmap.md](roadmap.md)
 
 ## What is ours and what isn't
 
