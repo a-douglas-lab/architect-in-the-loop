@@ -469,19 +469,22 @@ How is "the change works" judged independently, when coding agents write both th
 - **Quality layers beyond functional acceptance:** number of steps for a user to achieve the outcome, measured by journey scripts (HEART is not used, because it needs real users), accessibility, REST and API contract rules, breaking-change detection, API security, architecture rules, performance budgets and observability coverage. Tools chosen in Q2.
 - **Confirmation-bias control:** the E4 baseline runs the same tests; a test that the baseline also passes isn't discriminating.
 
-**Proposed sequence per evaluation outcome (5 Oct), awaiting confirmation:**
+**Sequence per evaluation outcome (proposed 5 Oct, decided 8 Oct):**
 
 1. Write visible and hidden acceptance tests and labels.
 2. Confirm the tests fail against unmodified eShop.
-3. Pre-register everything.
-4. Run the baseline and the capability. Satisfiability is shown by any run passing a test; a test nothing passes is inspected by hand.
+3. Pre-register everything, including the withdrawal criteria below.
+4. Run the baseline and the capability. Satisfiability is shown by any run passing a test; a test nothing passes is inspected by hand against the withdrawal criteria.
 5. Mutation-test whichever implementations pass.
 
-A pre-registered rule governs defects found in tests after the run: a test is withdrawn only with a documented reason, and the withdrawal applies to the baseline and the capability alike.
+**Withdrawal rule.** A test found defective after the run is withdrawn only with a documented reason, and the withdrawal applies to the baseline and the capability alike. **What counts as defective is pre-registered (8 Oct)**, so the hand inspection in step 4 can't move the goalposts. Starting criteria, finalised before pre-registration: the test contradicts the outcome statement or its visible examples; it depends on behaviour outside the outcome; or it can't be satisfied through public interfaces (APIs, events or the UI). Every withdrawal is published with its reason.
+
+**Mutation testing is proven on DEV-1 first (8 Oct),** as part of the D6 dry run, so the method is shown to work, and weak tests can still be strengthened, before any evaluation test is written.
+
+Why no reference implementations for evaluation outcomes: building seven by hand roughly doubles the work. The cost is that satisfiability is only shown after the scored run; the pre-registered withdrawal criteria contain that risk.
 
 **Open:**
 
-- Confirm the sequence above.
 - Second reviewer on a sample of tests (see E1).
 
 ### E3. Success thresholds · Open
@@ -634,7 +637,7 @@ Likely unnecessary: product.md and backlog.md supersede the original capabilitie
 
 **Decided (5 Oct):** Andy writes the reference acceptance tests with Claude Code, guided by a purpose-built skill. Search found generic test-driven development skills (unit-level red, green, refactor) but nothing for system-level acceptance tests in the four-layer model, so we build our own, using Anthropic's skill-creator and the existing TDD skills as reference. The skill is itself a portfolio artefact showing disciplined use of AI.
 
-**Decided (8 Oct):** the skill is **dry-run end to end on DEV-1 before any evaluation test is written** ([roadmap.md](roadmap.md), Phase 2): tests written, confirmed red, DEV-1 implemented, confirmed green.
+**Decided (8 Oct):** the skill is **dry-run end to end on DEV-1 before any evaluation test is written** ([roadmap.md](roadmap.md), Phase 2): tests written, confirmed red, DEV-1 implemented, confirmed green, then mutation-tested to prove the method (E2).
 
 What the skill covers:
 

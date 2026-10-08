@@ -53,7 +53,7 @@ Prior-art reading for T7, T6 and A1 (including agentheim) can start here as a se
 | P4 Baseline ADRs | On the critical path; the negative evaluation outcomes need ADRs to collide with. Includes "business rules live in the owning domain" |
 | P5b Merchant configuration | Some evaluation outcomes need somewhere for the merchant to set values; blocks their labels |
 | Q1 Enforcement map | Fills the enforcement section of each baseline ADR |
-| D6 Acceptance test skill, built and dry-run on DEV-1 | On the critical path. Proves the skill, the DSL and the four-layer model end to end (tests written, confirmed red, DEV-1 implemented, confirmed green) before any evaluation test is written. DEV-1's implementation is revisited in Phase 4 when Ordering reaches its preferred state |
+| D6 Acceptance test skill, built and dry-run on DEV-1 | On the critical path. Proves the skill, the DSL and the four-layer model end to end (tests written, confirmed red, DEV-1 implemented, confirmed green, mutation-tested) before any evaluation test is written. DEV-1's implementation is revisited in Phase 4 when Ordering reaches its preferred state |
 
 ### Phase 3. Evaluation assets
 
@@ -63,7 +63,7 @@ Prior-art reading for T7, T6 and A1 (including agentheim) can start here as a se
 | E2 Tests written with the D6 skill and confirmed red | In the private evaluation repo; then pre-registered |
 | E6 Running the private evaluation | The private tests must be runnable against a public commit before pre-registration |
 | E4 Baseline comparison design | Must be fixed before the scored run |
-| E3 Thresholds | Last step before pre-registration |
+| E3 Thresholds and test withdrawal criteria | Last step before pre-registration |
 
 ### Phase 4. Exemplar (Ordering)
 
