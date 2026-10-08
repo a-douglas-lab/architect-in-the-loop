@@ -10,4 +10,4 @@ Outcomes used to build and dry-run the Ordering exemplar (backlog P9). They may 
 | DEV-2 | Record a carrier and tracking number when an order ships | Ordering (ship command, order, shipped event), webhook payload for shipped orders | Rung 2–3: field plus event contract change |
 | DEV-3 | Orders not paid within 24 hours are cancelled automatically | Ordering, including OrderProcessor (background processing) | Rung 1: single domain, existing cancel transition |
 
-Each development outcome follows the agreed sequence: visible acceptance examples and tests written first, confirmed failing against unmodified eShop, then implemented and verified. DEV-1 is also the dry run for the acceptance test skill (backlog D6), before any evaluation test is written.
+Each development outcome follows the agreed sequence: visible acceptance examples and tests written first, confirmed failing against the subject before the change, then implemented and verified. Implementations and tests are commits in the eShop fork (backlog P3, P4). DEV-1 is also the dry run for the acceptance test skill (backlog D6), before any evaluation test is written.

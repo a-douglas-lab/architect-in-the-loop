@@ -17,7 +17,7 @@ Ranks the open items in [backlog.md](backlog.md) by what they unblock. Items tha
 
 The longest chain of dependencies, which sets the earliest possible scored run:
 
-ADR template (T2) → baseline ADRs (P4) → acceptance test skill dry run on DEV-1 (D6) → outcome labels (E1) → acceptance tests via the skill (E2) → pre-registration → capability build → scored run
+ADR template (T2) → baseline ADRs (P4) → acceptance test skill dry run on DEV-1 (D6) → outcome labels (E1) → acceptance tests via the skill (E2) → exemplar and evaluation baseline tag (P9, P4) → tests confirmed red and pre-registered → capability build → scored run
 
 Everything not on this chain can run alongside it.
 
@@ -60,10 +60,10 @@ Prior-art reading for T7, T6 and A1 (including agentheim) can start here as a se
 | Item | Why now |
 | --- | --- |
 | E1 Labels (two-tier, per part where an outcome may split; held privately) | Needs baseline ADRs and merchant configuration |
-| E2 Tests written with the D6 skill and confirmed red | In the private evaluation repo; then pre-registered |
+| E2 Tests written with the D6 skill | In the private evaluation repo. Confirmed red and pre-registered at the end of Phase 4, against the evaluation baseline |
 | E6 Running the private evaluation | The private tests must be runnable against a public commit before pre-registration |
 | E4 Baseline comparison design | Must be fixed before the scored run |
-| E3 Thresholds and test withdrawal criteria | Last step before pre-registration |
+| E3 Thresholds and test withdrawal criteria | Fixed before pre-registration |
 
 ### Phase 4. Exemplar (Ordering)
 
@@ -71,6 +71,7 @@ Prior-art reading for T7, T6 and A1 (including agentheim) can start here as a se
 | --- | --- |
 | P9 Ordering to preferred state, development outcomes DEV-1 to DEV-3, reference implementations | Dry run of the whole toolchain; produces the domain template (G13) |
 | Q4 Ratchet baseline for legacy domains | Recorded as exceptions (G12) |
+| Evaluation baseline frozen | Tag in the eShop fork once baseline work is complete (P4). Evaluation tests confirmed red against it, then everything pre-registered (E2) |
 
 ### Phase 5. Deep research, with spikes on the exemplar · can start earlier as paper research
 
