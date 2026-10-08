@@ -344,16 +344,26 @@ The original document assumed Spec Kit, ADRs and CUE. Each was reopened here for
 
 There are two layers: building the capability itself (and the exemplar), and the capability producing specs for changes to the subject system. They may use the same tool or different ones.
 
-**Decided (5 Oct): adopt the Spec Kit workflow** (constitution, specify, plan, tasks, implement) for building this project. Skills, subagents and hooks support its stages rather than replacing them.
+**Decided (5 Oct): adopt the Spec Kit workflow** for building this project. Skills, subagents and hooks support its stages rather than replacing them.
+
+**Decided (8 Oct), from the Spec Kit v1.1.2 documentation:**
+
+- **Version:** Spec Kit **v1.1.2** (released 7 Oct 2026, commit `959e866`), pinned. Installed with `uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@v1.1.2`. Upgrades are deliberate, reviewed changes.
+- **Workflow:** constitution once; per feature, specify → plan → tasks → implement → **converge** (repeat implement and converge until it reports converged). Clarify, checklist and analyze are optional quality gates.
+- **Initialisation (this repo):** `specify init --here --force --non-interactive --integration claude --script py --ignore-agent-tools`. Claude Code integration in skills mode (`.claude/skills/speckit-*`, invoked as `/speckit-<stage>`). Python scripts, so they behave the same on Windows, macOS, Linux and CI. `--ignore-agent-tools` only because the desktop app does not put a `claude` executable on PATH.
+- **Core only: no presets or extensions yet.**
+  - *Model Driven Engineering preset* (`mde` 0.5.1): **rejected.** It replaces the recognisable core flow with `specify → next`, needs its own extension, and treats proposed answers as approved when the user says `next`, which conflicts with our approval discipline. Small and little-used (one release, May 2026).
+  - *Brownfield Bootstrap* extension: **deferred to the eShop fork** (Phase 2), the only place with existing code. Try the core existing-projects guide first; the extension has not changed since April 2026, before Spec Kit 1.x.
+  - Official `git` extension (numbered feature branches): not yet; it may clash with the desktop app's worktree branches. Try it on the first spec.
+  - Official `agent-context` extension: no; CLAUDE.md is curated by hand.
+  - Official `assess` extension: consider in Step 7 as the base for the research-spike skill.
+- **Community extension policy:** community extensions and presets are third-party code that the Spec Kit maintainers do not review. None is installed without a source review, a pinned version and an ADR.
+- **Spec persistence: flow-forward, anchored on decisions.** Each feature folder in `specs/` is a fixed historical record; new requirements get a new folder. What must stay true lives in the ADRs and the constitution, enforced by deterministic checks. This is our answer to the criticism that Spec Kit is spec-first but not spec-anchored: the system is anchored on decisions, not on specs kept current by hand.
 
 **Open:**
 
-- Which presets and extensions to use: for example the brownfield bootstrap extension (eShop is existing code), and whether the community Model Driven Engineering preset fits. That preset already produces impact-driven change specs, so if we use it we must state what we add beyond it.
-- Whether the capability also produces Spec Kit artefacts for changes to the subject system (the second layer).
-- How ADRs and the constitution's ADR index connect to Spec Kit's constitution.
-- How our design answers the published criticism that Spec Kit is spec-first but not spec-anchored over time.
-
-Criteria: fit with orchestrating Claude Code, support for existing code, support for impact-scoped changes, how much it constrains us, and how well a reviewer will recognise it. Check the current release and documentation before deciding; don't rely on remembered versions.
+- How ADRs and the constitution's ADR index connect to Spec Kit's constitution (Phase 1, Step 6).
+- Whether the capability also produces Spec Kit artefacts for changes to the subject system (the second layer; with A1 and T4). Spec Kit will be initialised separately in the eShop fork for subject-side specs (P3).
 
 ### T2. Decision records · Open · Gate
 
@@ -383,6 +393,11 @@ Q1 treats enforcement as a map of rule types to mechanisms rather than a single 
 ### T6. ADR strategy across the system [B1] · Open
 
 How ADRs are stored, selected, referenced by agents and kept current, including the personas, nine use cases and evaluation criteria in the original document. The progressive-disclosure approach remains a hypothesis. Depends on T1, T2 and Q1.
+
+**Prior art to review (found 8 Oct, Spec Kit community catalogue):**
+
+- *adrkit* (github.com/mbeacom/adrkit, Apache-2.0): pulls the decisions governing a piece of work into agent context, checks plans against them, and drafts ADRs from plans. Close to our selection and checking ideas; state what we add beyond it. Its Spec Kit adapter requires Spec Kit below 1.1.0.
+- *arch-governance* (github.com/ashbrener/spec-kit-arch-governance, MIT): citation slots linking specs to ADRs, with a read-only, fail-closed validator. Also relevant to Q1.
 
 ### T7. From outcome to impacted domains [B2] · Partly decided · Gate · Deep research
 
@@ -620,6 +635,8 @@ Candidate sources, each seeing only part of the picture:
 - The token budget, and how it is enforced.
 - Which components are fine as thin stubs (for example the capability's web interface, P5a) versus which must be deep.
 
+**Prior art for the hooks (found 8 Oct):** *gates* (github.com/schwichtgit/spec-gates, MIT), a Spec Kit extension enforcing one policy at three boundaries: Claude Code hooks, git pre-commit and CI. Review before writing our own hooks.
+
 ### D2. Timebox and milestones · Decided (ADR pending)
 
 **Decided (5 Oct):** no hard deadline. Quality comes first; work continues beyond the nominal one-week date, and we see where we end up. Milestones are defined by the evidence they produce, so each phase leaves something publishable ([roadmap.md](roadmap.md)). Sizing at the time: about five to seven weeks for the full scope.
@@ -639,6 +656,8 @@ Likely unnecessary: product.md and backlog.md supersede the original capabilitie
 ### D6. System-level acceptance test skill · Partly decided · Gate
 
 **Decided (5 Oct):** Andy writes the reference acceptance tests with Claude Code, guided by a purpose-built skill. Search found generic test-driven development skills (unit-level red, green, refactor) but nothing for system-level acceptance tests in the four-layer model, so we build our own, using Anthropic's skill-creator and the existing TDD skills as reference. The skill is itself a portfolio artefact showing disciplined use of AI.
+
+**Prior art to check before building (found 8 Oct, Spec Kit community catalogue):** the *reqnroll-bdd* and *bdd* extensions (Gherkin from specs, step scaffolding, coverage), the *tdd* extension (red-green evidence, mutation-checked) and the *test-first-governance* preset (BDD/ATDD scenarios with traceability). None appears to cover the four-layer model or hidden examples, but this updates the 5 Oct search; confirm before building our own.
 
 **Decided (8 Oct):** the skill is **dry-run end to end on DEV-1 before any evaluation test is written** ([roadmap.md](roadmap.md), Phase 2): tests written, confirmed red, DEV-1 implemented, confirmed green, then mutation-tested to prove the method (E2).
 

@@ -34,7 +34,13 @@ cd architect-in-the-loop
 ./scripts/bootstrap.sh        # or scripts\bootstrap.ps1 on Windows
 ```
 
-The bootstrap script fetches eShop at the pinned commit and checks prerequisites: the .NET SDK named in eShop's `global.json`, a container runtime for Aspire, and Node.js. Run it again in every new clone or worktree.
+The bootstrap script fetches eShop at the pinned commit and checks prerequisites: the .NET SDK named in eShop's `global.json`, a container runtime for Aspire, Node.js, and the Spec Kit CLI. Run it again in every new clone or worktree.
+
+Work is specified with [Spec Kit](https://github.com/github/spec-kit) **v1.1.2** (pinned). To install its CLI, with [uv](https://docs.astral.sh/uv/):
+
+```bash
+uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@v1.1.2
+```
 
 ## Repository layout
 
