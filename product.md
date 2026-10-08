@@ -1,10 +1,10 @@
 # Product
 
-Status: draft v0.1 · 5 Oct 2026 · owner: Andy Douglas
+Status: draft v0.2 · 8 Oct 2026 · owner: Andy Douglas
 
-This file defines what we are building, for whom, and why. It sits at the repo root and is the reference every spec, ADR and the constitution trace back to. It deliberately avoids *how*: tools and methods are open questions in [backlog.md](backlog.md) until decided by ADR.
+This file defines what we are building, for whom, and why. It sits at the repo root and is the reference every spec, ADR and the constitution trace back to. It deliberately avoids *how*: tools and methods are decided in [backlog.md](backlog.md) and recorded as ADRs.
 
-Working name: TBD (backlog P1).
+Working title: Architect in the Loop. The product name is parked (backlog P1).
 
 ## Why this exists
 
@@ -22,7 +22,7 @@ Two things, with a clear boundary between them.
 
 | Part | What it is | Role in the demonstration |
 | --- | --- | --- |
-| **Subject system** | A multi-domain e-commerce platform, serving merchants and their shoppers. Built by extending an existing open-source reference application (candidate: dotnet/eShop, MIT licence) | The realistic, non-trivial system that change happens *to*. It carries the domains, integrations, events and ADRs the capability must reason over |
+| **Subject system** | A multi-domain e-commerce platform, serving merchants and their shoppers. Built by extending an existing open-source reference application: dotnet/eShop (MIT licence), pinned at commit `dc7ea49` and included as a dependency, not copied | The realistic, non-trivial system that change happens *to*. It carries the domains, integrations, events and ADRs the capability must reason over |
 | **Engineering capability** | An outcome-driven system builder that sits over the subject system. It takes a business outcome, works out which domains it touches, applies the architecture decisions that govern them, and coordinates AI coding agents to specify, build, test and ship the change, with humans approving at defined points | The product. It is what the portfolio is really about |
 
 The capability reasons across the whole subject system: domain boundaries, ADRs, integration patterns, authentication and authorisation, event schemas, and intelligence and reporting. It coordinates existing coding agents (such as Claude Code) rather than reimplementing them.
@@ -55,19 +55,19 @@ The architecture coordinator uses a web interface (React frontend, C# REST API) 
 
 Success is defined before building, against outcomes the system has not been tuned on.
 
-**Outcome evaluation.** At least ten merchant outcomes, written and labelled before the capability is built, of varying difficulty and spanning several domains. Each is run through the capability end to end. The detailed design, including the held-out split, negative cases and acceptance tests, is open (backlog E1 to E4).
+**Outcome evaluation.** Ten held-out merchant outcomes, written and labelled before the capability is built, of varying difficulty and spanning several domains: seven it should complete (one adding a new domain) and three it should stop on (an ADR conflict, a decision gap, an ambiguous request). Each is run through the capability end to end. A separate development set is used while building (backlog E1, E2).
 
 For each outcome, the capability succeeds when:
 
 1. **Impact is right.** The domains it identifies match the expected impact set, including the non-obvious ones.
 2. **Decisions are honoured.** Every applicable ADR is applied and none is breached, and this is shown by deterministic checks rather than asserted.
-3. **The change works.** The change passes acceptance tests that the coding agents did not write (approach open, backlog E2).
+3. **The change works.** The change passes acceptance tests that the coding agents did not write, including hidden examples they never saw (backlog E2).
 4. **Gaps and conflicts surface.** Where no decision exists, or decisions conflict, the capability stops and asks rather than guessing.
 5. **It is traceable.** An evaluator can follow the outcome through every artefact without help.
 
 Measures to report across the set (thresholds TBD, backlog E3): impact recall and precision, missed-ADR rate, acceptance pass rate, human interventions per outcome, cost and time per outcome, and the comparison against an ungoverned baseline (backlog E4).
 
-**Portfolio success.** The repo, a short video and a one-command run let a reviewer conclude, quickly and from evidence, that the ideas are good, the execution is strong, and the author is credible across system design, engineering and strategy. The concrete evidence line is open (backlog P2).
+**Portfolio success.** The repo, a short video and a one-command run let a reviewer conclude, quickly and from evidence, that the ideas are good, the execution is strong, and the author is credible across system design, engineering and strategy. The evidence line rests on three facts (backlog P2): hidden-test pass rate against plain Claude Code, zero breaches of architecture decisions reaching main, and negative outcomes stopped for the right reason.
 
 ## Scope boundaries
 
@@ -84,6 +84,9 @@ Also confirmed (backlog P7):
 
 ## Related documents
 
-- [backlog.md](backlog.md): open questions and decisions still to be made.
-- Constitution: to follow, once the planning tool is decided (backlog T1).
+- [backlog.md](backlog.md): every open question and decision, with status.
+- [roadmap.md](roadmap.md): the order for closing the backlog.
+- [architecture-sketch.md](architecture-sketch.md): the capability's contexts, flow and walkthroughs.
+- [development-outcomes.md](development-outcomes.md): DEV-1 to DEV-3, for the Ordering exemplar.
+- Constitution: to follow in Phase 1, using the Spec Kit workflow (backlog T1).
 - ADRs: to follow, starting with the ADR template (backlog T2).

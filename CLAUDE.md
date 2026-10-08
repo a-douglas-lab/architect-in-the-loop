@@ -16,10 +16,10 @@ Thesis: deterministic where possible, probabilistic where necessary, measured ev
 | Document | Holds |
 | --- | --- |
 | [product.md](product.md) | Who, what, why; personas; success; scope |
-| [backlog.md](backlog.md) | Every open question and every decision so far, with status. The source of truth for what is decided |
+| [backlog.md](backlog.md) | Every open question and every decision so far, with status (legend at the top). The source of truth for what is decided |
 | [roadmap.md](roadmap.md) | Order for closing the backlog; current phase |
 | [architecture-sketch.md](architecture-sketch.md) | The capability's nine contexts, flow, approval points, and walkthroughs G1 to G14 |
-| [development-outcomes.md](development-outcomes.md) | The three development outcomes (D1 to D3) for the Ordering exemplar |
+| [development-outcomes.md](development-outcomes.md) | The three development outcomes (DEV-1 to DEV-3) for the Ordering exemplar |
 
 **Current phase:** Phase 1, Foundations (see roadmap.md).
 
@@ -37,7 +37,7 @@ Thesis: deterministic where possible, probabilistic where necessary, measured ev
 ## Hard rules
 
 1. **Never access the private evaluation repository.** It holds the held-out evaluation outcomes, hidden tests and labels. Never clone it into this repo or a worktree, and never ask for its contents.
-2. **Build only development outcomes by hand.** D1 to D3, and only in the Ordering exemplar. Don't add eShop features beyond an approved spec.
+2. **Build only development outcomes by hand.** DEV-1 to DEV-3, and only in the Ordering exemplar. Don't add eShop features beyond an approved spec.
 3. **Never edit acceptance tests to make them pass.** A failing test is reported, not changed.
 4. **eShop stays pinned and separate.** Its optional AI features stay switched off.
 5. **Don't change existing eShop behaviour outside an approved spec,** including defects you notice. Report them to Andy instead; some existing behaviour is deliberately left as it is.

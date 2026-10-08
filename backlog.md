@@ -4,7 +4,7 @@
 
 Status: v0.2 · 8 Oct 2026
 
-Every open question and every decision so far, with its status. This file is the source of truth for what is decided. Nothing is cloned or coded until the items marked **Gate** are closed. Each item closes with a short ADR recording the decision, the options considered and the evidence. Items carried over from the original capabilities document keep their old ID in brackets.
+Every open question and every decision so far, with its status. This file is the source of truth for what is decided. **Gate rule (8 Oct):** an item marked **Gate** must close before the [roadmap](roadmap.md) phase that depends on it starts. Each item closes with a short ADR recording the decision, the options considered and the evidence. Items carried over from the original capabilities document keep their old ID in brackets.
 
 **Statuses.** Each item heading carries one status:
 
@@ -634,7 +634,7 @@ Likely unnecessary: product.md and backlog.md supersede the original capabilitie
 
 **Decided (5 Oct):** Andy writes the reference acceptance tests with Claude Code, guided by a purpose-built skill. Search found generic test-driven development skills (unit-level red, green, refactor) but nothing for system-level acceptance tests in the four-layer model, so we build our own, using Anthropic's skill-creator and the existing TDD skills as reference. The skill is itself a portfolio artefact showing disciplined use of AI.
 
-**Decided (8 Oct):** the skill is **dry-run end to end on a development outcome before any evaluation test is written** ([roadmap.md](roadmap.md), end of Phase 2).
+**Decided (8 Oct):** the skill is **dry-run end to end on DEV-1 before any evaluation test is written** ([roadmap.md](roadmap.md), Phase 2): tests written, confirmed red, DEV-1 implemented, confirmed green.
 
 What the skill covers:
 
