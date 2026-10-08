@@ -86,7 +86,7 @@ Also confirmed (backlog P7):
 
 - [backlog.md](backlog.md): every open question and decision, with status.
 - [roadmap.md](roadmap.md): the order for closing the backlog.
-- [architecture-sketch.md](architecture-sketch.md): the capability's contexts, flow and walkthroughs.
-- [development-outcomes.md](development-outcomes.md): DEV-1 to DEV-3, for the Ordering exemplar.
+- [architecture-sketch.md](docs/architecture/architecture-sketch.md): the capability's contexts, flow and walkthroughs.
+- [development-outcomes.md](docs/outcomes/development-outcomes.md): DEV-1 to DEV-3, for the Ordering exemplar.
 - Constitution: to follow in Phase 1, using the Spec Kit workflow (backlog T1).
 - ADRs: to follow, starting with the ADR template (backlog T2).

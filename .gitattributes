@@ -1,0 +1,13 @@
+# Line endings: LF in the repository and on checkout, on every platform.
+# Windows-only scripts are the exception and use CRLF.
+* text=auto eol=lf
+
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.sh  text eol=lf
+
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.zip binary

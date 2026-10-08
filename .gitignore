@@ -1,0 +1,38 @@
+# Private evaluation material must never enter this repository (CLAUDE.md hard rule 1).
+# This is a backstop; the Claude Code hooks (Step 7) also block it.
+private-eval/
+*private-eval*/
+mnt/
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+TestResults/
+*.trx
+coverage/
+StrykerOutput/
+
+# Node
+node_modules/
+dist/
+
+# Python
+__pycache__/
+.venv/
+
+# Editors and OS
+.vs/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Secrets and local settings
+.env
+.env.*
+!.env.example
+*.pfx
+.claude/settings.local.json

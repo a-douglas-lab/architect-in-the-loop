@@ -21,7 +21,36 @@ This project extends an existing open-source application rather than building an
 | | |
 | --- | --- |
 | Licence | MIT |
-| Version | Pinned to commit `dc7ea49` (1 Oct 2026); to be confirmed when the subject system is set up |
-| How it is included | As a pinned dependency, not copied into this repository |
+| Version | Upstream commit `dc7ea49` (2 Oct 2026), tagged `upstream-dc7ea49` in our fork |
+| How it is included | Our fork, [a-douglas-lab/eShop](https://github.com/a-douglas-lab/eShop), linked as a git submodule at `subject/eshop`. Our changes to eShop are commits in the fork; nothing from eShop is copied into this repository |
 
 **eShop's own AI features are not part of this project.** eShop includes optional AI features (semantic catalogue search using embeddings, and a storefront chat assistant). They are Microsoft's work, they are switched off in this project, and nothing here builds on them.
+
+## Getting started
+
+```bash
+git clone --recurse-submodules https://github.com/a-douglas-lab/architect-in-the-loop.git
+cd architect-in-the-loop
+./scripts/bootstrap.sh        # or scripts\bootstrap.ps1 on Windows
+```
+
+The bootstrap script fetches eShop at the pinned commit and checks prerequisites: the .NET SDK named in eShop's `global.json`, a container runtime for Aspire, and Node.js. Run it again in every new clone or worktree.
+
+## Repository layout
+
+| Path | Holds |
+| --- | --- |
+| `product.md`, `backlog.md`, `roadmap.md` | What we are building, every decision and open question, and the order of work |
+| `docs/architecture/` | The capability's architecture sketch and walkthroughs |
+| `docs/outcomes/` | Development outcomes for the Ordering exemplar |
+| `docs/adr/` | Architecture decision records for this project |
+| `docs/sessions/` | Short logs of each working session |
+| `.specify/`, `specs/` | Spec Kit: constitution, templates and feature specs |
+| `.claude/`, `CLAUDE.md` | Claude Code configuration: skills, subagents, hooks |
+| `src/`, `tests/`, `rubrics/` | The capability, its tests and its runtime rubrics (as they are built) |
+| `scripts/` | Bootstrap and repository tooling |
+| `subject/eshop/` | The subject system (submodule). Its contract, ADRs, specs and development acceptance tests live there, with its code |
+
+## Licence
+
+MIT, see [LICENSE](LICENSE). eShop is © Microsoft under its own MIT licence.

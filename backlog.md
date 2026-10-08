@@ -24,7 +24,7 @@ Two further markers may follow the status: **Gate** (see the rule above) and **D
 - **Differentiating items** (where the portfolio's originality lives: A1, A2, E2, T6, T7, T8, Q1's enforcement map, Q3's dependency map) get deep research, with measured spikes.
 - **Commodity items** (for example accessibility checking or load testing) get a sensible default, checked in an hour or two, and an ADR that says so. Spending days choosing an accessibility checker adds nothing a reviewer will notice.
 
-**IDs.** Backlog items use a group letter and number (P1, A1, T1, E1, Q1, D1). Development outcomes use DEV-1 to DEV-3 ([development-outcomes.md](development-outcomes.md)); walkthrough gaps use G1 to G14 ([architecture-sketch.md](architecture-sketch.md)).
+**IDs.** Backlog items use a group letter and number (P1, A1, T1, E1, Q1, D1). Development outcomes use DEV-1 to DEV-3 ([development-outcomes.md](docs/outcomes/development-outcomes.md)); walkthrough gaps use G1 to G14 ([architecture-sketch.md](docs/architecture/architecture-sketch.md)).
 
 | Group | Items |
 | --- | --- |
@@ -33,7 +33,7 @@ Two further markers may follow the status: **Gate** (see the rule above) and **D
 | Tools and methods | T1–T9 |
 | Evaluation | E1–E6 |
 | Quality enforcement | Q1–Q5 |
-| Delivery | D1–D6 |
+| Delivery | D1–D7 |
 
 ---
 
@@ -97,6 +97,7 @@ Instrumented from the first commit: hidden and visible acceptance results per ou
 - The capability reads a declared subject contract and holds no subject knowledge in its own code or prompts. A CI check enforces this by failing on subject-domain terms in the capability.
 - It targets a .NET, Aspire, event-driven stack and says so. Stack-specific parts sit behind small adapters.
 - eShop is the only fully built subject. Automated onboarding of new subjects is out of scope; the eShop contract is authored, or extracted with human review (see T8).
+- **Subject-side artefacts live with the subject's code (8 Oct):** the subject contract, the subject's ADRs, per-domain spec folders and the development acceptance tests live in the eShop fork, not in this repo. The capability is given the contract's location and never hard-codes the subject's path. A real team keeps its decisions with its code, and keeping subject knowledge physically outside the capability's repo makes the "no subject knowledge in the capability" rule easy to check.
 - **Stretch goal:** a tiny second subject in a different domain, run with two or three outcomes, to measure portability rather than assert it. At minimum, sketch its contract on paper to test that the contract isn't shaped like eShop.
 
 Options considered: fully generic (more impressive, costs more, risks never finishing); fully specific (faster, reads as a one-off demo); generic interfaces with this subject as the only implementation (chosen, with the stack made explicit).
@@ -111,7 +112,9 @@ The capability needs a realistic system to reason over. Which domains, ADRs, int
 
 - Most outcomes align with the domains eShop already has; at least one evaluation outcome adds a new domain.
 - **New domains are created by the capability, not built by hand beforehand.** Impact analysis returns "unowned capability", a domain design role drafts the charter, and the domain is scaffolded from the exemplar's template (G3, G13).
-- **eShop is pinned, not upgraded:** commit `dc7ea49` (1 Oct 2026). The pin is confirmed when the subject system is set up in Phase 1.
+- **eShop is pinned, not upgraded:** upstream commit `dc7ea49` (`dc7ea499cd35…`, "Update to Aspire 13.6.0", 2 Oct 2026 UTC). Confirmed 8 Oct.
+- **How it is included (8 Oct):** a fork, [a-douglas-lab/eShop](https://github.com/a-douglas-lab/eShop), with the upstream commit tagged `upstream-dc7ea49`, linked from this repo as a git submodule at `subject/eshop`. Our changes to eShop (exemplar, DEV-1 to DEV-3, baseline ADRs, feature flags, merchant configuration, and later the capability's own changes) are commits in the fork, never copies in this repo. Each commit here records exactly which subject commit it was built against. Options rejected: a fetch script with a manifest (pin not visible on GitHub, can drift without a check); an upstream submodule plus patch files (changes become patches, not reviewable code); copying eShop in (breaks the "used, not built" boundary).
+- **Two baselines (8 Oct).** `upstream-dc7ea49` is where we started. The **evaluation baseline** is a later tag in the fork, frozen after our baseline work (Phases 2 and 4); evaluation outcomes run from it. Tags in the fork are immutable (repository ruleset).
 
 **Verified (5 Oct) from the source:**
 
@@ -141,7 +144,7 @@ The capability needs a realistic system to reason over. Which domains, ADRs, int
 
 **Decided (5 Oct):** the persona is called the **architecture coordinator**. They state outcomes, resolve conflicts and make the decisions the capability escalates.
 
-**Open:** exactly what they approve and what is delegated. The use-case ladder in [architecture-sketch.md](architecture-sketch.md) proposes the answer; it closes with A1.
+**Open:** exactly what they approve and what is delegated. The use-case ladder in [architecture-sketch.md](docs/architecture/architecture-sketch.md) proposes the answer; it closes with A1.
 
 ### P7. Confirm non-goals · Decided (ADR pending)
 
@@ -179,7 +182,7 @@ What it gives us:
 - **Payments (PaymentProcessor) is its own thin context.** It has no database, depends only on the event bus, reacts to "stock confirmed", simulates a payment and publishes success or failure. It stands in for a payment gateway with a different reason to change; refunds would belong there.
 - **Other domains stay as they are.** A part-modernised, part-legacy system is realistic, and whether the capability applies the exemplar's conventions to legacy domains becomes a test in itself.
 - **Each domain has its own context, ADR scope and spec folder.** product.md and the constitution stay system-wide.
-- **Development outcomes: DEV-1 to DEV-3** ([development-outcomes.md](development-outcomes.md)), chosen so they don't pre-solve any evaluation outcome; the overlap check is held privately.
+- **Development outcomes: DEV-1 to DEV-3** ([development-outcomes.md](docs/outcomes/development-outcomes.md)), chosen so they don't pre-solve any evaluation outcome; the overlap check is held privately.
 
 Reference: Ordering's order lifecycle is Submitted, then (after the grace period) AwaitingValidation, StockConfirmed, Paid, Shipped; Cancelled is allowed until Paid.
 
@@ -196,7 +199,7 @@ Rules:
 
 The end-to-end design of the capability: its components and agent roles, how work flows from outcome to deployed change, where state lives, where humans approve, and how it reads the subject contract (P3). It pulls together T4 (agent orchestration), T6 (ADR strategy), T7 (impact analysis) and T8 (subject knowledge), so it closes after them, but its shape is sketched early so those items are decided with the whole system in view.
 
-**Sketch:** [architecture-sketch.md](architecture-sketch.md). Walkthrough 1 ran seven use cases (gaps G1 to G7); walkthrough 2 ran the remaining E5 scenarios (gaps G8 to G14). All proposed changes accepted (5 Oct).
+**Sketch:** [architecture-sketch.md](docs/architecture/architecture-sketch.md). Walkthrough 1 ran seven use cases (gaps G1 to G7); walkthrough 2 ran the remaining E5 scenarios (gaps G8 to G14). All proposed changes accepted (5 Oct).
 
 **Decided (5 Oct):**
 
@@ -428,7 +431,7 @@ Success is defined before building. These items turn product.md's success criter
 
 **Decided (5 Oct):**
 
-- **Ten held-out evaluation outcomes,** used only for scored runs, plus a separate development set (DEV-1 to DEV-3, [development-outcomes.md](development-outcomes.md)) for iterating during the build.
+- **Ten held-out evaluation outcomes,** used only for scored runs, plus a separate development set (DEV-1 to DEV-3, [development-outcomes.md](docs/outcomes/development-outcomes.md)) for iterating during the build.
 - **Seven positive outcomes (one adding a new domain) and three negative** (ADR conflict, decision gap, ambiguous request). Spread across single-domain, multi-domain and cross-cutting.
 - **Andy writes the outcomes and their expected impact sets.** The outcomes, their verification against eShop and their labels are held in the private evaluation repository and published with the results.
 - **Scoring is a deterministic comparison** (recall and precision) with no LLM in the scoring.
@@ -461,7 +464,7 @@ How is "the change works" judged independently, when coding agents write both th
 - **Layered acceptance, with a four-layer acceptance test model at its core:** business-language test cases and DSL written by a human before the run; protocol drivers built by the capability; a deterministic check that drivers only use public APIs, events or the UI.
 - **Acceptance tests are an input, written by Andy with Claude Code using the D6 skill,** not proposed by the capability.
 - **Acceptance tests first, as the definition of done.** Reference acceptance tests are written for every outcome before the capability is built. The visible examples, plus the quality layers and ADR checks, form the definition of done the capability works to. Hidden examples are not part of the definition of done; they are used only for scoring.
-- **Acceptance test-driven development at system level.** Every acceptance test must fail against unmodified eShop before the run (red), and pass after (green).
+- **Acceptance test-driven development at system level.** Every acceptance test must fail against the subject before the change (red), and pass after (green). For evaluation outcomes, "before" is the evaluation baseline tag (P4).
 - **Visible and hidden examples.** Each outcome includes a few business-language examples the capability sees (specification by example), plus hidden examples it never sees, used to check it generalised rather than fitted to the visible ones.
 - **No reference implementations for evaluation outcomes.** Reference implementations exist only for development outcomes on the exemplar (P9), to prove the test approach, the DSL and the D6 skill before any scored run.
 - **Test the tests** with mutation testing (for example Stryker.NET), and publish the score as a measure of test strength.
@@ -471,10 +474,10 @@ How is "the change works" judged independently, when coding agents write both th
 
 **Sequence per evaluation outcome (proposed 5 Oct, decided 8 Oct):**
 
-1. Write visible and hidden acceptance tests and labels.
-2. Confirm the tests fail against unmodified eShop.
-3. Pre-register everything, including the withdrawal criteria below.
-4. Run the baseline and the capability. Satisfiability is shown by any run passing a test; a test nothing passes is inspected by hand against the withdrawal criteria.
+1. Write visible and hidden acceptance tests and labels (Phase 3).
+2. Freeze the evaluation baseline tag in the fork, once our baseline work is complete (end of Phase 4; P4).
+3. Confirm the tests fail against the evaluation baseline, then pre-register everything, including the baseline tag and the withdrawal criteria below. (Decided 8 Oct: tests written before the exemplar work could otherwise behave differently after it.)
+4. Run the baseline and the capability, each from the evaluation baseline. Satisfiability is shown by any run passing a test; a test nothing passes is inspected by hand against the withdrawal criteria.
 5. Mutation-test whichever implementations pass.
 
 **Withdrawal rule.** A test found defective after the run is withdrawn only with a documented reason, and the withdrawal applies to the baseline and the capability alike. **What counts as defective is pre-registered (8 Oct)**, so the hand inspection in step 4 can't move the goalposts. Starting criteria, finalised before pre-registration: the test contradicts the outcome statement or its visible examples; it depends on behaviour outside the outcome; or it can't be satisfied through public interfaces (APIs, events or the UI). Every withdrawal is published with its reason.
@@ -499,7 +502,7 @@ What are results compared against? The strongest evidence is an ablation: the sa
 
 An evaluation set for the capability's *architecture*, separate from E1's outcomes, which measure its results. Prior art: quality attribute scenarios from the Architecture Tradeoff Analysis Method (ATAM).
 
-**Done (5 Oct):** every scenario below was walked through on paper ([architecture-sketch.md](architecture-sketch.md), W5 to W11), producing gaps G5 to G14, all accepted.
+**Done (5 Oct):** every scenario below was walked through on paper ([architecture-sketch.md](docs/architecture/architecture-sketch.md), W5 to W11), producing gaps G5 to G14, all accepted.
 
 | Scenario | Walkthrough |
 | --- | --- |
@@ -646,7 +649,17 @@ What the skill covers:
 - **A stub protocol driver**, so the tests compile and run before any implementation exists.
 - **Splitting visible from hidden examples.** Visible examples go into the outcome request and are the definition of done. Hidden examples cover cases the outcome didn't spell out (edge cases, failure paths, interactions) and check that the capability understood the outcome rather than satisfying a checklist. This mirrors what a domain expert does, which is what domain stewards stand in for.
 - **Keeping hidden examples hidden:** they live in the private evaluation repo the capability can't access, and are published after the scored run.
-- **Red first:** confirming every test fails against unmodified eShop.
+- **Red first:** confirming every test fails against the subject before the change (for evaluation outcomes, the evaluation baseline tag).
 - **Pre-registration:** committing tests and labels with a hash before the scored run.
 
 **Open: who builds the exemplar's reference implementations.** If the plan comes from the capability's own stewards, the reference is produced by the system under test, and impact scoring would agree with the capability by construction. The reference implementations must also exist before the capability is built (E2). Proposed: an independent plan and implementation, made by Andy with Claude Code in a separate session using this skill. To decide.
+
+### D7. Licence and repository hosting · Decided (ADR pending)
+
+**Decided (8 Oct):**
+
+- **This repo is public on GitHub** ([a-douglas-lab/architect-in-the-loop](https://github.com/a-douglas-lab/architect-in-the-loop)), built in the open. Its dated history is part of the evidence of authorship.
+- **MIT licence for everything** in this repo, code and documents. Options considered: no licence (all rights reserved; odd for a portfolio and deters reviewers from running it); source-available such as PolyForm Noncommercial (less familiar); MIT for code with CC BY 4.0 for documents. Ideas can't be protected by any licence; being visibly first and able to defend the work is the practical protection.
+- **The eShop fork is public** (a fork of a public repo must be) and keeps eShop's MIT licence.
+- **Repository rulesets:** `main` in both repos cannot be force-pushed or deleted; tags in the fork cannot be moved or deleted, so baseline and pre-registration tags are trustworthy.
+- **Pushes happen only after Andy's review.** Private evaluation material is kept out by `.gitignore`, the bootstrap check and, from Step 7, Claude Code hooks.
