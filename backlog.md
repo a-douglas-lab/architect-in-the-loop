@@ -664,6 +664,8 @@ Candidate sources, each seeing only part of the picture:
 - Where the skill eval sets live and how they are run (with A5 and Q2).
 - Whether low-risk stages (tasks, analyze) need a lighter loop card.
 
+**Decided (20 Oct): the adversarial reviewer runs on every documentation PR now, by hand,** to [REVIEW.md](REVIEW.md), ahead of Step 7. It is a subagent with a fresh context that sees the diff and the sources, not the author's reasoning. It never approves: its findings and the author's responses go in the PR description, and Andy decides. The first run, on batch 1 after it was merged, found 3 High problems the author had missed ([loop card](docs/loops/cards/2026-10-20-adr-batch1-review-run1.md)). Code review joins the policy when there is code.
+
 ### D2. Timebox and milestones · Decided (ADR pending)
 
 **Decided (5 Oct):** no hard deadline. Quality comes first; work continues beyond the nominal one-week date, and we see where we end up. Milestones are defined by the evidence they produce, so each phase leaves something publishable ([roadmap.md](roadmap.md)). Sizing at the time: about five to seven weeks for the full scope.
