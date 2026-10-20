@@ -94,7 +94,7 @@ Instrumented from the first commit: hidden and visible acceptance results per ou
 
 **Decided (5 Oct):** generic over subject knowledge, specific to the stack.
 
-- The capability reads a declared subject contract and holds no subject knowledge in its own code or prompts. A CI check enforces this by failing on subject-domain terms in the capability.
+- The capability reads a declared subject contract and holds no subject knowledge in its own code or prompts. A CI check is to enforce this by failing on subject-domain terms in the capability (planned, ADR-001 C1).
 - It targets a .NET, Aspire, event-driven stack and says so. Stack-specific parts sit behind small adapters.
 - eShop is the only fully built subject. Automated onboarding of new subjects is out of scope; the eShop contract is authored, or extracted with human review (see T8).
 - **Subject-side artefacts live with the subject's code (8 Oct):** the subject contract, the subject's ADRs, per-domain spec folders and the development acceptance tests live in the eShop fork, not in this repo. The capability is given the contract's location and never hard-codes the subject's path. A real team keeps its decisions with its code, and keeping subject knowledge physically outside the capability's repo makes the "no subject knowledge in the capability" rule easy to check.
@@ -166,9 +166,11 @@ Design to evaluate:
 
 **Open:** how much of this is built versus designed and documented only; whether experiments (comparing groups through Q5's flags) are in scope or only on/off release; and whether the hypothesis is part of the outcome input, alongside the visible examples.
 
-### P9. Exemplar domain · Closed (ADR-005) · Gate
+### P9. Exemplar domain · Partly decided · Gate
 
-ADR-005 records the exemplar approach. Which projects belong to Ordering, and Payments as its own context, are subject ADRs, written in the fork in Phase 2 (ADR-003).
+The exemplar approach is recorded in [ADR-005](docs/adr/ADR-005-ordering-exemplar.md).
+
+**Decided, still to record as subject ADRs in the fork (Phase 2, ADR-000 C12):** the projects that make up Ordering (including OrderProcessor); Payments as its own thin context; and "each domain has its own context, ADR scope and spec folder", with product.md and the constitution staying system-wide. P9 closes when these are written.
 
 Bring one existing domain into the preferred state first, with everything we expect of a well-governed domain: constitution and specs, ADRs with enforcement, build and CI checks, acceptance tests in the four-layer model, and instrumentation. Then apply development outcomes to it by hand (with Claude Code), as reference implementations.
 

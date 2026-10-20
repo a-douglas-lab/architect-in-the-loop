@@ -1,5 +1,6 @@
 ---
 id: ADR-002
+version: 2
 title: eShop is included as a pinned fork submodule, with two baselines
 status: accepted
 date: 2026-10-20
@@ -13,8 +14,8 @@ superseded-by: null
 exceptions: not-allowed
 enforcement:
   - constraint: C1
-    mechanism: git submodule configuration, checked by the bootstrap script
-    ref: scripts/bootstrap.ps1
+    mechanism: none yet; the bootstrap script initialises the submodule but doesn't check it
+    ref: null
     state: manual
   - constraint: C2
     mechanism: CI check that the submodule commit descends from the pinned upstream tag
@@ -25,11 +26,15 @@ enforcement:
     ref: null
     state: planned
   - constraint: C4
-    mechanism: GitHub repository ruleset on the fork (tags cannot be moved or deleted)
-    ref: https://github.com/a-douglas-lab/eShop
+    mechanism: GitHub repository ruleset "Immutable tags" on the fork (all tags; deletion, update and force-push blocked)
+    ref: https://github.com/a-douglas-lab/eShop/rules/24726585
     state: enforced
   - constraint: C5
     mechanism: review, then the evaluation runner (E6)
+    ref: null
+    state: manual
+  - constraint: C6
+    mechanism: review
     ref: null
     state: manual
 backlog: [P4]
@@ -45,22 +50,23 @@ Criteria: the pin is visible on GitHub; our changes are reviewable code, not pat
 
 ## Decision
 
-Fork eShop to [a-douglas-lab/eShop](https://github.com/a-douglas-lab/eShop). Tag the upstream commit `dc7ea49` ("Update to Aspire 13.6.0", 2 Oct 2026) as `upstream-dc7ea49`. Include the fork in this repo as the git submodule `subject/eshop`. Our changes to eShop are commits in the fork; each commit here records exactly which fork commit it was built against.
+Fork eShop to [a-douglas-lab/eShop](https://github.com/a-douglas-lab/eShop). Tag the upstream commit `dc7ea49` (`dc7ea499cd35…`, "Update to Aspire 13.6.0", 2 Oct 2026 UTC) as `upstream-dc7ea49`. Include the fork in this repo as the git submodule `subject/eshop`. Our changes to eShop are commits in the fork; each commit here records exactly which fork commit it was built against.
 
 There are two baselines:
 
 - `upstream-dc7ea49` is where we started.
-- The **evaluation baseline** is a later tag in the fork, frozen once our baseline work is complete (end of Phase 4). Evaluation outcomes run from it.
+- The **evaluation baseline** is a later tag in the fork, frozen after our baseline work (Phases 2 and 4). Evaluation outcomes run from it.
 
-eShop is pinned, not upgraded.
+eShop is pinned, not upgraded. Tags in the fork are immutable.
 
 ## Constraints
 
 - **C1:** eShop MUST be included only as the git submodule `subject/eshop`, pointing at the fork.
-- **C2:** The fork MUST stay based on upstream `dc7ea49`. Upgrading eShop needs a new ADR that supersedes this one.
-- **C3:** eShop files MUST NOT be copied into this repo. Changes to eShop MUST be commits in the fork.
-- **C4:** Baseline tags in the fork MUST NOT be moved or deleted.
+- **C2:** The fork MUST stay based on upstream `dc7ea49`. Upgrading eShop needs a revision of this ADR.
+- **C3:** eShop files MUST NOT be copied into this repo.
+- **C4:** Tags in the fork MUST NOT be moved or deleted.
 - **C5:** Evaluation outcomes MUST run from the evaluation baseline tag, once it exists.
+- **C6:** Changes to eShop MUST be commits in the fork.
 
 ## Consequences
 
@@ -73,7 +79,7 @@ Easier:
 Harder:
 
 - Submodules add friction: clones need `--recurse-submodules`, and the pointer can show as modified while fork work is in progress.
-- Upstream fixes don't arrive unless we supersede this ADR.
+- Upstream fixes don't arrive unless this ADR is revised.
 
 To do:
 
@@ -82,15 +88,15 @@ To do:
 
 ## Alternatives
 
-### Do nothing: depend on upstream eShop directly
+### Do nothing: depend on upstream eShop directly (added when writing this ADR)
 
 - For: no fork to maintain.
 - Against: there's nowhere to commit our changes, and upstream moves.
 
-### Naive: copy eShop into this repo
+### Copying eShop in
 
 - For: one repo, simple.
-- Against: breaks the "used, not built" boundary, and blurs which code is ours.
+- Against: breaks the "used, not built" boundary.
 
 ### A fetch script with a manifest
 
@@ -100,13 +106,20 @@ To do:
 ### An upstream submodule plus patch files
 
 - For: no fork.
-- Against: our changes become patches rather than reviewable code.
+- Against: our changes become patches, not reviewable code.
 
 ### A fork plus submodule, with tagged baselines (chosen)
 
 - For: a visible pin, reviewable changes, immutable baselines.
 - Against: submodule friction, and the fork needs looking after.
 
+The naive option (an LLM with everything in its prompt) doesn't apply to how code is included.
+
 ## Enforcement
 
-C4 is enforced by the fork's repository ruleset. C1 is set up by the bootstrap script but not yet checked, so it is recorded as manual. C2 and C3 are planned CI checks. C5 is held by review until the evaluation runner (E6) exists.
+C4 is enforced by the fork's "Immutable tags" ruleset, which covers all tags and has no bypass actors. Whether organisation owners could edit the ruleset itself hasn't been checked. C1 is set up by the bootstrap script but not checked by anything, so it is manual. C2 and C3 are planned CI checks. C5 and C6 are held by review, C5 until the evaluation runner (E6) exists.
+
+## History
+
+- **v1** · 2026-10-20 · accepted · Andy Douglas: first version.
+- **v2** · 2026-10-20 · correction · Andy Douglas: from review run 1 (findings 1, 10, 11, 15; nits 1, 2, 4). C1's mechanism no longer claims the bootstrap script checks it. C3 split: "changes are commits in the fork" is now C6. C4 restored to all tags, as in P4, with `ref` pointing at the ruleset. Upstream date given in UTC with the full hash, and baseline timing worded as in P4. Alternatives aligned with P4's rejected options, and the added one marked.

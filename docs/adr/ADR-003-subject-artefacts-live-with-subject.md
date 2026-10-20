@@ -1,5 +1,6 @@
 ---
 id: ADR-003
+version: 2
 title: Subject-side artefacts live with the subject's code, in the fork
 status: accepted
 date: 2026-10-20
@@ -17,6 +18,10 @@ enforcement:
     ref: null
     state: planned
   - constraint: C2
+    mechanism: review
+    ref: null
+    state: manual
+  - constraint: C3
     mechanism: CI check that the capability's code doesn't contain the subject's path
     ref: null
     state: planned
@@ -31,12 +36,15 @@ Some artefacts describe the subject system rather than the capability: the subje
 
 ## Decision
 
-Subject-side artefacts live in the eShop fork, with the code they describe. The capability is given the contract's location at run time and never hard-codes the subject's path.
+Subject-side artefacts live in the eShop fork, with the code they describe. The capability is given the contract's location and never hard-codes the subject's path.
+
+What counts as a subject ADR, as opposed to a project ADR about the subject, is defined in ADR-000 (v2).
 
 ## Constraints
 
-- **C1:** The subject contract, the subject's ADRs, per-domain spec folders and the development acceptance tests MUST live in the eShop fork, not in this repo.
-- **C2:** The capability MUST find the subject through a contract location it is given, and MUST NOT hard-code the subject's path.
+- **C1:** The subject contract, subject ADRs (as defined in ADR-000), per-domain spec folders and the development acceptance tests MUST live in the eShop fork, not in this repo.
+- **C2:** The capability MUST find the subject through a contract location it is given.
+- **C3:** The capability MUST NOT hard-code the subject's path.
 
 ## Consequences
 
@@ -47,26 +55,33 @@ Easier:
 
 Harder:
 
-- Work often spans two repos, each with its own Spec Kit set-up. Subject-side stages run with the fork as the project root (first noted on the DEV-1 specify loop card).
+- Work often spans two repos.
 - The evaluation's held-out material stays in a third, private repo, so three repos are in play.
 
 ## Alternatives
 
-### Do nothing: keep subject artefacts wherever they are first written
+### Do nothing: keep subject artefacts wherever they are first written (added when writing this ADR)
 
 - For: no rule to follow.
 - Against: they would end up scattered between repos, and ADR-001 couldn't be checked.
 
-### Naive: keep everything in this repo
+### Keep everything in this repo (added when writing this ADR)
 
 - For: one place to look.
-- Against: puts subject knowledge in the capability's repo, which is what ADR-001 forbids.
+- Against: puts subject knowledge in the capability's repo, which ADR-001 forbids.
 
 ### Subject artefacts in the fork (chosen)
 
 - For: realistic, and makes ADR-001 checkable by location.
 - Against: two repos to work across.
 
+The naive option (an LLM with everything in its prompt) doesn't apply to where files live.
+
 ## Enforcement
 
-C1 and C2 are planned CI checks (Step 7). Until then they rely on review and CLAUDE.md hard rule 4.
+C1 and C3 are planned CI checks (Step 7). Until then, C1 relies on review and CLAUDE.md hard rule 4, and C3 on review alone. C2 needs judgement and stays with review.
+
+## History
+
+- **v1** · 2026-10-20 · accepted · Andy Douglas: first version.
+- **v2** · 2026-10-20 · correction · Andy Douglas: from review run 1 (findings 7, 9, 13, 15). Removed a citation of an unmerged loop card, and an untrue claim that the fork has its own Spec Kit set-up. C1 now refers to ADR-000's definition of a subject ADR. C2 split: "no hard-coded path" is now C3. The enforcement note no longer says hard rule 4 covers hard-coded paths. Alternatives added at write-up are marked.
