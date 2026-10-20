@@ -12,6 +12,8 @@ Working title: Architect in the Loop. The product name is parked (backlog P1).
 
 **The thesis.** Deterministic where possible, probabilistic where necessary, measured everywhere. AI does the reasoning that needs judgement; deterministic checks hold it to the decisions that have already been made; every claim the system makes about its own quality is backed by a measurement.
 
+**Where it sits.** Published agentic delivery loops, such as Anthropic's AI-native SDLC playbook (reviewed 20 Oct 2026, backlog A1), take a request through intent, spec, plan, build, test and deploy, with organisational policy applied as generic skills. They don't work out which domains a change touches, which decisions govern it, or when those decisions conflict or are missing. That governance layer is what this capability adds.
+
 **How it improves.** Every claim starts as a stated direction, not a promise. Anything we need to know is tried, measured, reviewed and adapted, then the cycle repeats. Where we can't measure something (for example real-world value, without users), the repo says so rather than claiming it.
 
 **Why this repo exists.** This is a portfolio project, built in the open to demonstrate system design, engineering judgement and strategic thinking for early-stage CTO, Chief Architect and Head of Platform roles. It is not a live service with real customers and does not claim to be. It is production-grade in its engineering and reasoning, so an interviewer can inspect, run and question any part of it.

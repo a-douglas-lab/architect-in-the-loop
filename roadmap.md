@@ -1,6 +1,6 @@
 # Roadmap: order for closing the backlog
 
-Status: proposal · updated 8 Oct 2026
+Status: proposal · updated 20 Oct 2026
 
 Ranks the open items in [backlog.md](backlog.md) by what they unblock. Items that are fully decided are not listed. Under the backlog's Gate rule, a Gate item must close before the phase that depends on it starts. Phases overlap where nothing blocks them; with Claude Code, two tracks can run in parallel.
 
@@ -53,7 +53,7 @@ Prior-art reading for T7, T6 and A1 (including agentheim) can start here as a se
 | P4 Baseline ADRs | On the critical path; the negative evaluation outcomes need ADRs to collide with. Includes "business rules live in the owning domain" |
 | P5b Merchant configuration | Some evaluation outcomes need somewhere for the merchant to set values; blocks their labels |
 | Q1 Enforcement map | Fills the enforcement section of each baseline ADR |
-| D6 Acceptance test skill, built and dry-run on DEV-1 | On the critical path. Proves the skill, the DSL and the four-layer model end to end (tests written, confirmed red, DEV-1 implemented, confirmed green, mutation-tested) before any evaluation test is written. DEV-1's implementation is revisited in Phase 4 when Ordering reaches its preferred state |
+| D6 Acceptance test skill, built and dry-run on DEV-1 | On the critical path. Proves the skill, the DSL and the four-layer model end to end (tests written, confirmed red, DEV-1 implemented, confirmed green, mutation-tested) before any evaluation test is written. Each stage is run by hand and recorded on a loop card ([docs/loops/](docs/loops/README.md), D1), so the stages are understood before any is automated. DEV-1's implementation is revisited in Phase 4 when Ordering reaches its preferred state |
 
 ### Phase 3. Evaluation assets
 

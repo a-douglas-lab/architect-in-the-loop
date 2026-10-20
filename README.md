@@ -51,6 +51,7 @@ uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@v1
 | `docs/outcomes/` | Development outcomes for the Ordering exemplar |
 | `docs/adr/` | Architecture decision records for this project |
 | `docs/sessions/` | Short logs of each working session |
+| `docs/loops/` | Loop cards: one record per run of each delivery stage, used to decide when a stage is ready to automate |
 | `.specify/`, `specs/` | Spec Kit: constitution, templates and feature specs |
 | `.claude/`, `CLAUDE.md` | Claude Code configuration: skills, subagents, hooks |
 | `src/`, `tests/`, `rubrics/` | The capability, its tests and its runtime rubrics (as they are built) |

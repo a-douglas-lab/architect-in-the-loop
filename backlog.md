@@ -2,7 +2,7 @@
 
 > **Public version.** Evaluation outcomes, their labels, hidden examples and anything deliberately left in eShop for evaluation are held in the private evaluation repository. Where they were discussed, this file points there instead.
 
-Status: v0.2 · 8 Oct 2026
+Status: v0.2 · updated 20 Oct 2026
 
 Every open question and every decision so far, with its status. This file is the source of truth for what is decided. **Gate rule (8 Oct):** an item marked **Gate** must close before the [roadmap](roadmap.md) phase that depends on it starts. Each item closes with a short ADR recording the decision, the options considered and the evidence. Items carried over from the original capabilities document keep their old ID in brackets.
 
@@ -219,6 +219,7 @@ The end-to-end design of the capability: its components and agent roles, how wor
 - **Structure versus prose, proposed principle:** structure what the system acts on; keep prose for reasoning. Decisions, domain and ADR IDs, verdicts, references and confidence go in schema fields; the reasoning stays as free text in a rationale field. Likely mechanism: the agent reasons freely, then emits a schema-validated result. Confirm with a spike comparing structured and free-form impact analysis on the development set.
 - **Long-running traces.** An outcome may wait days for approval. Likely option: a trace per stage, linked by span links and the outcome ID. Confirm in a spike.
 - **Prior art to review:** agentheim, a domain-driven-design harness for Claude Code (an orchestrator that never writes code, strict worker return formats, a knowledge layer). Check what it already solves before designing our own.
+- **Prior art reviewed (20 Oct):** Anthropic's AI-native SDLC playbook (intent → spec → plan → build → test → deploy → maintain, each stage committing an artefact). It has no impact analysis across domains, no selection of the decisions that govern a change, and no stop when decisions conflict or are missing; its design stage applies generic organisational skills. That gap is this capability's differentiator (product.md). Its evals have no held-out set, and its headline figures are unmeasured vendor claims.
 
 ### A2. Independent grader · Partly decided
 
@@ -636,6 +637,19 @@ Candidate sources, each seeing only part of the picture:
 - Which components are fine as thin stubs (for example the capability's web interface, P5a) versus which must be deep.
 
 **Prior art for the hooks (found 8 Oct):** *gates* (github.com/schwichtgit/spec-gates, MIT), a Spec Kit extension enforcing one policy at three boundaries: Claude Code hooks, git pre-commit and CI. Review before writing our own hooks.
+
+**Decided (20 Oct), from a review of Anthropic's [AI-native SDLC playbook](https://claude.com/resources/articles/the-ai-native-sdlc-playbook):** Spec Kit stays the engine; the playbook supplies the loop around it (who acts at each stage, what each stage measures, how autonomy is granted).
+
+- **A hook blocks writes to acceptance test paths during implement.** Hard rule 3 becomes a deterministic control, not just an instruction in CLAUDE.md. Review *gates* (above) first.
+- **The adversarial reviewer works to a written policy, `REVIEW.md`:** three passes (bugs, security, compliance with spec and plan), findings ranked by severity, nits capped. Without a policy its output can't be compared across runs.
+- **Each skill gets a small regression eval set,** re-run whenever the skill, CLAUDE.md or a hook changes. Configuration is treated as code.
+- **Each delivery stage is run by hand before it is automated, and each run is recorded on a loop card** ([docs/loops/](docs/loops/README.md)). A stage's autonomy is raised one level at a time, only when its cards meet the readiness criteria. The cards also give each stage a leading and a lagging indicator, which feeds the delivery metrics above.
+
+**Open, from the same review:**
+
+- The autonomy levels (0 to 4) and the readiness criteria in docs/loops are a first draft. Refine them after the first DEV-1 runs.
+- Where the skill eval sets live and how they are run (with A5 and Q2).
+- Whether low-risk stages (tasks, analyze) need a lighter loop card.
 
 ### D2. Timebox and milestones · Decided (ADR pending)
 
