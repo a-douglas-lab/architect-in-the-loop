@@ -17,7 +17,7 @@ Ranks the open items in [backlog.md](backlog.md) by what they unblock. Items tha
 
 The longest chain of dependencies, which sets the earliest possible scored run:
 
-ADR template (T2) → baseline ADRs (P4) → acceptance test skill dry run on DEV-1 (D6) → outcome labels (E1) → acceptance tests via the skill (E2) → exemplar and evaluation baseline tag (P9, P4) → tests confirmed red and pre-registered → capability build → scored run
+ADR template (T2, done: ADR-000) → baseline ADRs (P4) → acceptance test skill dry run on DEV-1 (D6) → outcome labels (E1) → acceptance tests via the skill (E2) → exemplar and evaluation baseline tag (P9, P4) → tests confirmed red and pre-registered → capability build → scored run
 
 Everything not on this chain can run alongside it.
 
@@ -33,7 +33,6 @@ Evidence: product.md, the backlog, outcome validation and the architecture sketc
 
 | Item | Depth | Why now |
 | --- | --- | --- |
-| T2 ADR template (ADR-000) | Commodity plus our front matter (scope, precedence, enforcement links, exceptions) | On the critical path; everything references ADRs |
 | T1 Spec Kit presets and extensions, and the constitution | Spike | Decides how both the capability and the exemplar are specified |
 | D1 Claude Code setup | Short | Skills, subagent and hooks that every later session uses |
 | T5 Stack for the capability | Short | Decides how T4 and T9 are built |

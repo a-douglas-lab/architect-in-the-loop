@@ -366,9 +366,17 @@ There are two layers: building the capability itself (and the exemplar), and the
 - How ADRs and the constitution's ADR index connect to Spec Kit's constitution (Phase 1, Step 6).
 - Whether the capability also produces Spec Kit artefacts for changes to the subject system (the second layer; with A1 and T4). Spec Kit will be initialised separately in the eShop fork for subject-side specs (P3).
 
-### T2. Decision records · Open · Gate
+### T2. Decision records · Closed (ADR-000) · Gate
 
 ADR format (Nygard, MADR, or our own template), where ADRs live, and how they are versioned. The template becomes ADR-000. Its front matter needs at least: ID, status, scope tags, precedence (G5), supersedes, enforcement links (Q1) and exceptions (G12).
+
+**Decided (20 Oct), [ADR-000](docs/adr/ADR-000-decision-record-format.md):** our own template ([docs/adr/template.md](docs/adr/template.md)), extending MADR 4.0.0 with front matter for scope, precedence, supersession, exceptions and per-constraint enforcement, and a numbered Constraints section separate from the Decision prose.
+
+- **Precedence (G5):** an explicit `overrides` wins first, then tier (cross-cutting binds domain, domain binds component); anything else is a decision gap.
+- **Exceptions (G12):** separate records in `docs/adr/exceptions/`; the ADR says only whether exceptions are allowed. Record format decided with Q1.
+- **Accepted ADRs:** only status, date, superseded-by and enforcement state and link may change; anything else is a new, superseding ADR.
+- **Both repositories use the same template;** the eShop fork's ADRs have their own ID sequence.
+- **Not yet enforced:** an ADR validator (constraints C1 to C5) is built with the D1 hooks in Step 7.
 
 ### T3. Deterministic constraint enforcement · Merged into Q1
 
