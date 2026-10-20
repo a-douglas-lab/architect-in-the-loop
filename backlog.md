@@ -664,6 +664,15 @@ Candidate sources, each seeing only part of the picture:
 - Where the skill eval sets live and how they are run (with A5 and Q2).
 - Whether low-risk stages (tasks, analyze) need a lighter loop card.
 
+**Decided (20 Oct): file access is an allowlist, enforced by a hook,** built with the other D1 hooks.
+
+- **Why a hook:** Claude Code has no allowlist setting. Outside the working directory, file tools prompt rather than block, and a deny rule can't carve out the project folder, because deny beats allow. A `PreToolUse` hook can deny any file-tool path (Read, Edit, Write, Glob, Grep) outside an allowlist, with no prompt to click through.
+- **Allowlist:** the session's working directory, plus what Claude needs for its own work: the session scratchpad, its project folder under `~/.claude/projects/` (memory and saved tool output), and plugin and skill folders. Everything else is denied.
+- **Defence in depth:** a user-level deny rule names the private evaluation repo's path explicitly (hard rule 1), so it still holds if the hook is missing or broken. It lives in user settings, not this public repo.
+- **Limit:** neither the hook nor deny rules contain a script that opens files itself (Python, Node). Only the OS-level sandbox does, and it needs WSL2 or a container, not native Windows. Whether to move to WSL2 is open.
+
+**Open:** the exact exception list, settled while building the hook; whether the hook also checks paths named in shell commands.
+
 **Decided (20 Oct): the adversarial reviewer runs on every documentation PR now, by hand,** to [REVIEW.md](REVIEW.md), ahead of Step 7. It is a subagent with a fresh context that sees the diff and the sources, not the author's reasoning. It never approves: its findings and the author's responses go in the PR description, and Andy decides. The first run, on batch 1 after it was merged, found 3 High problems the author had missed ([loop card](docs/loops/cards/2026-10-20-adr-batch1-review-run1.md)). Code review joins the policy when there is code.
 
 ### D2. Timebox and milestones · Decided (ADR pending)
