@@ -94,7 +94,7 @@ Instrumented from the first commit: hidden and visible acceptance results per ou
 
 **Decided (5 Oct):** generic over subject knowledge, specific to the stack.
 
-- The capability reads a declared subject contract and holds no subject knowledge in its own code or prompts. A CI check is to enforce this by failing on subject-domain terms in the capability (planned, ADR-001 C1).
+- The capability reads a declared subject contract and holds no subject knowledge in its own code or prompts. A CI check is to enforce this by failing on subject-domain terms in the capability (planned, ADR-001@v2 C1).
 - It targets a .NET, Aspire, event-driven stack and says so. Stack-specific parts sit behind small adapters.
 - eShop is the only fully built subject. Automated onboarding of new subjects is out of scope; the eShop contract is authored, or extracted with human review (see T8).
 - **Subject-side artefacts live with the subject's code (8 Oct):** the subject contract, the subject's ADRs, per-domain spec folders and the development acceptance tests live in the eShop fork, not in this repo. The capability is given the contract's location and never hard-codes the subject's path. A real team keeps its decisions with its code, and keeping subject knowledge physically outside the capability's repo makes the "no subject knowledge in the capability" rule easy to check.
@@ -166,11 +166,11 @@ Design to evaluate:
 
 **Open:** how much of this is built versus designed and documented only; whether experiments (comparing groups through Q5's flags) are in scope or only on/off release; and whether the hypothesis is part of the outcome input, alongside the visible examples.
 
-### P9. Exemplar domain · Partly decided · Gate
+### P9. Exemplar domain · Decided (ADR pending) · Gate
 
 The exemplar approach is recorded in [ADR-005](docs/adr/ADR-005-ordering-exemplar.md).
 
-**Decided, still to record as subject ADRs in the fork (Phase 2, ADR-000 C12):** the projects that make up Ordering (including OrderProcessor); Payments as its own thin context; and "each domain has its own context, ADR scope and spec folder", with product.md and the constitution staying system-wide. P9 closes when these are written.
+**Decided, still to record as subject ADRs in the fork (Phase 2, ADR-000@v2 C12):** the projects that make up Ordering (including OrderProcessor); Payments as its own thin context; and "each domain has its own context, ADR scope and spec folder", with product.md and the constitution staying system-wide. P9 closes when these are written.
 
 Bring one existing domain into the preferred state first, with everything we expect of a well-governed domain: constitution and specs, ADRs with enforcement, build and CI checks, acceptance tests in the four-layer model, and instrumentation. Then apply development outcomes to it by hand (with Claude Code), as reference implementations.
 
@@ -654,7 +654,7 @@ Candidate sources, each seeing only part of the picture:
 **Decided (20 Oct), from a review of Anthropic's [AI-native SDLC playbook](https://claude.com/resources/articles/the-ai-native-sdlc-playbook):** Spec Kit stays the engine; the playbook supplies the loop around it (who acts at each stage, what each stage measures, how autonomy is granted).
 
 - **A hook blocks writes to acceptance test paths during implement.** Hard rule 3 becomes a deterministic control, not just an instruction in CLAUDE.md. Review *gates* (above) first.
-- **The adversarial reviewer works to a written policy, `REVIEW.md`:** three passes (bugs, security, compliance with spec and plan), findings ranked by severity, nits capped. Without a policy its output can't be compared across runs.
+- **The adversarial reviewer works to a written policy, `REVIEW.md`:** findings ranked by severity, nits capped. Without a policy its output can't be compared across runs. *Revised 20 Oct (Andy):* documentation PRs get four passes now (fidelity, facts, constraints, honest enforcement). The playbook's three code passes (bugs, security, compliance with spec and plan) are added when there is code.
 - **Each skill gets a small regression eval set,** re-run whenever the skill, CLAUDE.md or a hook changes. Configuration is treated as code.
 - **Each delivery stage is run by hand before it is automated, and each run is recorded on a loop card** ([docs/loops/](docs/loops/README.md)). A stage's autonomy is raised one level at a time, only when its cards meet the readiness criteria. The cards also give each stage a leading and a lagging indicator, which feeds the delivery metrics above.
 

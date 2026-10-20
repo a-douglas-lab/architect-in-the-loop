@@ -1,6 +1,6 @@
 ---
 id: ADR-nnn
-version: 1                  # incremented on every change (ADR-000 C8)
+version: 1                  # incremented on every change (ADR-000@v2 C8)
 title: Short statement of the decision
 status: proposed            # proposed | accepted | rejected | deprecated | superseded
 date: YYYY-MM-DD            # date of the last status change
@@ -55,6 +55,6 @@ The `enforcement` list in the front matter is the record of which check covers w
 
 ## History
 
-One line per version: version, date, type (accepted, correction or revision), approver, one-line summary.
+One line per version: version, date, type, approver, one-line summary. v1's type is `accepted`; later versions are `correction` or `revision` (ADR-000@v2 C8).
 
 - **v1** · YYYY-MM-DD · accepted · Andy Douglas: first version.

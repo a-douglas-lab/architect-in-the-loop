@@ -30,7 +30,7 @@ enforcement:
     ref: null
     state: planned
   - constraint: C5
-    mechanism: test that useOllama is false in the AppHost
+    mechanism: source check that the AppHost still declares useOllama as false (it is a local variable, so a unit test can't observe it)
     ref: null
     state: planned
 backlog: [P7, T4]
@@ -97,4 +97,4 @@ C1 to C3 need judgement and stay with review. C4 and C5 are mechanical but not y
 ## History
 
 - **v1** · 2026-10-20 · accepted · Andy Douglas: first version.
-- **v2** · 2026-10-20 · correction · Andy Douglas: from review run 1 (findings 6, 8, 15, 20; nit 3). Removed an untraced claim about the E4 comparison, which is still open. C4 split into C4 (Foundry, checked at run time) and C5 (Ollama). `ref` no longer points at the subject file. The existing upstream test is noted as partial coverage. Alternatives added at write-up are marked, and the second one is no longer labelled as the naive option.
+- **v2** · 2026-10-20 · correction · written by Claude, checked by review runs 1 and 2, merged by Andy Douglas: from review run 1 (findings 6, 8, 15, 20; nit 3). Removed "the evaluation compares governance with plain Claude Code, not one agent with another". The comparison itself is decided (P2), but its design is open (E4), so the claim went beyond the source. C4 split into C4 (Foundry, checked at run time) and C5 (Ollama). `ref` no longer points at the subject file. The existing upstream test is noted as partial coverage. Alternatives added at write-up are marked, and the second one is no longer labelled as the naive option.

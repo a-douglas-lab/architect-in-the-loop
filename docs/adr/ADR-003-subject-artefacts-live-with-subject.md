@@ -38,7 +38,7 @@ Some artefacts describe the subject system rather than the capability: the subje
 
 Subject-side artefacts live in the eShop fork, with the code they describe. The capability is given the contract's location and never hard-codes the subject's path.
 
-What counts as a subject ADR, as opposed to a project ADR about the subject, is defined in ADR-000 (v2).
+What counts as a subject ADR, as opposed to a project ADR about the subject, is defined in ADR-000@v2.
 
 ## Constraints
 
@@ -84,4 +84,4 @@ C1 and C3 are planned CI checks (Step 7). Until then, C1 relies on review and CL
 ## History
 
 - **v1** · 2026-10-20 · accepted · Andy Douglas: first version.
-- **v2** · 2026-10-20 · correction · Andy Douglas: from review run 1 (findings 7, 9, 13, 15). Removed a citation of an unmerged loop card, and an untrue claim that the fork has its own Spec Kit set-up. C1 now refers to ADR-000's definition of a subject ADR. C2 split: "no hard-coded path" is now C3. The enforcement note no longer says hard rule 4 covers hard-coded paths. Alternatives added at write-up are marked.
+- **v2** · 2026-10-20 · correction · written by Claude, checked by review runs 1 and 2, merged by Andy Douglas: from review run 1 (findings 7, 9, 13, 15). Removed a citation of an unmerged loop card, and the claim that the fork has its own Spec Kit set-up (true only in an unpushed local commit). C1 now refers to ADR-000's definition of a subject ADR. C2 split: "no hard-coded path" is now C3. The enforcement note no longer says hard rule 4 covers hard-coded paths. Alternatives added at write-up are marked.

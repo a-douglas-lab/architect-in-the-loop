@@ -18,7 +18,7 @@ The main risk in documentation PRs is the author adding, softening or strengthen
 - Flag anything with no source as **untraced**: a design detail, rule, threshold or example that the source doesn't contain.
 - Flag any change of strength: SHOULD in the source but MUST in the ADR, a condition or exception dropped, or scope widened or narrowed.
 - Flag decisions in the source that the PR should carry but leaves out.
-- **For an ADR correction** (a new version typed `correction`), check every changed line against its source. A correction that changes the decision is High (ADR-000 C11).
+- **For an ADR correction** (a new version typed `correction`), check every changed line against its source. A correction that changes the decision is High (ADR-000@v2 C11).
 
 ### 2. Facts: are the claims true?
 

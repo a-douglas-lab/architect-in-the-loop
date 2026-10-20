@@ -14,7 +14,7 @@ superseded-by: null
 exceptions: not-allowed
 enforcement:
   - constraint: C1
-    mechanism: none yet; the bootstrap script initialises the submodule but doesn't check it
+    mechanism: review; the bootstrap script initialises the submodule but doesn't check it
     ref: null
     state: manual
   - constraint: C2
@@ -117,9 +117,9 @@ The naive option (an LLM with everything in its prompt) doesn't apply to how cod
 
 ## Enforcement
 
-C4 is enforced by the fork's "Immutable tags" ruleset, which covers all tags and has no bypass actors. Whether organisation owners could edit the ruleset itself hasn't been checked. C1 is set up by the bootstrap script but not checked by anything, so it is manual. C2 and C3 are planned CI checks. C5 and C6 are held by review, C5 until the evaluation runner (E6) exists.
+C4 is enforced by the fork's "Immutable tags" ruleset, which covers all tags and has no bypass actors. Whether organisation owners could edit the ruleset itself hasn't been checked. C1 is set up by the bootstrap script but no check reads it, so it is held by review. C2 and C3 are planned CI checks. C5 and C6 are held by review, C5 until the evaluation runner (E6) exists.
 
 ## History
 
 - **v1** · 2026-10-20 · accepted · Andy Douglas: first version.
-- **v2** · 2026-10-20 · correction · Andy Douglas: from review run 1 (findings 1, 10, 11, 15; nits 1, 2, 4). C1's mechanism no longer claims the bootstrap script checks it. C3 split: "changes are commits in the fork" is now C6. C4 restored to all tags, as in P4, with `ref` pointing at the ruleset. Upstream date given in UTC with the full hash, and baseline timing worded as in P4. Alternatives aligned with P4's rejected options, and the added one marked.
+- **v2** · 2026-10-20 · correction · written by Claude, checked by review runs 1 and 2, merged by Andy Douglas: from review run 1 (findings 1, 10, 11, 15; nits 1, 2, 4), plus ADR-000@v2's versioning (C2 and the matching Harder bullet now say "a revision of this ADR" instead of "a new ADR that supersedes this one"). C1's mechanism no longer claims the bootstrap script checks it. C3 split: "changes are commits in the fork" is now C6. C4 restored to all tags, as in P4, with `ref` pointing at the ruleset. Upstream date given in UTC with the full hash, and baseline timing worded as in P4. Alternatives aligned with P4's rejected options, and the added one marked.

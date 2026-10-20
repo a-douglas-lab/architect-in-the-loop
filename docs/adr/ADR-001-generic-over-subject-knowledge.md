@@ -22,7 +22,7 @@ enforcement:
     ref: null
     state: manual
   - constraint: C3
-    mechanism: to be chosen with Q1
+    mechanism: review, until Q1 chooses a check
     ref: null
     state: manual
   - constraint: C4
@@ -101,9 +101,9 @@ To do:
 
 ## Enforcement
 
-C1 is planned as a CI check that fails on subject-domain terms (P3). C2 and C4 need judgement and stay with review. C3 has no mechanism chosen yet; Q1 decides it once the capability has code. C4 states the scope exclusion as a rule so that it can be checked; its effect is the same as "out of scope".
+C1 is planned as a CI check that fails on subject-domain terms (P3). C2 and C4 need judgement and stay with review. C3 is held by review until Q1 chooses a check, once the capability has code. C4 states the scope exclusion as a rule so that it can be checked; its effect is the same as "out of scope".
 
 ## History
 
 - **v1** · 2026-10-20 · accepted · Andy Douglas: first version.
-- **v2** · 2026-10-20 · correction · Andy Douglas: from review run 1 (findings 12, 14, 15, 19). Removed untraced details (the C1 term list derived from the contract; building C1 before the first code; an architecture test for C3). Restored the stretch goal's "two or three outcomes". Stated C4 as out of scope. Marked alternatives added at write-up, and aligned the others with P3's options-considered text.
+- **v2** · 2026-10-20 · correction · written by Claude, checked by review runs 1 and 2, merged by Andy Douglas: from review run 1 (findings 12, 14, 15, 19). Removed untraced details (the C1 term list derived from the contract; building C1 before the first code; an architecture test for C3). Restored the stretch goal's "two or three outcomes". Stated C4 as out of scope. Marked alternatives added at write-up, and aligned the others with P3's options-considered text.

@@ -37,7 +37,7 @@ Thesis: deterministic where possible, probabilistic where necessary, measured ev
 ## Hard rules
 
 1. **Never access the private evaluation repository.** It holds the held-out evaluation outcomes, hidden tests and labels. Never clone it into this repo or a worktree, and never ask for its contents.
-2. **Build only development outcomes by hand.** DEV-1 to DEV-3, and only in the Ordering exemplar. Don't add eShop features beyond an approved spec.
+2. **Build only development outcomes by hand.** DEV-1 to DEV-3, centred on the Ordering exemplar, each changing only the areas listed for it in development-outcomes.md (ADR-005). Don't add eShop features beyond an approved spec.
 3. **Never edit acceptance tests to make them pass.** A failing test is reported, not changed.
 4. **eShop stays pinned and separate.** It lives only in the fork, a-douglas-lab/eShop, included as the submodule `subject/eshop`; never copy eShop files into this repo. Subject-side artefacts (contract, subject ADRs, domain specs, development acceptance tests) are committed in the fork. Its optional AI features stay switched off.
 5. **Don't change existing eShop behaviour outside an approved spec,** including defects you notice. Report them to Andy instead; some existing behaviour is deliberately left as it is.
