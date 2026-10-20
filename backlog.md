@@ -90,7 +90,7 @@ Instrumented from the first commit: hidden and visible acceptance results per ou
 
 **Publication: decided after seeing results** (Andy's call, 5 Oct). **All-or-none rule (5 Oct):** if results are published, all pre-registered measures are published; the choice is whether to publish, never which numbers. The development-set dry run gives an early read before the scored run, which reduces the risk of a surprise.
 
-### P3. Boundary between capability and subject system · Decided (ADR pending) · Gate
+### P3. Boundary between capability and subject system · Closed (ADR-001, ADR-003) · Gate
 
 **Decided (5 Oct):** generic over subject knowledge, specific to the stack.
 
@@ -115,6 +115,7 @@ The capability needs a realistic system to reason over. Which domains, ADRs, int
 - **eShop is pinned, not upgraded:** upstream commit `dc7ea49` (`dc7ea499cd35…`, "Update to Aspire 13.6.0", 2 Oct 2026 UTC). Confirmed 8 Oct.
 - **How it is included (8 Oct):** a fork, [a-douglas-lab/eShop](https://github.com/a-douglas-lab/eShop), with the upstream commit tagged `upstream-dc7ea49`, linked from this repo as a git submodule at `subject/eshop`. Our changes to eShop (exemplar, DEV-1 to DEV-3, baseline ADRs, feature flags, merchant configuration, and later the capability's own changes) are commits in the fork, never copies in this repo. Each commit here records exactly which subject commit it was built against. Options rejected: a fetch script with a manifest (pin not visible on GitHub, can drift without a check); an upstream submodule plus patch files (changes become patches, not reviewable code); copying eShop in (breaks the "used, not built" boundary).
 - **Two baselines (8 Oct).** `upstream-dc7ea49` is where we started. The **evaluation baseline** is a later tag in the fork, frozen after our baseline work (Phases 2 and 4); evaluation outcomes run from it. Tags in the fork are immutable (repository ruleset).
+- **Recorded (20 Oct):** the pin, the fork and submodule, and the two baselines are [ADR-002](docs/adr/ADR-002-subject-included-as-pinned-fork.md).
 
 **Verified (5 Oct) from the source:**
 
@@ -146,7 +147,7 @@ The capability needs a realistic system to reason over. Which domains, ADRs, int
 
 **Open:** exactly what they approve and what is delegated. The use-case ladder in [architecture-sketch.md](docs/architecture/architecture-sketch.md) proposes the answer; it closes with A1.
 
-### P7. Confirm non-goals · Decided (ADR pending)
+### P7. Confirm non-goals · Closed (ADR-004)
 
 **Decided (5 Oct):** no shopper-facing AI features, no multi-tenancy, no custom coding agent.
 
@@ -165,7 +166,9 @@ Design to evaluate:
 
 **Open:** how much of this is built versus designed and documented only; whether experiments (comparing groups through Q5's flags) are in scope or only on/off release; and whether the hypothesis is part of the outcome input, alongside the visible examples.
 
-### P9. Exemplar domain · Decided (ADR pending) · Gate
+### P9. Exemplar domain · Closed (ADR-005) · Gate
+
+ADR-005 records the exemplar approach. Which projects belong to Ordering, and Payments as its own context, are subject ADRs, written in the fork in Phase 2 (ADR-003).
 
 Bring one existing domain into the preferred state first, with everything we expect of a well-governed domain: constitution and specs, ADRs with enforcement, build and CI checks, acceptance tests in the four-layer model, and instrumentation. Then apply development outcomes to it by hand (with Claude Code), as reference implementations.
 
@@ -384,7 +387,7 @@ Q1 treats enforcement as a map of rule types to mechanisms rather than a single 
 
 ### T4. Orchestrating coding agents · Partly decided · Gate
 
-**Decided:** orchestrate existing agents such as Claude Code rather than build our own (P7).
+**Decided:** orchestrate existing agents such as Claude Code rather than build our own (P7, [ADR-004](docs/adr/ADR-004-non-goals.md)).
 
 **Open:**
 
