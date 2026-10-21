@@ -664,6 +664,15 @@ Candidate sources, each seeing only part of the picture:
 - Where the skill eval sets live and how they are run (with A5 and Q2).
 - Whether low-risk stages (tasks, analyze) need a lighter loop card.
 
+**Decided (20 Oct, revised 21 Oct): file access is an allowlist,** switched on and tested with the other D1 hooks in Step 7.
+
+- **Reads: the built-in setting `permissions.blockReadsOutsideWorkingDirectories`,** in user settings. It refuses Read, Grep, Glob and LSP outside the working directories in every permission mode, including bypass, and keeps Claude Code's own files under `~/.claude/` readable (skills, plugins, rules, agents, CLAUDE.md). Anything else Claude needs, such as the session scratchpad or saved tool output, is added through `additionalDirectories` in user settings. *Revised 21 Oct (Andy):* the 20 Oct decision assumed no such setting existed, and planned a hook for reads too. The review of this PR found the setting.
+- **Writes: a `PreToolUse` hook** denies Edit, Write and NotebookEdit on any path outside the same allowlist, with no prompt to click through. The setting doesn't cover writes, and a deny rule can't carve out the project folder, because deny beats allow.
+- **Backstop:** a deny rule naming the private evaluation repo's path (hard rule 1) was added to Andy's user settings on 20 Oct. It lives outside this public repo and hasn't been tested, because testing it means trying to read the repo. In one documented setup (no managed settings, and no Team or Enterprise login), a mod can approve a call that a deny rule refuses, so the rule is a backstop, not a guarantee.
+- **Limit:** shell commands aren't refused the same way, and none of these controls contain a script that opens files itself (Python, Node). Only the OS-level sandbox does. It runs on macOS, Linux and WSL2, not native Windows (Claude Code's sandboxing documentation). Whether to move to WSL2 is open.
+
+**Open:** the exact `additionalDirectories` list, settled while testing; whether the write hook also checks paths named in shell commands.
+
 **Decided (20 Oct): the adversarial reviewer runs on every documentation PR now, by hand,** to [REVIEW.md](REVIEW.md), ahead of Step 7. It is a subagent with a fresh context that sees the diff and the sources, not the author's reasoning. It never approves: its findings and the author's responses go in the PR description, and Andy decides. The first run, on batch 1 after it was merged, found 3 High problems the author had missed ([loop card](docs/loops/cards/2026-10-20-adr-batch1-review-run1.md)). Code review joins the policy when there is code.
 
 ### D2. Timebox and milestones · Decided (ADR pending)
