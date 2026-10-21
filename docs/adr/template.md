@@ -1,5 +1,6 @@
 ---
 id: ADR-nnn
+version: 1                  # incremented on every change (ADR-000@v2 C8)
 title: Short statement of the decision
 status: proposed            # proposed | accepted | rejected | deprecated | superseded
 date: YYYY-MM-DD            # date of the last status change
@@ -15,7 +16,7 @@ enforcement:
   - constraint: C1
     mechanism: none         # e.g. hook, architecture test, schema, analyser, CI check, grader, review
     ref: null               # path or link to the check
-    state: manual           # enforced | planned | manual
+    state: manual           # enforced | planned | manual | withdrawn
 backlog: []                 # backlog item IDs this ADR closes or relates to
 ---
 
@@ -41,7 +42,7 @@ What becomes easier, what becomes harder, and what we now have to do. Include th
 
 ## Alternatives
 
-Each option considered, including the naive one and "do nothing", with what counted for and against it, and the evidence where a spike was run.
+Each option considered, including the naive one and "do nothing", with what counted for and against it, and the evidence where a spike was run. Mark any option that wasn't weighed when the decision was taken with "(added when writing this ADR)".
 
 ### Option name
 
@@ -51,3 +52,9 @@ Each option considered, including the naive one and "do nothing", with what coun
 ## Enforcement
 
 The `enforcement` list in the front matter is the record of which check covers which constraint; don't repeat it here. Use this section for what the list can't say: why a constraint is still manual or only planned, what a check misses, and what would make it deterministic.
+
+## History
+
+One line per version: version, date, type, approver, one-line summary. v1's type is `accepted`; later versions are `correction` or `revision` (ADR-000@v2 C8).
+
+- **v1** · YYYY-MM-DD · accepted · Andy Douglas: first version.

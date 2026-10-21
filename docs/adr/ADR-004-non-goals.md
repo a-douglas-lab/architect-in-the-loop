@@ -1,5 +1,6 @@
 ---
 id: ADR-004
+version: 2
 title: "Non-goals: no shopper-facing AI, no multi-tenancy, no custom coding agent"
 status: accepted
 date: 2026-10-20
@@ -25,8 +26,12 @@ enforcement:
     ref: null
     state: manual
   - constraint: C4
-    mechanism: test that the AppHost starts with Foundry and Ollama disabled
-    ref: subject/eshop/src/eShop.AppHost/AppHost.cs
+    mechanism: check of the configuration eShop is run with (UseFoundry not set to true)
+    ref: null
+    state: planned
+  - constraint: C5
+    mechanism: source check that the AppHost still declares useOllama as false (it is a local variable, so a unit test can't observe it)
+    ref: null
     state: planned
 backlog: [P7, T4]
 ---
@@ -35,7 +40,7 @@ backlog: [P7, T4]
 
 ## Context
 
-The project is about governing change across a multi-domain system. Three tempting directions would dilute that or multiply the work: AI features for shoppers, multi-tenancy in the subject system, and writing our own coding agent. eShop also ships optional AI features of its own (catalogue semantic search, and a storefront chat), which are Microsoft's work, not ours.
+The project is about governing change across a multi-domain system. Three directions would dilute that or multiply the work: AI features for shoppers, multi-tenancy in the subject system, and writing our own coding agent. eShop also ships optional AI features of its own (catalogue semantic search with embeddings, and a storefront chat), switched on through the AppHost. They are Microsoft's work, not ours.
 
 ## Decision
 
@@ -45,21 +50,21 @@ These are non-goals:
 - **No multi-tenancy** in the subject system.
 - **No custom coding agent.** The capability orchestrates existing coding agents, such as Claude Code (T4).
 
-eShop's optional AI features stay switched off, and the README says they are eShop's.
+eShop's optional AI features stay switched off, and the README states they are eShop's, not ours.
 
 ## Constraints
 
 - **C1:** Specs MUST NOT add shopper-facing AI features.
 - **C2:** Specs MUST NOT add multi-tenancy to the subject system.
 - **C3:** The capability MUST orchestrate existing coding agents, and MUST NOT implement its own.
-- **C4:** eShop's AI features MUST stay disabled: `UseFoundry` not enabled, and `useOllama` false in the AppHost.
+- **C4:** eShop MUST NOT be run with Foundry enabled (`UseFoundry` set to true).
+- **C5:** `useOllama` in eShop's AppHost MUST stay false.
 
 ## Consequences
 
 Easier:
 
-- Effort stays on governance, impact analysis and evaluation, where the portfolio's originality is.
-- The evaluation compares governance with plain Claude Code, not one agent with another.
+- Effort stays on governance, impact analysis and evaluation.
 
 Harder:
 
@@ -68,21 +73,28 @@ Harder:
 
 ## Alternatives
 
-### Do nothing: decide case by case
+### Do nothing: decide case by case (added when writing this ADR)
 
 - For: flexible.
 - Against: scope creep, one reasonable-looking feature at a time.
 
-### Naive: build whatever makes the best demo
+### Build whatever makes the best demo (added when writing this ADR)
 
 - For: an impressive video.
-- Against: shopper-facing AI and a custom agent are both crowded spaces, and neither shows governance.
+- Against: neither shopper-facing AI nor a custom agent shows governance.
 
 ### Agreed non-goals (chosen)
 
 - For: a clear scope, and a reason to say no.
 - Against: rules out some appealing demonstrations.
 
+The naive option (an LLM with everything in its prompt) doesn't apply to a choice of scope.
+
 ## Enforcement
 
-C1 to C3 need judgement and stay with review. C4 is mechanical: a planned test that the AppHost configuration keeps both AI switches off. Today `useOllama` is hard-coded false and Foundry is off unless configured.
+C1 to C3 need judgement and stay with review. C4 and C5 are mechanical but not yet checked. For C4, `UseFoundry` is read from configuration at run time, and eShop's README shows setting it as an environment variable, so the check has to look at the configuration eShop is actually run with, not at the AppHost code. Upstream eShop's test `FoundryFlagUsesSafeOptInDefault` (`tests/eShop.AppHost.UnitTests/AppHostConfigurationTests.cs`) checks that Foundry is off unless configured. That covers the default only, not how eShop is run. For C5, `useOllama` is hard-coded false today.
+
+## History
+
+- **v1** · 2026-10-20 · accepted · Andy Douglas: first version.
+- **v2** · 2026-10-20 · correction · written by Claude, checked by review runs 1 and 2, merged by Andy Douglas: from review run 1 (findings 6, 8, 15, 20; nit 3). Removed "the evaluation compares governance with plain Claude Code, not one agent with another". The comparison itself is decided (P2), but its design is open (E4), so the claim went beyond the source. C4 split into C4 (Foundry, checked at run time) and C5 (Ollama). `ref` no longer points at the subject file. The existing upstream test is noted as partial coverage. Alternatives added at write-up are marked, and the second one is no longer labelled as the naive option.

@@ -1,5 +1,6 @@
 ---
 id: ADR-001
+version: 2
 title: The capability is generic over subject knowledge and specific to one stack
 status: accepted
 date: 2026-10-20
@@ -21,9 +22,9 @@ enforcement:
     ref: null
     state: manual
   - constraint: C3
-    mechanism: architecture test on the capability's adapter boundary
+    mechanism: review, until Q1 chooses a check
     ref: null
-    state: planned
+    state: manual
   - constraint: C4
     mechanism: review
     ref: null
@@ -45,14 +46,14 @@ Criteria: the results must be credible as evidence; the scope must be finishable
 
 The capability is generic over subject knowledge and specific to one stack. Everything it knows about a subject comes from a declared **subject contract**: domains, ADRs, schemas, and build and test commands. It targets a .NET, Aspire, event-driven stack and says so openly; stack-specific parts sit behind small adapters.
 
-eShop is the only fully built subject. Onboarding new subjects automatically is out of scope: the eShop contract is written by hand, or extracted with human review (T8). A tiny second subject in a different domain is a stretch goal, to measure portability rather than assert it.
+eShop is the only fully built subject. Automated onboarding of new subjects is out of scope: the eShop contract is written by hand, or extracted with human review (T8). A tiny second subject in a different domain, run with two or three outcomes, is a stretch goal, to measure portability rather than assert it. At minimum, its contract is sketched on paper to test that the contract isn't shaped like eShop.
 
 ## Constraints
 
 - **C1:** The capability's code and prompts MUST NOT contain subject-domain knowledge, such as eShop's domain names, entities, events or business rules.
 - **C2:** Everything the capability knows about a subject MUST come from that subject's declared contract.
 - **C3:** Stack-specific behaviour (.NET, Aspire, the event bus) MUST sit behind adapters, not be spread through the capability's core.
-- **C4:** Automated onboarding of new subjects MUST NOT be built. A subject's contract is written by hand, or extracted and then reviewed by a human.
+- **C4:** Automated onboarding of new subjects is out of scope and MUST NOT be built. A subject's contract is written by hand, or extracted and then reviewed by a human.
 
 ## Consequences
 
@@ -68,17 +69,17 @@ Harder:
 
 To do:
 
-- Build the C1 check before the capability's first code lands.
-- Sketch a second subject's contract on paper, to check that the contract isn't shaped like eShop.
+- Build the C1 CI check.
+- Sketch a second subject's contract on paper.
 
 ## Alternatives
 
-### Do nothing: let the capability learn eShop as it goes
+### Do nothing: let the capability learn eShop as it goes (added when writing this ADR)
 
 - For: fastest start.
 - Against: results become unfalsifiable, because the capability may have been tuned to eShop. Nothing would be portable.
 
-### Naive: put eShop's architecture and decisions into the agents' prompts
+### Naive: put eShop's architecture and decisions into the agents' prompts (added when writing this ADR)
 
 - For: simple, and probably works well on eShop.
 - Against: the "load decisions into a prompt and hope" approach the product exists to replace. It leaks subject knowledge into the capability by design.
@@ -86,18 +87,23 @@ To do:
 ### Fully generic across stacks
 
 - For: the most impressive claim.
-- Against: far more work, and it risks never finishing. Each stack needs its own enforcement mechanisms (Q1).
+- Against: costs more, and risks never finishing.
 
 ### Fully specific to eShop
 
 - For: the fastest to build.
-- Against: reads as a one-off demo, and can't show governance working on anything else.
+- Against: reads as a one-off demo.
 
-### Generic over subject knowledge, specific to one stack (chosen)
+### Generic interfaces, with this subject as the only implementation and the stack made explicit (chosen)
 
 - For: credible evidence, a finishable scope, and portability that can be measured.
 - Against: the subject contract becomes a critical design artefact, and the stack limit has to be stated honestly.
 
 ## Enforcement
 
-C1 is planned as a CI check that fails on subject-domain terms. The term list will itself be derived from the eShop contract, so the check gets stronger as the contract grows. C2 and C4 need judgement and stay with review. C3 becomes an architecture test once the capability has code (Q1).
+C1 is planned as a CI check that fails on subject-domain terms (P3). C2 and C4 need judgement and stay with review. C3 is held by review until Q1 chooses a check, once the capability has code. C4 states the scope exclusion as a rule so that it can be checked; its effect is the same as "out of scope".
+
+## History
+
+- **v1** · 2026-10-20 · accepted · Andy Douglas: first version.
+- **v2** · 2026-10-20 · correction · written by Claude, checked by review runs 1 and 2, merged by Andy Douglas: from review run 1 (findings 12, 14, 15, 19). Removed untraced details (the C1 term list derived from the contract; building C1 before the first code; an architecture test for C3). Restored the stretch goal's "two or three outcomes". Stated C4 as out of scope. Marked alternatives added at write-up, and aligned the others with P3's options-considered text.
