@@ -2,7 +2,7 @@
 
 > **Public version.** Evaluation outcomes, their labels, hidden examples and anything deliberately left in eShop for evaluation are held in the private evaluation repository. Where they were discussed, this file points there instead.
 
-Status: v0.2 · updated 20 Oct 2026
+Status: v0.2 · updated 21 Oct 2026
 
 Every open question and every decision so far, with its status. This file is the source of truth for what is decided. **Gate rule (8 Oct):** an item marked **Gate** must close before the [roadmap](roadmap.md) phase that depends on it starts. Each item closes with a short ADR recording the decision, the options considered and the evidence. Items carried over from the original capabilities document keep their old ID in brackets.
 
@@ -89,6 +89,8 @@ Working shape: *"Turns business outcomes into governed, deployed changes. On 10 
 Instrumented from the first commit: hidden and visible acceptance results per outcome and per run; ADR check results on every merge; escalation records with their reasons; the same measures for the baseline.
 
 **Publication: decided after seeing results** (Andy's call, 5 Oct). **All-or-none rule (5 Oct):** if results are published, all pre-registered measures are published; the choice is whether to publish, never which numbers. The development-set dry run gives an early read before the scored run, which reduces the risk of a surprise.
+
+**Decided (21 Oct, Andy), from review of ADR-006:** "instrumented from the first commit" means from the capability's first commit. The list of measures that all-or-none publication covers is pre-registered (E2).
 
 ### P3. Boundary between capability and subject system · Closed (ADR-001, ADR-003) · Gate
 
@@ -494,6 +496,8 @@ How is "the change works" judged independently, when coding agents write both th
 
 The decided part, including the sequence, the withdrawal rule and mutation testing on DEV-1 first, is recorded in [ADR-008](docs/adr/ADR-008-acceptance-tests-and-preregistration.md).
 
+**Decided (21 Oct, Andy), from review of ADR-008:** "pass after the change" is required for development outcomes only; for evaluation outcomes, passing is the measured result. In the D6 dry run, protocol drivers are built by Andy with Claude Code; in capability and evaluation runs, by the capability. Mutation testing covers the implementations that pass. Mutation scores and withdrawals are published with the results, if results are published (P2). The pre-registration also fixes the list of measures that all-or-none publication covers.
+
 **Decided (5 Oct):**
 
 - **Layered acceptance, with a four-layer acceptance test model at its core:** business-language test cases and DSL written by a human before the run; protocol drivers built by the capability; a deterministic check that drivers only use public APIs, events or the UI.
@@ -561,6 +565,8 @@ Options to evaluate:
 - **Triggered from the public repo:** a release or tag in the public repo sends a dispatch event to the private repo. Automatic, but the public repo then holds a credential that can start evaluations, so it must be scoped narrowly.
 
 Either way: the workflow checks out the public repo at the given commit, runs the hidden tests against it, and stores results in the private repo. Agents in build sessions never hold credentials for the private repo. Development-set runs can be frequent; the scored held-out run happens once, at a pre-registered commit, and results follow the all-or-none rule (P2).
+
+**Open (added 21 Oct):** whether to anchor the pre-registration publicly. A commit in the private repository can be rewritten before it is published, so its date rests on trust. One option: publish the pre-registration commit's hash in this public repo, under an immutable tag, at the time of pre-registration. Raised by review of ADR-008; Andy chose to decide it here.
 
 ---
 
@@ -703,7 +709,7 @@ Likely unnecessary: product.md and backlog.md supersede the original capabilitie
 
 **Prior art to check before building (found 8 Oct, Spec Kit community catalogue):** the *reqnroll-bdd* and *bdd* extensions (Gherkin from specs, step scaffolding, coverage), the *tdd* extension (red-green evidence, mutation-checked) and the *test-first-governance* preset (BDD/ATDD scenarios with traceability). None appears to cover the four-layer model or hidden examples, but this updates the 5 Oct search; confirm before building our own.
 
-**Decided (8 Oct):** the skill is **dry-run end to end on DEV-1 before any evaluation test is written** ([roadmap.md](roadmap.md), Phase 2): tests written, confirmed red, DEV-1 implemented, confirmed green, then mutation-tested to prove the method (E2).
+**Decided (8 Oct):** the skill is **dry-run end to end on DEV-1 before any evaluation test is written** ([roadmap.md](roadmap.md), Phase 2): tests written, confirmed red, DEV-1 implemented, confirmed green, then mutation-tested to prove the method (E2). Recorded in [ADR-008](docs/adr/ADR-008-acceptance-tests-and-preregistration.md) (C16, C23); in the dry run, protocol drivers are built by Andy with Claude Code (C2).
 
 What the skill covers:
 

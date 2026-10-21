@@ -34,8 +34,8 @@ enforcement:
     ref: null
     state: manual
   - constraint: C6
-    mechanism: review; the bootstrap script's name check (`*private-eval*`) catches only some copies
-    ref: scripts/bootstrap.ps1
+    mechanism: review; the bootstrap scripts' name check catches only some copies in this repo (see Enforcement)
+    ref: null
     state: manual
   - constraint: C7
     mechanism: the scoring code itself, once written
@@ -53,6 +53,10 @@ enforcement:
     mechanism: review, against the private labels
     ref: null
     state: manual
+  - constraint: C11
+    mechanism: review, against the private labels
+    ref: null
+    state: manual
 backlog: [E1, E1b]
 ---
 
@@ -60,7 +64,7 @@ backlog: [E1, E1b]
 
 ## Context
 
-The capability's first job on any outcome is to work out which domains it touches (T7). If it misses one, that domain's ADRs are never applied. So impact must be scored, against labels written before the run, on outcomes the capability was never tuned on. Who writes the labels, and how they are compared, decides whether the score means anything.
+The capability's first job on any outcome is to work out which domains it touches (T7). A domain the router misses is never consulted, unless deterministic expansion adds it: domains that consume an affected event, or that a cross-cutting ADR adds, always join the set. So impact must be scored, against labels written before the run, on outcomes the capability was never tuned on. Who writes the labels, and how they are compared, decides whether the score means anything.
 
 Every evaluation and development outcome was checked against the eShop source and against each other (an overlap matrix, held privately) before work started (E1b).
 
@@ -72,12 +76,12 @@ Every evaluation and development outcome was checked against the eShop source an
 
 **Impact set, defined:** for each outcome, the list of domains (and the contracts within them: APIs, events, data) that the change must modify or explicitly consider. It is an intermediate output of the capability (T7), scored for recall and precision against a label written before the run. It is not a measure of value; value measures such as time and human effort are covered in E3.
 
-**Labels have two tiers,** both written by hand:
+**Labels have two tiers:**
 
-- *Must change:* domains the change must modify, at domain level, with acceptable alternatives recorded where more than one design is valid.
-- *Must consider:* domains that need checking but not changing, for example a domain whose ADR constrains the change.
+- *Must change:* domains the change must modify, written by hand at domain level, with acceptable alternatives recorded where more than one design is valid.
+- *Must consider:* domains that need checking but not changing, for example a domain whose ADR constrains the change, written by hand.
 
-**Scoring is a deterministic comparison** (recall and precision), with no LLM in the scoring. LLMs are used only as disagreement detectors: several models can label independently to flag outcomes worth a second look, never as the answer key. Split outcomes are labelled by part (A4).
+**Scoring is a deterministic comparison** (recall and precision), with no LLM in the scoring. **LLMs are disagreement detectors only:** several models can label independently to flag outcomes worth a second look, never as the answer key. Split outcomes are labelled by part (A4).
 
 ## Constraints
 
@@ -88,9 +92,10 @@ Every evaluation and development outcome was checked against the eShop source an
 - **C5:** Andy MUST write the outcomes and their expected impact sets.
 - **C6:** The outcomes, their verification and their labels MUST be held in the private evaluation repository until they are published with the results.
 - **C7:** Impact MUST be scored by a deterministic comparison (recall and precision) with no LLM in the scoring.
-- **C8:** Labels MUST have two tiers, must change and must consider, written by hand at domain level, with acceptable alternatives recorded where more than one design is valid.
-- **C9:** LLMs MUST NOT be used as the answer key.
+- **C8:** Labels MUST have two tiers, must change and must consider, both written by hand.
+- **C9:** LLMs MUST be used only as disagreement detectors, never as the answer key.
 - **C10:** Split outcomes MUST be labelled by part.
+- **C11:** Must-change labels MUST be written at domain level, with acceptable alternatives recorded where more than one design is valid.
 
 ## Consequences
 
@@ -102,7 +107,7 @@ Easier:
 Harder:
 
 - The labels reflect one person's design of the system. A second reviewer on a sample would address this; it is open (E1).
-- Hand labelling at domain level takes Andy's time, and "acceptable alternatives" must be anticipated before the run.
+- Hand labelling takes Andy's time, and "acceptable alternatives" must be anticipated before the run.
 
 ## Alternatives
 
@@ -116,10 +121,10 @@ Harder:
 - For: cheap, and copes with varied wording.
 - Against: puts a probabilistic judge where a deterministic comparison works, and the judge may share the capability's blind spots.
 
-### LLMs write the labels (recorded as rejected in E1: "never as the answer key")
+### LLMs write the labels (added when writing this ADR)
 
 - For: fast.
-- Against: the answer key would come from the same kind of system being tested.
+- Against: the answer key would come from the same kind of system being tested. E1's rule, "never as the answer key", rules it out.
 
 ### Hand-written two-tier labels, deterministic scoring, LLMs only to flag disagreements (chosen)
 
@@ -128,8 +133,8 @@ Harder:
 
 ## Enforcement
 
-Most constraints concern private material and can only be held by review: C3, C4, C8 and C10 against the labels themselves. Under hard rule 1, Claude never reads those labels. C6 is barely checked. The bootstrap script fails only on paths in this repository whose name contains `private-eval`; a copy of the evaluation repository under its real name wouldn't be caught. It doesn't check the private repository itself. C7 becomes a property of the scoring code, testable once that code exists.
+Most constraints concern private material and can only be held by review: C3, C4, C8, C10 and C11 against the labels themselves. Under hard rule 1, Claude never reads those labels. C6 is barely checked. The bootstrap scripts (`scripts/bootstrap.ps1` and `.sh`) fail only on paths in this repository whose name contains `private-eval`, and they skip `subject/`. A copy of the evaluation repository under its real name, or under `subject/`, wouldn't be caught, and nothing checks the private repository itself. C7 becomes a property of the scoring code, testable once that code exists.
 
 ## History
 
-- **v1** · 2026-10-21 · accepted · Andy Douglas: first version, recording E1's decided part (5 Oct) and E1b's development-set decision.
+- **v1** · 2026-10-21 · accepted · Andy Douglas: first version, recording E1's decided part (5 Oct) and E1b's development-set decision. Tier `cross-cutting` and exceptions `not-allowed` ruled by Andy in chat on 21 Oct, from review of this ADR.

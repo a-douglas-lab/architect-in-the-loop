@@ -1,6 +1,6 @@
 ---
 id: ADR-000
-version: 2
+version: 3
 title: Decision records use our own template, extending MADR 4.0.0
 status: accepted
 date: 2026-10-20
@@ -61,6 +61,10 @@ enforcement:
     mechanism: review
     ref: null
     state: manual
+  - constraint: C13
+    mechanism: review; the reviewer flags any other value without a recorded ruling
+    ref: null
+    state: manual
 backlog: [T2, G5, G12, Q1]
 ---
 
@@ -119,6 +123,7 @@ Anything that cites an ADR records its version, for example `ADR-005@v2 C2`, so 
 - **C10:** Anything that cites an ADR constraint (specs, plans, traces, evaluation records) MUST record the ADR's version, as `ADR-nnn@vN Cn`.
 - **C11:** A revision MUST be approved by the architecture coordinator. A correction MUST NOT change the decision.
 - **C12:** A subject ADR, as defined above, MUST live in the subject's repository. A project ADR MUST live in this repository.
+- **C13:** A project-wide project ADR MUST use tier `cross-cutting` and exceptions `not-allowed`, unless a different value is ruled by the architecture coordinator and recorded in its History.
 
 ## Consequences
 
@@ -177,9 +182,10 @@ To do:
 
 ## Enforcement
 
-Nothing in this ADR is enforced yet. C1 to C3, C5, C8 and C9 are mechanical, so they are planned for a validator script run as a hook and in CI (Step 7). C6, C7, C11 and C12 need judgement and stay with review. C10 becomes checkable once spec, plan and trace formats exist. C6 is a candidate for a runtime rubric later (A5).
+Nothing in this ADR is enforced yet. C1 to C3, C5, C8 and C9 are mechanical, so they are planned for a validator script run as a hook and in CI (Step 7). C6, C7, C11, C12 and C13 need judgement and stay with review. C10 becomes checkable once spec, plan and trace formats exist. C6 is a candidate for a runtime rubric later (A5).
 
 ## History
 
 - **v1** · 2026-10-20 · accepted · Andy Douglas: first version.
 - **v2** · 2026-10-20 · revision · approved by Andy Douglas in chat: ADRs are versioned in place instead of superseded (C4 withdrawn; C8 to C11 added); `version` field and History section added; withdrawn state added; alternatives added at write-up must be marked (C7); subject and project ADRs defined (C12). Bootstrapping note: v1's C4 forbade this edit. Strictly, the change should have been a new ADR. It was made as v2, under the rule it introduces, with Andy's explicit approval.
+- **v3** · 2026-10-21 · revision · approved by Andy Douglas in chat: C13 added. Project-wide project ADRs default to tier `cross-cutting` and exceptions `not-allowed`, because an exception to a project-wide rule, such as an evaluation rule, is a way to move the goalposts. Raised by review of ADR-006 to ADR-008, where both values had no source.
