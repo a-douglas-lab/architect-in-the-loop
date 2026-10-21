@@ -76,7 +76,7 @@ Criteria:
 - *Codesteward:* uses "steward" naming and learns from merge outcomes. Relevant to the stewardship context and A2.
 - *AgentFlow CI:* a hackathon project (2026) that takes a plain-English feature request through five agents to a pull request, with a human only at final approval. It confirms that "outcome to pull request" alone isn't distinctive; the differentiation is governance, measured results and pre-registration.
 
-### P2. The evidence line · Decided (ADR pending)
+### P2. The evidence line · Closed (ADR-006)
 
 **Decided (5 Oct):** the evidence line is built on three facts:
 
@@ -458,6 +458,8 @@ Success is defined before building. These items turn product.md's success criter
 
 ### E1. The outcome set · Partly decided · Gate
 
+The decided part is recorded in [ADR-007](docs/adr/ADR-007-outcome-set-and-impact-scoring.md).
+
 **Decided (5 Oct):**
 
 - **Ten held-out evaluation outcomes,** used only for scored runs, plus a separate development set (DEV-1 to DEV-3, [development-outcomes.md](docs/outcomes/development-outcomes.md)) for iterating during the build.
@@ -484,9 +486,13 @@ Success is defined before building. These items turn product.md's success criter
 - Times are stored in UTC; business time periods follow UK local time (Europe/London).
 - The development set is DEV-1 to DEV-3.
 
+Recorded so far: the development set in [ADR-007](docs/adr/ADR-007-outcome-set-and-impact-scoring.md), independent runs in [ADR-008](docs/adr/ADR-008-acceptance-tests-and-preregistration.md). The storefront context, business rules in the owning domain, and UTC with Europe/London are subject ADRs, to be written in the fork in Phase 2 (ADR-000@v2 C12). E1b closes when they are.
+
 ### E2. Acceptance tests · Partly decided · Gate
 
 How is "the change works" judged independently, when coding agents write both the code and its tests?
+
+The decided part, including the sequence, the withdrawal rule and mutation testing on DEV-1 first, is recorded in [ADR-008](docs/adr/ADR-008-acceptance-tests-and-preregistration.md).
 
 **Decided (5 Oct):**
 
