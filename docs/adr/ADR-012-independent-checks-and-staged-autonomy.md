@@ -45,7 +45,11 @@ enforcement:
     mechanism: skill eval runs, triggered by changes to a skill, CLAUDE.md or a hook
     ref: null
     state: planned
-backlog: [D1]
+  - constraint: C9
+    mechanism: review when a stage's autonomy is raised
+    ref: null
+    state: manual
+backlog: [D1, D8]
 ---
 
 # ADR-012: Agent work is checked independently, and autonomy is raised in stages
@@ -58,9 +62,9 @@ Anthropic's AI-native SDLC playbook argues for loops in which agents check their
 
 Spec Kit stays the engine; the playbook supplies the loop around it: who acts at each stage, what each stage measures, and how autonomy is granted.
 
-**Stages are run by hand before they are automated.** Each run of a delivery stage is recorded on a loop card ([docs/loops/](../loops/README.md)). A stage's autonomy is raised one level at a time, and only when its cards meet the readiness criteria. The cards also give each stage a leading and a lagging indicator, which feeds the delivery metrics (ADR-010). The autonomy levels (0 to 4) and the readiness criteria are a first draft, to be refined after the first DEV-1 runs.
+**Stages are run by hand before they are automated.** Each run of a delivery stage is recorded on a loop card ([docs/loops/](../loops/README.md)). A stage's autonomy is raised one level at a time, and only when its cards meet the readiness criteria. The cards also give each stage a leading and a lagging indicator, which feeds the delivery metrics (ADR-010). The autonomy levels (0 to 4) and the readiness criteria are a first draft, to be refined after the first DEV-1 runs. Whether low-risk stages (tasks, analyze) need a lighter loop card is open (D1). No stage goes above level 2 until ADR-013's gating rule has been revised for automated stages (ADR-013@v1 C7).
 
-**Agent work is checked by an independent reviewer.** The adversarial reviewer runs on every documentation PR, by hand, to a written policy, [REVIEW.md](../../REVIEW.md), with findings ranked by severity and nits capped. It is a subagent with a fresh context that sees the diff and the sources, not the author's reasoning. It never approves: its findings and the author's responses go in the PR description, and Andy decides. Documentation PRs get four passes (fidelity, facts, constraints, honest enforcement). The playbook's three code passes (bugs, security, compliance with spec and plan) are added when there is code.
+**Agent work is checked by an independent reviewer.** The adversarial reviewer runs on every documentation PR, by hand, to a written policy, [REVIEW.md](../../REVIEW.md), with findings ranked by severity and nits capped. It is a subagent with a fresh context that sees the diff and the sources, not the author's reasoning. It never approves, and Andy decides. While stages are hand-run, the review happens before anything is pushed (ADR-013@v1 C5). So its findings and the author's responses are written on that run's loop card, committed on the branch, where Andy reads them during his local review. The PR description summarises them and links the card once the branch is pushed (*ruled by Andy, 21 Oct*). Documentation PRs get four passes (fidelity, facts, constraints, honest enforcement). The playbook's three code passes (bugs, security, compliance with spec and plan) are added when there is code.
 
 **Configuration is treated as code.** Each skill gets a small regression eval set, re-run whenever the skill, CLAUDE.md or a hook changes. Where the eval sets live and how they run is open (A5, Q2).
 
@@ -71,9 +75,10 @@ Spec Kit stays the engine; the playbook supplies the loop around it: who acts at
 - **C3:** Each stage's loop cards MUST record a leading and a lagging indicator.
 - **C4:** Every documentation PR MUST be reviewed by the adversarial reviewer to REVIEW.md before Andy reviews it.
 - **C5:** The reviewer MUST run in a fresh context that sees the diff and its sources, not the author's reasoning.
-- **C6:** The reviewer MUST NOT approve a change. Its findings and the author's responses MUST go in the PR description.
+- **C6:** The reviewer MUST NOT approve a change. Its findings and the author's responses MUST be recorded on the run's loop card, and summarised in the PR description once the branch is pushed.
 - **C7:** Once there is code, code PRs MUST also be reviewed for bugs, security, and compliance with the spec and plan.
 - **C8:** Each skill MUST have a regression eval set, re-run whenever the skill, CLAUDE.md or a hook changes.
+- **C9:** A stage MUST NOT be raised above autonomy level 2 until ADR-013 has been revised as its C7 requires.
 
 ## Consequences
 
@@ -84,7 +89,7 @@ Easier:
 
 Harder:
 
-- Every documentation PR costs a reviewer run: about 100,000 to 115,000 tokens in the first four runs (loop cards).
+- Every documentation PR costs a reviewer run: between about 98,000 and 122,000 tokens in the first five runs (loop cards).
 - The reviewer is the same model as the author, so it may share some blind spots. Its precision has so far been scored by the author, not independently.
 - Running stages by hand is slower than automating them straight away.
 
@@ -118,4 +123,4 @@ Everything here relies on review today. The loop cards and REVIEW.md are the rec
 
 ## History
 
-- **v1** · 2026-10-21 · accepted · Andy Douglas: first version, recording D1's decisions of 20 Oct (loop cards, REVIEW.md, skill evals, the adversarial reviewer). Andy ruled on 21 Oct that the reviewer decisions belong in this ADR.
+- **v1** · 2026-10-21 · accepted · Andy Douglas: first version, recording D1's decisions of 20 Oct (loop cards, REVIEW.md, skill evals, the adversarial reviewer). Rulings by Andy on 21 Oct: the reviewer decisions belong in this ADR; findings go on the loop card for his local review, then into the PR; no stage goes above level 2 until ADR-013 is revised (C9).

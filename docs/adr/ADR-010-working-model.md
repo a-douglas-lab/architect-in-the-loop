@@ -34,8 +34,8 @@ enforcement:
     ref: null
     state: planned
   - constraint: C6
-    mechanism: none yet; how token use is monitored is open
-    ref: null
+    mechanism: loop cards record tokens per reviewer run; there is no budget or alert yet (open)
+    ref: docs/loops/cards
     state: manual
 backlog: [D1]
 ---
@@ -65,7 +65,7 @@ With coding agents, typing is cheap and review is not. One person reviews everyt
 - **C3:** Claude Code configuration (CLAUDE.md, skills, subagents, hooks) MUST be committed to this repository.
 - **C4:** When a backlog item closes, its decision MUST be recorded as an ADR.
 - **C5:** AI-authored commits MUST carry the Co-Authored-By trailer.
-- **C6:** Token use MUST be monitored.
+- **C6:** Token use MUST be monitored. What monitoring means beyond recording usage (a budget, and how it is enforced) is open (D1).
 
 ## Consequences
 
@@ -94,7 +94,7 @@ Harder:
 ### A setup tuned for agent throughput, with review sampled (added when writing this ADR)
 
 - For: fastest delivery.
-- Against: unreviewed changes reach main, which contradicts the project's thesis.
+- Against: unreviewed changes reach main, against the review-paced model chosen here.
 
 ### Review-paced tracks, configuration as code, dogfooding (chosen)
 
@@ -105,7 +105,7 @@ The naive option (an LLM with everything in its prompt) doesn't apply to how the
 
 ## Enforcement
 
-C5 becomes a commit-message check (planned with the Step 7 hooks). The rest rely on review. So far, all work has run as a single track in one session, in the main checkout rather than a worktree; C2 hasn't yet been applied to a second track. How token use is monitored (C6) is open, so nothing enforces it yet.
+C5 becomes a commit-message check (planned with the Step 7 hooks). The rest rely on review. Two are unmet today. C2: no work has yet run in a worktree; track A runs in the main checkout (`git worktree list` shows only it). C3: so far only the Spec Kit skills are committed; the ADR, spike and acceptance-test skills, the reviewer subagent and the hooks are built in Step 7. For C6, loop cards record tokens per reviewer run; nothing sets or enforces a budget. How token use is monitored (C6) is open, so nothing enforces it yet.
 
 ## History
 

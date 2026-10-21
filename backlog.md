@@ -33,7 +33,7 @@ Two further markers may follow the status: **Gate** (see the rule above) and **D
 | Tools and methods | T1–T9 |
 | Evaluation | E1–E6 |
 | Quality enforcement | Q1–Q5 |
-| Delivery | D1–D7 |
+| Delivery | D1–D8 |
 
 ---
 
@@ -687,9 +687,9 @@ The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (
 - **Backstop:** a deny rule naming the private evaluation repo's path (hard rule 1) was added to Andy's user settings on 20 Oct. It lives outside this public repo and hasn't been tested, because testing it means trying to read the repo. In one documented setup (no managed settings, and no Team or Enterprise login), a mod can approve a call that a deny rule refuses, so the rule is a backstop, not a guarantee.
 - **Limit:** shell commands aren't refused the same way, and none of these controls contain a script that opens files itself (Python, Node). Only the OS-level sandbox does. It runs on macOS, Linux and WSL2, not native Windows (Claude Code's sandboxing documentation). Whether to move to WSL2 is open.
 
-**Open:** the exact `additionalDirectories` list, settled while testing; whether the write hook also checks paths named in shell commands.
+**Open:** the exact `additionalDirectories` list, settled while testing; whether the write hook also checks paths named in shell commands; which paths count as protected (the 5 Oct hook "blocking writes to protected paths" has no list).
 
-**Decided (20 Oct): the adversarial reviewer runs on every documentation PR now, by hand,** to [REVIEW.md](REVIEW.md), ahead of Step 7. It is a subagent with a fresh context that sees the diff and the sources, not the author's reasoning. It never approves: its findings and the author's responses go in the PR description, and Andy decides. The first run, on batch 1 after it was merged, found 3 High problems the author had missed ([loop card](docs/loops/cards/2026-10-20-adr-batch1-review-run1.md)). Code review joins the policy when there is code.
+**Decided (20 Oct): the adversarial reviewer runs on every documentation PR now, by hand,** to [REVIEW.md](REVIEW.md), ahead of Step 7. It is a subagent with a fresh context that sees the diff and the sources, not the author's reasoning. It never approves: its findings and the author's responses go in the PR description, and Andy decides. *Revised 21 Oct (Andy):* while stages are hand-run, review comes before any push (D7), so findings are recorded on the run's loop card, committed on the branch for Andy's local review, then summarised in the PR. The first run, on batch 1 after it was merged, found 3 High problems the author had missed ([loop card](docs/loops/cards/2026-10-20-adr-batch1-review-run1.md)). Code review joins the policy when there is code.
 
 ### D2. Timebox and milestones · Decided (ADR pending)
 
@@ -729,7 +729,7 @@ What the skill covers:
 
 ### D7. Licence and repository hosting · Closed (ADR-013)
 
-**Decided (21 Oct, Andy):** "pushes happen only after Andy's review" means nothing is pushed, not even a branch, until Andy has reviewed the change locally; main changes only through a PR he merges. PRs #4 to #9 were pushed before his review. Neither repository's `main` ruleset requires a pull request today; adding that rule is recorded for Step 7. Recorded in [ADR-013](docs/adr/ADR-013-public-repo-licence-and-review.md).
+**Decided (21 Oct, Andy):** "pushes happen only after Andy's review" means nothing is pushed, not even a branch, until Andy has reviewed the change locally; main changes only through a PR he merges. Both rules apply **while stages are hand-run** (autonomy level 2 or below). Before any stage is automated, the rule is revised to gate `main` instead of pushes (D8). PRs #4 to #9 were pushed before his review. Neither repository's `main` ruleset requires a pull request today; adding that rule is recorded for Step 7. Recorded in [ADR-013](docs/adr/ADR-013-public-repo-licence-and-review.md).
 
 **Decided (8 Oct):**
 
@@ -738,3 +738,14 @@ What the skill covers:
 - **The eShop fork is public** (a fork of a public repo must be) and keeps eShop's MIT licence.
 - **Repository rulesets:** `main` in both repos cannot be force-pushed or deleted; tags in the fork cannot be moved or deleted, so baseline and pre-registration tags are trustworthy.
 - **Pushes happen only after Andy's review.** Private evaluation material is kept out by `.gitignore`, the bootstrap check and, from Step 7, Claude Code hooks.
+
+### D8. The gate for automated delivery loops · Open
+
+Added 21 Oct. ADR-013's "no push before Andy's review" holds only while stages are hand-run; it would block automated loops, and puts human review before the deterministic checks. Before any stage goes above autonomy level 2 (ADR-012@v1 C9, ADR-013@v1 C7), decide:
+
+- **What reaches `main`, and how:** every change by pull request, required checks passing, and Andy's approval where the change's risk calls for it, mirroring the capability's own approval points (A1). How risk is assessed for the project's own changes.
+- **Where agents push:** a private mirror where CI and the reviewer run, so nothing unreviewed is public; or public draft branches, visibly unreviewed work in progress.
+- **What Andy samples** at level 3, and how often.
+- **How the reviewer and loop cards fit** once there is no local review step: findings move to the PR.
+
+Prior art: the AI-native SDLC playbook's tiered autonomy by environment, and branch protection as the human gate.

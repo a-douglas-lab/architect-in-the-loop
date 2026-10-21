@@ -18,7 +18,7 @@ enforcement:
     ref: null
     state: manual
   - constraint: C2
-    mechanism: bootstrap scripts compare the installed CLI with the pin; they warn on a mismatch but don't fail
+    mechanism: bootstrap scripts compare the installed CLI with the pin and exit with code 2 on a mismatch; nothing yet runs them as a gate
     ref: scripts/bootstrap.ps1
     state: manual
   - constraint: C3
@@ -26,7 +26,7 @@ enforcement:
     ref: null
     state: manual
   - constraint: C4
-    mechanism: CI check that no Spec Kit preset or extension is installed (no .specify/extensions.yml)
+    mechanism: CI check that no Spec Kit preset or extension is installed (how Spec Kit records installed ones is to be confirmed; .specify/extensions.yml registers hooks, not installs)
     ref: null
     state: planned
   - constraint: C5
@@ -34,9 +34,9 @@ enforcement:
     ref: null
     state: manual
   - constraint: C6
-    mechanism: CI check that a merged feature folder under specs/ isn't changed later
+    mechanism: review; a CI check needs a rule for when a folder becomes fixed, which isn't decided
     ref: null
-    state: planned
+    state: manual
   - constraint: C7
     mechanism: review
     ref: null
@@ -69,11 +69,11 @@ This ADR covers building this project. Whether the capability also produces Spec
 ## Constraints
 
 - **C1:** This project MUST be built with the Spec Kit workflow; skills, subagents and hooks MUST support its stages, not replace them.
-- **C2:** Spec Kit MUST be pinned at v1.1.2. Upgrading needs a revision of this ADR.
+- **C2:** Spec Kit MUST be pinned at v1.1.2. Upgrades are deliberate, reviewed changes; under ADR-000@v3 C8 and C11, an upgrade is a revision of this ADR.
 - **C3:** Each feature MUST go through specify, plan, tasks, implement and converge, repeating implement and converge until converge reports converged.
-- **C4:** A Spec Kit preset or extension MUST NOT be installed without a revision of this ADR.
+- **C4:** Spec Kit MUST be used core only, with no presets or extensions installed. Changing that is a revision of this ADR (ADR-000@v3 C11).
 - **C5:** A community extension or preset MUST NOT be installed without a source review, a pinned version and an ADR.
-- **C6:** A feature folder in `specs/` MUST NOT be changed after its feature is merged; new requirements MUST get a new folder.
+- **C6:** Each feature folder in `specs/` MUST be kept as a fixed historical record; new requirements MUST get a new folder.
 - **C7:** What must stay true after a change MUST live in the ADRs and the constitution, not in specs.
 
 ## Consequences
@@ -124,7 +124,7 @@ T1 also records three extensions as deferred, not rejected: *Brownfield Bootstra
 
 ## Enforcement
 
-C2 is checked by the bootstrap scripts, which compare the installed CLI's version with the pin. They only warn on a mismatch and don't fail, so the state is manual. C4 and C6 are planned CI checks. The rest rely on review.
+C2 is checked by the bootstrap scripts, which compare the installed CLI's version with the pin and exit with code 2 on a mismatch. Nothing runs them as a gate yet (no CI, no hook), so the state is manual. C4 is a planned CI check, once it is confirmed how Spec Kit records installed presets and extensions. C6 needs a rule for when a feature folder becomes fixed (for example, when its feature is merged) before a check can enforce it; until then it is held by review. The rest rely on review.
 
 ## History
 
