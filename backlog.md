@@ -352,6 +352,8 @@ The original document assumed Spec Kit, ADRs and CUE. Each was reopened here for
 
 There are two layers: building the capability itself (and the exemplar), and the capability producing specs for changes to the subject system. They may use the same tool or different ones.
 
+The decided part is recorded in [ADR-009](docs/adr/ADR-009-spec-kit-workflow.md).
+
 **Decided (5 Oct): adopt the Spec Kit workflow** for building this project. Skills, subagents and hooks support its stages rather than replacing them.
 
 **Decided (8 Oct), from the Spec Kit v1.1.2 documentation:**
@@ -646,6 +648,8 @@ Candidate sources, each seeing only part of the picture:
 
 ### D1. Ways of working: speeding up development · Partly decided · Gate
 
+The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (working model), [ADR-011](docs/adr/ADR-011-deterministic-controls-on-agents.md) (deterministic controls) and [ADR-012](docs/adr/ADR-012-independent-checks-and-staged-autonomy.md) (independent checks and staged autonomy).
+
 **Decided (5 Oct):**
 
 - **Principle: Andy's review attention is the bottleneck, not typing speed,** so the setup is designed around review capacity.
@@ -717,13 +721,15 @@ What the skill covers:
 - **Extending the DSL** as new outcomes need new steps.
 - **A stub protocol driver**, so the tests compile and run before any implementation exists.
 - **Splitting visible from hidden examples.** Visible examples go into the outcome request and are the definition of done. Hidden examples cover cases the outcome didn't spell out (edge cases, failure paths, interactions) and check that the capability understood the outcome rather than satisfying a checklist. This mirrors what a domain expert does, which is what domain stewards stand in for.
-- **Keeping hidden examples hidden:** they live in the private evaluation repo the capability can't access, and are published after the scored run.
+- **Keeping hidden examples hidden:** they live in the private evaluation repo the capability can't access, and are published with the results, if results are published (P2; *revised 21 Oct, Andy*: previously "published after the scored run", which conflicted with P2's option not to publish).
 - **Red first:** confirming every test fails against the subject before the change (for evaluation outcomes, the evaluation baseline tag).
 - **Pre-registration:** committing tests and labels with a hash before the scored run.
 
 **Open: who builds the exemplar's reference implementations.** If the plan comes from the capability's own stewards, the reference is produced by the system under test, and impact scoring would agree with the capability by construction. The reference implementations must also exist before the capability is built (E2). Proposed: an independent plan and implementation, made by Andy with Claude Code in a separate session using this skill. To decide.
 
-### D7. Licence and repository hosting · Decided (ADR pending)
+### D7. Licence and repository hosting · Closed (ADR-013)
+
+**Decided (21 Oct, Andy):** "pushes happen only after Andy's review" means nothing is pushed, not even a branch, until Andy has reviewed the change locally; main changes only through a PR he merges. PRs #4 to #9 were pushed before his review. Neither repository's `main` ruleset requires a pull request today; adding that rule is recorded for Step 7. Recorded in [ADR-013](docs/adr/ADR-013-public-repo-licence-and-review.md).
 
 **Decided (8 Oct):**
 
