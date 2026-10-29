@@ -24,23 +24,23 @@
 | # | Sev | Finding | Response |
 | --- | --- | --- | --- |
 | 1 | High | ADR-013: the planned "require a PR" rule is filed under C5, which a PR rule can't enforce; C6 has no planned mechanism | Accept. Moved to C6 (planned) |
-| 2 | High | ADR-011 C6: "reads and edits" and the rule types are untraced | Accept, with a trace: Andy asked on 20 Oct to "add the deny rules for the eval repo", and both rules were added. The request is now quoted in the ADR |
+| 2 | High | ADR-011@v1 C6: "reads and edits" and the rule types are untraced | Accept, with a trace: Andy asked on 20 Oct to "add the deny rules for the eval repo", and both rules were added. The request is now quoted in the ADR |
 | 3 | Med | ADR-009: bootstrap "warns but doesn't fail" is false; it exits 2 | Accept. Verified in `bootstrap.ps1` lines 45–46 and 64–66. The author had read only the matching lines. Corrected, and the session log too |
-| 4 | Med | ADR-013 C6 ("only a PR Andy merges") untraced | Andy's ruling (21 Oct), recorded |
+| 4 | Med | ADR-013@v1 C6 ("only a PR Andy merges") untraced | Andy's ruling (21 Oct), recorded |
 | 5 | Med | "Protected paths" is defined nowhere | Accept. Recorded as open under D1; ADR-011 says so |
-| 6 | Med | ADR-010 C6: "monitored" is undefined; the mechanism "none yet" is misleading | Accept. The mechanism is what exists (loop cards record tokens per run); the budget is open |
-| 7 | Med | ADR-009 C4 adds an untraced mechanism and overlaps C5 | Accept. C4 restated as the source ("core only"), with changes as a revision under ADR-000@v3 C11 |
-| 8 | Med | ADR-009 C6's "after merge" trigger is untraced | Accept. Trigger removed; the rule for when a folder becomes fixed is noted as undecided; the state is now manual |
+| 6 | Med | ADR-010@v1 C6: "monitored" is undefined; the mechanism "none yet" is misleading | Accept. The mechanism is what exists (loop cards record tokens per run); the budget is open |
+| 7 | Med | ADR-009@v1 C4 adds an untraced mechanism and overlaps C5 | Accept. C4 restated as the source ("core only"), with changes as a revision under ADR-000@v3 C11 |
+| 8 | Med | ADR-009@v1 C6's "after merge" trigger is untraced | Accept. Trigger removed; the rule for when a folder becomes fixed is noted as undecided; the state is now manual |
 | 9 | Low | ADR-010's "single track in one session" is inaccurate; C2 is unmet | Accept. Reworded: no work has run in a worktree yet |
-| 10 | Low | ADR-009 C2's "revision" not attributed | Accept. Cites ADR-000@v3 C8 and C11 |
+| 10 | Low | ADR-009@v1 C2's "revision" not attributed | Accept. Cites ADR-000@v3 C8 and C11 |
 | 11 | Low | ADR-011 misses "no prompt to click through", the D1 open items and the setting's minimum version | Accept. All added |
 | 12 | Low | ADR-012 omits the lighter-card open item | Accept. Added |
 | 13 | Low | ADR-013 overclaims "nothing reaches GitHub without review"; C4's ref names one repo | Accept. Consequence softened; both ruleset IDs in the mechanism |
 | 14 | Low | ADR-013 has no "do nothing" option for the push rule | Accept. Added |
-| 15 | Low | ADR-009 C4's planned check wouldn't detect presets | Accept. Mechanism notes the detection method is to be confirmed |
-| 16 | Low | ADR-010 C3's configuration mostly doesn't exist yet | Accept. Stated in Enforcement |
+| 15 | Low | ADR-009@v1 C4's planned check wouldn't detect presets | Accept. Mechanism notes the detection method is to be confirmed |
+| 16 | Low | ADR-010@v1 C3's configuration mostly doesn't exist yet | Accept. Stated in Enforcement |
 | 17 | Low | ADR-013 "agents write most of the changes" is unmeasured | Accept. Now "many of the changes"; the working rule's location is named |
-| 18 | Low | ADR-012 C4 "before Andy reviews it" is inferred | Now traced: Andy's ruling puts findings on the card for his local review |
+| 18 | Low | ADR-012@v1 C4 "before Andy reviews it" is inferred | Now traced: Andy's ruling puts findings on the card for his local review |
 | Nits | — | Contradictory enforcement line; "three mechanisms" then a fourth; an alternative marked as added though D1 weighed it; token range; "contradicts the thesis" | All fixed |
 
 Author-scored: 18 of 18 real (2 with an added trace or ruling). Not independent.
@@ -69,7 +69,7 @@ The reviewer noted that ADR-012 put findings in the PR description, but under "n
 | Failure | Root cause | Fix | Where the fix landed |
 | --- | --- | --- | --- |
 | A second factual error by the author (bootstrap behaviour) | Read the lines that matched a search, not the surrounding control flow | Corrected | ADR-009, session log. Process fix still none; same pattern as run 3's missed setting |
-| A rule written without asking whether it scales | The D7 ruling was recorded as permanent | Scoped, with a revision trigger | ADR-013 C7, ADR-012 C9, D8 |
+| A rule written without asking whether it scales | The D7 ruling was recorded as permanent | Scoped, with a revision trigger | ADR-013@v1 C7, ADR-012@v1 C9, D8 |
 
 ## Ready to automate?
 
