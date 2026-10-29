@@ -33,7 +33,7 @@ Two further markers may follow the status: **Gate** (see the rule above) and **D
 | Tools and methods | T1–T9 |
 | Evaluation | E1–E6 |
 | Quality enforcement | Q1–Q5 |
-| Delivery | D1–D7 |
+| Delivery | D1–D8 |
 
 ---
 
@@ -352,6 +352,8 @@ The original document assumed Spec Kit, ADRs and CUE. Each was reopened here for
 
 There are two layers: building the capability itself (and the exemplar), and the capability producing specs for changes to the subject system. They may use the same tool or different ones.
 
+The decided part is recorded in [ADR-009](docs/adr/ADR-009-spec-kit-workflow.md).
+
 **Decided (5 Oct): adopt the Spec Kit workflow** for building this project. Skills, subagents and hooks support its stages rather than replacing them.
 
 **Decided (8 Oct), from the Spec Kit v1.1.2 documentation:**
@@ -646,6 +648,8 @@ Candidate sources, each seeing only part of the picture:
 
 ### D1. Ways of working: speeding up development · Partly decided · Gate
 
+The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (working model), [ADR-011](docs/adr/ADR-011-deterministic-controls-on-agents.md) (deterministic controls) and [ADR-012](docs/adr/ADR-012-independent-checks-and-staged-autonomy.md) (independent checks and staged autonomy).
+
 **Decided (5 Oct):**
 
 - **Principle: Andy's review attention is the bottleneck, not typing speed,** so the setup is designed around review capacity.
@@ -683,9 +687,9 @@ Candidate sources, each seeing only part of the picture:
 - **Backstop:** a deny rule naming the private evaluation repo's path (hard rule 1) was added to Andy's user settings on 20 Oct. It lives outside this public repo and hasn't been tested, because testing it means trying to read the repo. In one documented setup (no managed settings, and no Team or Enterprise login), a mod can approve a call that a deny rule refuses, so the rule is a backstop, not a guarantee.
 - **Limit:** shell commands aren't refused the same way, and none of these controls contain a script that opens files itself (Python, Node). Only the OS-level sandbox does. It runs on macOS, Linux and WSL2, not native Windows (Claude Code's sandboxing documentation). Whether to move to WSL2 is open.
 
-**Open:** the exact `additionalDirectories` list, settled while testing; whether the write hook also checks paths named in shell commands.
+**Open:** the exact `additionalDirectories` list, settled while testing; whether the write hook also checks paths named in shell commands; which paths count as protected (the 5 Oct hook "blocking writes to protected paths" has no list).
 
-**Decided (20 Oct): the adversarial reviewer runs on every documentation PR now, by hand,** to [REVIEW.md](REVIEW.md), ahead of Step 7. It is a subagent with a fresh context that sees the diff and the sources, not the author's reasoning. It never approves: its findings and the author's responses go in the PR description, and Andy decides. The first run, on batch 1 after it was merged, found 3 High problems the author had missed ([loop card](docs/loops/cards/2026-10-20-adr-batch1-review-run1.md)). Code review joins the policy when there is code.
+**Decided (20 Oct): the adversarial reviewer runs on every documentation PR now, by hand,** to [REVIEW.md](REVIEW.md), ahead of Step 7. It is a subagent with a fresh context that sees the diff and the sources, not the author's reasoning. It never approves: its findings and the author's responses go in the PR description, and Andy decides. *Revised 21 Oct (Andy):* while stages are hand-run, review comes before any push (D7), so findings are recorded on the run's loop card, committed on the branch for Andy's local review, then summarised in the PR. The first run, on batch 1 after it was merged, found 3 High problems the author had missed ([loop card](docs/loops/cards/2026-10-20-adr-batch1-review-run1.md)). Code review joins the policy when there is code.
 
 ### D2. Timebox and milestones · Decided (ADR pending)
 
@@ -717,13 +721,15 @@ What the skill covers:
 - **Extending the DSL** as new outcomes need new steps.
 - **A stub protocol driver**, so the tests compile and run before any implementation exists.
 - **Splitting visible from hidden examples.** Visible examples go into the outcome request and are the definition of done. Hidden examples cover cases the outcome didn't spell out (edge cases, failure paths, interactions) and check that the capability understood the outcome rather than satisfying a checklist. This mirrors what a domain expert does, which is what domain stewards stand in for.
-- **Keeping hidden examples hidden:** they live in the private evaluation repo the capability can't access, and are published after the scored run.
+- **Keeping hidden examples hidden:** they live in the private evaluation repo the capability can't access, and are published with the results, if results are published (P2; *revised 21 Oct, Andy*: previously "published after the scored run", which conflicted with P2's option not to publish).
 - **Red first:** confirming every test fails against the subject before the change (for evaluation outcomes, the evaluation baseline tag).
 - **Pre-registration:** committing tests and labels with a hash before the scored run.
 
 **Open: who builds the exemplar's reference implementations.** If the plan comes from the capability's own stewards, the reference is produced by the system under test, and impact scoring would agree with the capability by construction. The reference implementations must also exist before the capability is built (E2). Proposed: an independent plan and implementation, made by Andy with Claude Code in a separate session using this skill. To decide.
 
-### D7. Licence and repository hosting · Decided (ADR pending)
+### D7. Licence and repository hosting · Closed (ADR-013)
+
+**Decided (21 Oct, Andy):** "pushes happen only after Andy's review" means nothing is pushed, not even a branch, until Andy has reviewed the change locally; main changes only through a PR he merges. Both rules apply **while stages are hand-run** (autonomy level 2 or below). Before any stage is automated, the rule is revised to gate `main` instead of pushes (D8). PRs #4 to #9 were pushed before his review. Neither repository's `main` ruleset requires a pull request today; adding that rule is recorded for Step 7. Recorded in [ADR-013](docs/adr/ADR-013-public-repo-licence-and-review.md).
 
 **Decided (8 Oct):**
 
@@ -732,3 +738,14 @@ What the skill covers:
 - **The eShop fork is public** (a fork of a public repo must be) and keeps eShop's MIT licence.
 - **Repository rulesets:** `main` in both repos cannot be force-pushed or deleted; tags in the fork cannot be moved or deleted, so baseline and pre-registration tags are trustworthy.
 - **Pushes happen only after Andy's review.** Private evaluation material is kept out by `.gitignore`, the bootstrap check and, from Step 7, Claude Code hooks.
+
+### D8. The gate for automated delivery loops · Open
+
+Added 21 Oct. ADR-013's "no push before Andy's review" holds only while stages are hand-run; it would block automated loops, and puts human review before the deterministic checks. Before any stage goes above autonomy level 2 (ADR-012@v1 C9, ADR-013@v1 C7), decide:
+
+- **What reaches `main`, and how:** every change by pull request, required checks passing, and Andy's approval where the change's risk calls for it, mirroring the capability's own approval points (A1). How risk is assessed for the project's own changes.
+- **Where agents push:** a private mirror where CI and the reviewer run, so nothing unreviewed is public; or public draft branches, visibly unreviewed work in progress.
+- **What Andy samples** at level 3, and how often.
+- **How the reviewer and loop cards fit** once there is no local review step: findings move to the PR.
+
+Prior art: the AI-native SDLC playbook's tiered autonomy by environment, and branch protection as the human gate.
