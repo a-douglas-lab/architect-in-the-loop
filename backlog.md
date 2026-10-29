@@ -134,7 +134,7 @@ The capability needs a realistic system to reason over. Which domains, ADRs, int
 
 ### P5. Interfaces: who states outcomes, and where merchants configure things · Partly decided
 
-**P5a. Capability interface, decided (5 Oct):** merchants do not change the system. The architecture coordinator states outcomes, on behalf of merchant needs, through a web interface: a React frontend over a C# REST API.
+**P5a. Capability interface, decided (5 Oct)** and recorded in [ADR-017](docs/adr/ADR-017-coordinator-interface.md): merchants do not change the system. The architecture coordinator states outcomes, on behalf of merchant needs, through a web interface: a React frontend over a C# REST API.
 
 **P5b. Merchant configuration in the subject system:** eShop has no merchant interface, so outcomes that depend on merchant-set values (for example thresholds or promotion periods) need somewhere for a merchant to set them. This is separate from P5a.
 
@@ -230,6 +230,8 @@ The end-to-end design of the capability: its components and agent roles, how wor
 
 ### A2. Independent grader · Partly decided
 
+The decided part is recorded in [ADR-014](docs/adr/ADR-014-two-separate-graders.md).
+
 **Decided (5 Oct):** two graders, kept separate. A **runtime grader** checks work before a human sees it; an **evaluation grader** scores outcomes for E1 to E4. They use separate rubrics and are calibrated separately, and human labels remain the final check on the evaluation grader. Rubrics are catalogued in A5.
 
 **Open (A5 proposes answers to several):**
@@ -252,7 +254,7 @@ At least one further context governs system-wide concerns: integration patterns,
 - **Overlap with ADR scoping.** Cross-cutting ADRs already add domains to the impact set (T6, T7). Decide whether this context *owns* those ADRs and the shared code, while the ADR mechanism does the selection.
 - **Authority.** Can it veto a steward's plan, or only advise, with the arbiter or architecture coordinator deciding?
 
-### A4. When an outcome splits, and who decides · Decided (ADR pending)
+### A4. When an outcome splits, and who decides · Closed (ADR-015)
 
 From G11: an outcome can split so that unblocked work continues. Whether a split can be automatic depends on why it happens.
 
@@ -404,7 +406,7 @@ Q1 treats enforcement as a map of rule types to mechanisms rather than a single 
 
 ### T5. Language and stack for the capability itself · Partly decided · Gate
 
-**Decided (5 Oct):** the capability's API is C# with a React frontend (P5a).
+**Decided (5 Oct):** the capability's API is C# with a React frontend (P5a; [ADR-017](docs/adr/ADR-017-coordinator-interface.md)).
 
 **Open:** whether agent orchestration also runs in .NET (driving Claude Code through its command-line interface) or in a small TypeScript or Python worker using the Claude Agent SDK, called from the C# API. The tension: the subject is .NET, but the agent orchestration ecosystem is strongest in TypeScript and Python. Criteria: delivery speed, how it reads to target employers, and fit with the CV story.
 
@@ -611,9 +613,11 @@ Candidate sources, each seeing only part of the picture:
 
 **Open:** which sources we combine; how we reconcile them; and whether declared dependencies can be compared with observed ones from traces, so drift between what the system says and what it does is detected automatically. Output: a validated dependency map consumed by T7 and Q1.
 
-### Q4. Improving legacy code a change touches · Decided (ADR pending) · Gate
+### Q4. Improving legacy code a change touches · Closed (ADR-016) · Gate
 
 **Decided (5 Oct):** when a change touches a legacy domain, it also improves the code it touches.
+
+**Decided (29 Oct, Andy):** this governs the capability, when it changes a legacy domain during an outcome. Hand-built development outcomes stay under CLAUDE.md hard rule 5: defects noticed are reported, not fixed. Recorded in [ADR-016](docs/adr/ADR-016-improving-legacy-code-the-capability-touches.md).
 
 - **Scope by touch radius.** Improve only the code the change already modifies (files or methods in the diff), not the whole domain. Deterministic: computed from the diff.
 - **Separate structural from behavioural change.** Improvements go in their own commits, which must not change behaviour: existing tests stay green before and after, and the mutation score doesn't fall. Prior art: Kent Beck's "Tidy First?".
