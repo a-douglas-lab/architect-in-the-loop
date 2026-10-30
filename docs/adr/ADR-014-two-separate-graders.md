@@ -22,7 +22,7 @@ enforcement:
     ref: null
     state: manual
   - constraint: C3
-    mechanism: review of the rubric catalogue (A5)
+    mechanism: review; evaluation rubrics are private, so only Andy can compare the two sets
     ref: null
     state: manual
   - constraint: C4
@@ -34,6 +34,10 @@ enforcement:
     ref: null
     state: manual
   - constraint: C6
+    mechanism: review
+    ref: null
+    state: manual
+  - constraint: C7
     mechanism: review
     ref: null
     state: manual
@@ -50,11 +54,13 @@ This ADR is about the capability's graders. It is not about the adversarial revi
 
 ## Decision
 
-**Two graders, kept separate.** A **runtime grader** checks work before a human sees it. An **evaluation grader** scores outcomes for E1 to E4. They use separate rubrics and are calibrated separately, and human labels remain the final check on the evaluation grader. Rubrics are catalogued in A5.
+**Two graders, kept separate.** A **runtime grader** checks work before a human sees it. An **evaluation grader** scores outcomes for E1 to E4. They use separate rubrics and are calibrated separately, and human labels remain the final check on the evaluation grader. Rubrics are catalogued in A5. Runtime rubrics live in this public repository, because they define quality for the capability, as visible examples do. Evaluation rubrics live in the private evaluation repository, so the capability can't tune itself to them.
+
+The evaluation grader doesn't replace deterministic scoring: impact is scored by a deterministic comparison with no LLM (ADR-007@v1 C7), and acceptance by tests (ADR-008@v1).
 
 Still open (A2; A5 proposes answers to several):
 
-- **Scope:** under the thesis, the grader covers only what deterministic checks can't.
+- **Scope:** under the thesis, the grader covers only what deterministic checks can't. For impact scoring, ADR-007 has already settled this. Where else it applies, and at which points the runtime grader runs, is open.
 - **Independence:** the grader sees the artefacts, the rubric and the outcome statement, not the producing agent's reasoning. Whether a different model or model family is used, to reduce self-preference bias.
 - **Calibration:** rubrics versioned as code, with agreement with human labels measured and published before scores are trusted.
 - **Consequences:** whether a low grade blocks, triggers a bounded repair loop, or only flags for the human reviewer, and the loop limit.
@@ -62,12 +68,13 @@ Still open (A2; A5 proposes answers to several):
 
 ## Constraints
 
-- **C1:** A runtime grader MUST check the capability's work before a human sees it.
-- **C2:** A separate evaluation grader MUST score outcomes for E1 to E4.
+- **C1:** The capability MUST have a runtime grader that checks work before a human sees it. Which work, and at which points, is open.
+- **C2:** A separate evaluation grader MUST score outcomes for E1 to E4, only where deterministic scoring doesn't apply (ADR-007@v1 C7).
 - **C3:** The two graders MUST use separate rubrics.
 - **C4:** The two graders MUST be calibrated separately.
 - **C5:** Human labels MUST remain the final check on the evaluation grader.
-- **C6:** Rubrics MUST be catalogued in A5.
+- **C6:** Runtime rubrics MUST live in this public repository, catalogued in A5.
+- **C7:** Evaluation rubrics MUST live in the private evaluation repository.
 
 ## Consequences
 
@@ -86,7 +93,7 @@ Harder:
 ### Do nothing: no grader; humans judge what checks can't (added when writing this ADR)
 
 - For: no grader to build or calibrate.
-- Against: every judgement lands on the human, which review capacity can't sustain (ADR-010).
+- Against: every judgement lands on the human reviewer, and nothing screens work before they see it.
 
 ### Naive: one LLM judges everything, including what checks could cover (added when writing this ADR)
 
@@ -105,7 +112,7 @@ Harder:
 
 ## Enforcement
 
-All six constraints rely on review today. Neither grader exists yet. C3 and C4 become checkable once the rubric catalogue and calibration records exist (A5).
+All seven constraints rely on review today. Neither grader exists yet. The runtime side of C4 becomes checkable once calibration records exist (A5). Evaluation rubrics and their calibration are private, and Claude never reads them (hard rule 1), so C3, C5, C7 and the evaluation side of C4 can only be checked by Andy.
 
 ## History
 

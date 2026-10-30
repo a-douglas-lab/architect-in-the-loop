@@ -30,7 +30,7 @@ enforcement:
     ref: null
     state: planned
   - constraint: C5
-    mechanism: the capability's split check
+    mechanism: the capability's approval points; for work delivered dark, the flag switch
     ref: null
     state: planned
   - constraint: C6
@@ -42,7 +42,7 @@ enforcement:
     ref: null
     state: planned
   - constraint: C8
-    mechanism: feature flags in the subject system, switched off on delivery
+    mechanism: the capability's split check, confirming the delivered feature's flag is off
     ref: null
     state: planned
   - constraint: C9
@@ -57,6 +57,18 @@ enforcement:
     mechanism: the capability's approval points
     ref: null
     state: planned
+  - constraint: C12
+    mechanism: review against the scenario table
+    ref: null
+    state: manual
+  - constraint: C13
+    mechanism: the capability's split check
+    ref: null
+    state: planned
+  - constraint: C14
+    mechanism: the capability's split logic
+    ref: null
+    state: planned
 backlog: [A4, G11]
 ---
 
@@ -64,7 +76,7 @@ backlog: [A4, G11]
 
 ## Context
 
-An outcome can be blocked in part: a decision gap, an ADR conflict, an ambiguous request, or a failing part (G11). Splitting lets unblocked work continue. But a split changes what the merchant gets, so whether it can happen automatically depends on why it happens.
+An outcome can be blocked in part: a decision gap, an ADR conflict, an ambiguous request, or a failing part (scenarios S1 to S4 below). Splitting lets unblocked work continue (G11). But a split changes what the merchant gets, so whether it can happen automatically depends on why it happens.
 
 ## Decision
 
@@ -82,31 +94,36 @@ An outcome can be blocked in part: a decision gap, an ADR conflict, an ambiguous
 | S8 | Out-of-scope security defect (G10) | A gap found in code next to the change | Nothing directly | Automatic proposal of a remediation outcome; flagged immediately |
 | S9 | Preparatory change needed first | A calculation an outcome depends on must be corrected first | Nothing, if behaviour-preserving | Automatic if structural; approval if it changes behaviour |
 
-**Deliver dark:** partial features ship behind feature flags, switched off, so nothing changes for users and splitting can be automatic. Switching a flag on is the human decision. The cost is a feature flag capability in the subject system, which eShop has none of today. The flag mechanism itself (OpenFeature, Q5) is a subject decision, recorded in the fork (ADR-000@v3 C12).
+**Deliver dark:** partial features ship behind feature flags, switched off, so nothing changes for users and splitting can be automatic. Switching a flag on is the human decision. The cost is a feature flag capability in the subject system, which eShop has none of today. The flag mechanism itself (OpenFeature, Q5) is a subject decision, to be recorded in the fork in Phase 2 (ADR-000@v3 C12).
 
 **Rules for an automatic split,** all checked deterministically:
 
 1. The delivered part passes its own subset of the visible acceptance examples.
 2. Nothing in the delivered part depends on the blocked part (contract dependency graph, G1).
 3. The split doesn't reduce what the outcome asked for. Any reduction in what the merchant gets needs a human; with deliver dark, that happens when the flag is switched on.
-4. The delivered part's risk rung is no higher than the original outcome's. Risk rungs are the use-case ladder in the architecture sketch.
+4. The delivered part's risk rung is no higher than the original outcome's. Risk rungs are the use-case ladder in the architecture sketch, which is still a proposal (A1).
 5. The system is left consistent: no half-built feature visible to users.
 
 For evaluation, outcomes expected to split are labelled by part (ADR-007@v1 C10).
 
+**Open (A1):** which rule applies when a security defect is in touched code (ADR-016@v1 C9, fixed with a test and flagged) and also needed first (S9, approval if it changes behaviour).
+
 ## Constraints
 
-- **C1:** Every split MUST fall under one of the scenarios S1 to S9, and follow that scenario's decision.
-- **C2:** A split MUST be automatic only when all five rules hold, each checked deterministically.
-- **C3:** The delivered part MUST pass its own subset of the visible acceptance examples.
-- **C4:** The delivered part MUST NOT depend on the blocked part.
-- **C5:** A reduction in what the merchant gets MUST be approved by a human.
-- **C6:** The delivered part's risk rung MUST NOT be higher than the original outcome's.
-- **C7:** A split MUST leave no half-built feature visible to users.
+- **C1:** Every split MUST fall under one of the scenarios S1 to S9.
+- **C2:** A split MUST NOT be made automatically unless all five rules hold, each checked deterministically.
+- **C3:** In an automatic split, the delivered part MUST pass its own subset of the visible acceptance examples.
+- **C4:** In an automatic split, the delivered part MUST NOT depend on the blocked part.
+- **C5:** A reduction in what the merchant gets MUST be approved by a human. For work delivered dark, that happens when the flag is switched on.
+- **C6:** In an automatic split, the delivered part's risk rung MUST NOT be higher than the original outcome's.
+- **C7:** An automatic split MUST leave no half-built feature visible to users.
 - **C8:** Partial features MUST be delivered behind feature flags, switched off.
 - **C9:** Switching a feature flag on MUST be a human decision.
-- **C10:** A split where the delivered part depends on the blocked part (S5) MUST NOT be made.
-- **C11:** Follow-up outcomes proposed by a split (S7, S8) MUST be approved before they are built.
+- **C10:** A split where the delivered part depends on the blocked part (S5) MUST NOT be made, automatically or otherwise.
+- **C11:** A follow-up outcome proposed for over-budget improvement work (S7) MUST be approved.
+- **C12:** A split MUST follow the decision recorded for its scenario.
+- **C13:** An automatic split MUST NOT reduce what the outcome asked for.
+- **C14:** An out-of-scope security defect (S8) MUST be flagged immediately, and a remediation outcome proposed automatically.
 
 ## Consequences
 
@@ -145,7 +162,7 @@ Harder:
 
 ## Enforcement
 
-Nothing here is enforced yet: the capability doesn't exist. C2 to C8 and C10 are designed as deterministic checks in the capability's split logic. C9 and C11 are approval points. C1 is held by review until the split logic records which scenario applies.
+Nothing here is enforced yet: the capability doesn't exist. C2 to C4, C6 to C8, C10, C13 and C14 are intended as deterministic checks in the capability's split logic. C5, C9 and C11 are approval points. C1 and C12 are held by review until the split logic records which scenario applies.
 
 ## History
 

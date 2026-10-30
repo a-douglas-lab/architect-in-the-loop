@@ -29,6 +29,10 @@ enforcement:
     mechanism: review of the capability's project structure
     ref: null
     state: manual
+  - constraint: C5
+    mechanism: review
+    ref: null
+    state: manual
 backlog: [P5, T5]
 ---
 
@@ -50,10 +54,11 @@ Still open:
 
 ## Constraints
 
-- **C1:** Merchants MUST NOT change the system through the capability; the architecture coordinator states outcomes on their behalf.
+- **C1:** Merchants MUST NOT change the system.
 - **C2:** The architecture coordinator MUST state outcomes through a web interface.
 - **C3:** The capability's API MUST be a C# REST API.
 - **C4:** The capability's frontend MUST be built with React.
+- **C5:** The architecture coordinator MUST state outcomes on merchants' behalf.
 
 ## Consequences
 
@@ -92,7 +97,7 @@ The naive option (an LLM with everything in its prompt) doesn't apply to an inte
 
 ## Enforcement
 
-All four constraints rely on review. Nothing is built yet. C3 and C4 become checkable from the capability's project structure once it exists.
+All five constraints rely on review. Nothing is built yet. C3 and C4 become checkable from the capability's project structure once it exists.
 
 ## History
 

@@ -2,7 +2,7 @@
 
 > **Public version.** Evaluation outcomes, their labels, hidden examples and anything deliberately left in eShop for evaluation are held in the private evaluation repository. Where they were discussed, this file points there instead.
 
-Status: v0.2 · updated 21 Oct 2026
+Status: v0.2 · updated 30 Oct 2026
 
 Every open question and every decision so far, with its status. This file is the source of truth for what is decided. **Gate rule (8 Oct):** an item marked **Gate** must close before the [roadmap](roadmap.md) phase that depends on it starts. Each item closes with a short ADR recording the decision, the options considered and the evidence. Items carried over from the original capabilities document keep their old ID in brackets.
 
@@ -221,7 +221,7 @@ The end-to-end design of the capability: its components and agent roles, how wor
 **Open:**
 
 - **Roles from strategic domain-driven design.** The subject system's bounded contexts shape the stewards; the capability's own context map (nine contexts in the sketch) decides which roles exist and which are LLM-driven or deterministic. Confirm the context map, including whether Evidence is its own context and where risk scoring lives.
-- **Human approval points.** The sketch's use-case ladder proposes them, scaled by risk. Confirm.
+- **Human approval points.** The sketch's use-case ladder proposes them, scaled by risk. Confirm. Include which rule applies when a security defect is in touched code (ADR-016@v1 C9: fixed with a test and flagged) and also needed first (ADR-015@v1 S9: approval if it changes behaviour).
 - **Typed handoff limits.** A schema guarantees a message's shape, not the quality of the reasoning inside its text fields; those fields still need the runtime grader. Decide how schemas are versioned and where they are validated.
 - **Structure versus prose, proposed principle:** structure what the system acts on; keep prose for reasoning. Decisions, domain and ADR IDs, verdicts, references and confidence go in schema fields; the reasoning stays as free text in a rationale field. Likely mechanism: the agent reasons freely, then emits a schema-validated result. Confirm with a spike comparing structured and free-form impact analysis on the development set.
 - **Long-running traces.** An outcome may wait days for approval. Likely option: a trace per stage, linked by span links and the outcome ID. Confirm in a spike.
@@ -599,6 +599,8 @@ Output: the enforcement section of each baseline ADR (the ADR template, T2, defi
 
 Choose a default tool for each E2 quality layer: journey step counts, accessibility, REST rules (stricter Spectral ruleset), breaking-change detection, API security, performance budgets and observability coverage. Commodity research: pick, check briefly, record.
 
+**Open (added 30 Oct): how tool outputs reach the capability.** Most consumers need no model: the ratchet, the structural-commit check and the budget are comparisons. Proposed direction: a deterministic step reads each tool's native output into one small typed evidence record per change. Gates run on that record, and agents receive only the slice they must act on, such as the new violations in code they touched. Agents are organised around decisions, not tools. Test the record's shape with a spike on DEV-1's real outputs (with Q1, T4; A1's "structure what the system acts on").
+
 ### Q3. Validate the system dependency map · Open · Gate
 
 Impact analysis and service-dependency ADRs both rely on knowing which services depend on which. Where does that map come from, and how do we know it's right?
@@ -618,6 +620,8 @@ Candidate sources, each seeing only part of the picture:
 **Decided (5 Oct):** when a change touches a legacy domain, it also improves the code it touches.
 
 **Decided (29 Oct, Andy):** this governs the capability, when it changes a legacy domain during an outcome. Hand-built development outcomes stay under CLAUDE.md hard rule 5: defects noticed are reported, not fixed. Recorded in [ADR-016](docs/adr/ADR-016-improving-legacy-code-the-capability-touches.md).
+
+**Decided (30 Oct, Andy):** SARIF covers rule violations only. Measurement tools keep their native formats, because Stryker.NET and coverlet have no SARIF output. How outputs reach the capability is open (Q2).
 
 - **Scope by touch radius.** Improve only the code the change already modifies (files or methods in the diff), not the whole domain. Deterministic: computed from the diff.
 - **Separate structural from behavioural change.** Improvements go in their own commits, which must not change behaviour: existing tests stay green before and after, and the mutation score doesn't fall. Prior art: Kent Beck's "Tidy First?".

@@ -73,6 +73,10 @@ enforcement:
     mechanism: review
     ref: null
     state: manual
+  - constraint: C16
+    mechanism: review
+    ref: null
+    state: manual
 backlog: [Q4, G7, G10, G12]
 ---
 
@@ -93,7 +97,7 @@ This ADR governs the capability, when it changes a legacy domain during an outco
 - **Budget, not target.** Improvement effort is capped as a share of the outcome, for example structural diff relative to behavioural diff, or a share of the token budget. Lines changed is used only as a budget proxy, never as a measure of value, because it rewards churn. Thresholds are pre-registered, like E3's.
 - **Over budget becomes a follow-up.** Improvements beyond the budget are proposed as a separate improvement outcome for the architecture coordinator, rather than done inline (ADR-015@v1, S7).
 - **Checks on legacy domains are differential** (G7). A baseline of existing violations is recorded as exceptions (G12), with a ratchet: the count can fall, but never rise.
-- **Security defects in touched code are never ratcheted silently** (G10). They are fixed as their own behavioural change with a test and flagged, or escalated.
+- **Security defects in touched code are never ratcheted silently** (G10). They are fixed as their own behavioural change with a test and flagged to the coordinator, or escalated if fixing them is out of scope. Which rule applies when such a fix is also a preparatory change that alters behaviour (ADR-015@v1, S9) is open (A1).
 
 **Measure with existing tools, not bespoke metrics:**
 
@@ -102,7 +106,9 @@ This ADR governs the capability, when it changes a legacy domain during an outco
 - SonarAnalyzer.CSharp, which runs in a normal build, so it works headlessly for agents and CI. Its licence must be checked before it is adopted. SonarQube for IDE (formerly SonarLint) is IDE-only, so it suits Andy's own editing, not the pipeline.
 - Coverage via coverlet; mutation score via Stryker.NET.
 
-**One output format: SARIF.** The ratchet, the repair loop and GitHub code scanning consume one format, so any tool can be swapped without changing the capability. **Rule IDs feed the repair loop,** as ADR IDs do: a violation names its rule, and the agent repairs against it.
+**One output format for rule violations: SARIF.** The ratchet, the repair loop and GitHub code scanning consume one format, so any analyzer can be swapped without changing the capability. Measurement tools keep their native formats, because Stryker.NET and coverlet have no SARIF output (*ruled by Andy, 30 Oct*). **Rule IDs feed the repair loop,** as ADR IDs do: a violation names its rule, and the agent repairs against it.
+
+How outputs reach the capability is open (Q2). The proposed direction is a deterministic step that reads each tool's native output into one small typed evidence record per change. Gates run on that record, and agents receive only the slice they must act on. Its shape is to be tested with a spike on DEV-1's real outputs.
 
 **Measure value by what got better.** Primary: the ratchet delta, meaning violations of the exemplar's rules removed in the touched code. Secondary: complexity, coverage and mutation score of the touched code, plus coupling and duplication. Hotspots, code that changes often and is complex, are prioritised, after Adam Tornhill.
 
@@ -120,13 +126,14 @@ This ADR governs the capability, when it changes a legacy domain during an outco
 - **C6:** Lines changed MUST NOT be used as a measure of value.
 - **C7:** Improvements beyond the budget MUST be proposed as a separate improvement outcome, not done inline.
 - **C8:** Checks on legacy domains MUST be differential: existing violations recorded as exceptions, with a count that may fall but MUST NOT rise.
-- **C9:** A security defect in touched code MUST NOT be ratcheted silently; it MUST be fixed as its own behavioural change with a test and flagged, or escalated.
-- **C10:** Analysis tools MUST report in SARIF.
+- **C9:** A security defect in touched code MUST NOT be ratcheted silently; it MUST be fixed as its own behavioural change with a test and flagged to the coordinator, or escalated if fixing it is out of scope.
+- **C10:** Tools that report rule violations MUST report in SARIF.
 - **C11:** Each violation MUST name the rule it breaks, for the repair loop.
 - **C12:** The reviewable size of each change MUST be reported alongside the improvement it bought.
 - **C13:** The project MUST NOT claim fewer defects or faster future changes from these improvements.
 - **C14:** SonarAnalyzer.CSharp MUST NOT be adopted until its licence has been checked.
-- **C15:** This ADR MUST NOT be applied to hand-built development outcomes; for them, defects are reported, not fixed (hard rule 5).
+- **C15:** This ADR MUST NOT be applied to hand-built development outcomes (hard rule 5 governs them).
+- **C16:** The repository MUST state that fewer defects or faster future changes can't be claimed, because that would need real history.
 
 ## Consequences
 
@@ -140,6 +147,7 @@ Harder:
 
 - Every legacy domain needs a recorded baseline of violations before the ratchet works (Q4, Phase 4; the exception record format is decided with Q1).
 - Budgets and thresholds must be set and pre-registered.
+- The baseline may not fit the exception model as it stands. An exception names an ADR and a constraint, but analyzer rule IDs aren't ADR constraints, and ADRs with exceptions `not-allowed` can't take exceptions. Q1's exception format has to resolve this.
 - Changes get bigger to review; the burden is reported, not reduced.
 
 ## Alternatives
@@ -176,8 +184,8 @@ Harder:
 
 ## Enforcement
 
-Nothing here is enforced yet: the capability, the tool set-up and the baselines don't exist. C2 to C5, C7, C8, C10 and C12 are designed as checks in the capability and its pipeline. The rest rely on review.
+Nothing here is enforced yet: the capability, the tool set-up and the baselines don't exist. C2 to C5, C7, C8, C10 and C12 are intended as checks in the capability and its pipeline. The rest rely on review.
 
 ## History
 
-- **v1** · 2026-10-29 · accepted · Andy Douglas: first version, recording Q4 (decided 5 Oct). Rulings by Andy on 29 Oct: the ADR governs the capability only, and hand-built work stays under hard rule 5 (C15); tier `cross-cutting` and exceptions `not-allowed`.
+- **v1** · 2026-10-29 · accepted · Andy Douglas: first version, recording Q4 (decided 5 Oct). Rulings by Andy on 29 Oct: the ADR governs the capability only, and hand-built work stays under hard rule 5 (C15); tier `cross-cutting` and exceptions `not-allowed`. Rulings on 30 Oct, from review: SARIF covers rule violations only, measurement tools keep native formats, and the evidence record is an open design question (Q2); the boundary with ADR-015's S9 is open (A1).
