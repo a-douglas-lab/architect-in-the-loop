@@ -69,7 +69,7 @@ The agent is marking its own homework here. The checklist mostly asks about form
 | At most 3 clarification markers | Deterministic in principle | ≤ 3 | Pass (1) |
 | Mandatory template sections present | Deterministic in principle | All present | Pass |
 | Spec matches current eShop behaviour | Human judgement | Assumptions about existing behaviour are true | Not run |
-| Scope matches the outcome's listed areas (Ordering, storefront checkout) | Human judgement | Nothing outside them | Agent's own check: pass, after FR-008 was answered. Human check: pending at the gate |
+| Scope matches the outcome's listed areas (Ordering, storefront checkout) | Human judgement | Nothing outside them | Agent's own check: pass, after FR-008 was answered. Human check: Andy reviewed the spec on 30 Oct and made no edits |
 
 Ways to move checks out of judgement:
 
@@ -81,18 +81,18 @@ Ways to move checks out of judgement:
 
 - **Approver:** Andy, as architecture coordinator, editing then approving the spec (level 1).
 - **Evidence shown:** the spec, the checklist with its notes, and this card.
-- **Decision:** *pending: Andy to review and edit.*
-- **Did the approver redo any of the work to decide?** *Pending.*
+- **Decision:** reviewed by Andy, 30 Oct, and he said to proceed. He made no edits: the fork's working tree is clean at `af47ded`. This is a practice spec, so the review doesn't make it the authoritative DEV-1 spec.
+- **Did the approver redo any of the work to decide?** Not recorded.
 
 ## 9. Measurements
 
 | Measure | Value | How measured |
 | --- | --- | --- |
 | Wall time | About 5 minutes from branching the fork to the commit (14:22 to about 14:27), including one wait for Andy's clarification answer. The earlier run-type question came before 14:22 | Shell clock at the start; fork commit time 14:27:33. Waits not timed separately |
-| Human minutes (work plus review) | Not measured | No timer on Andy's side; review still pending |
+| Human minutes (work plus review) | Not measured | Andy's review wasn't timed |
 | Tokens / cost | Not measured | The session doesn't expose per-stage token counts. Gap to fix before cost can be compared across runs |
 | Iterations to pass checks | 2 | Checklist notes |
-| Leading indicator: spec accepted without rework | Pending | Set at the gate |
+| Leading indicator: spec accepted without rework | No edits at the gate | Fork working tree compared with `af47ded` |
 | Lagging indicator: rework found in a later stage | Unknown | Fill in after plan and D6 |
 
 ## 10. What went wrong
@@ -112,7 +112,7 @@ The failures didn't send work back to an earlier stage. The clarification answer
 - [ ] Stable inputs and outputs: one run only.
 - [ ] A trustworthy check: self-assessed checklist, no independent grader.
 - [ ] Known failures: five found, none fixed durably (one possibly resolved by the tool, unconfirmed).
-- [ ] An evidence-based gate: gate not yet run.
+- [ ] An evidence-based gate: run once, with no edits; whether Andy had to redo any work isn't recorded.
 - [ ] Known cost: tokens and human time not measured.
 
 **Verdict:** keep at level 1. **Why:** first run, no trustworthy check and no cost data.
