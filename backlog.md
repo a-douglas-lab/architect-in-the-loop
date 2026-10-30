@@ -709,7 +709,7 @@ Public repo, short video of a recorded run, and a one-command deploy. Decide wha
 
 ### D4. Prior-work IP check · Closed (ADR-018)
 
-**Decided (5 Oct):** we build the best engineering solution and do not avoid ideas because they overlap with previous work. Any overlap is flagged to Andy, who has the final say on whether and how it is used. The README carries no prior-work statement until Andy decides what it should say. Whether to take legal advice on past employment contracts is Andy's call; Claude is not a lawyer.
+**Decided (5 Oct):** we build the best engineering solution and do not avoid ideas because they overlap with previous work. Any overlap is flagged to Andy, who has the final say on whether and how it is used. *Revised 30 Oct (Andy):* the flag applies to an idea that may overlap with Andy's previous employment, as CLAUDE.md says, so a suspected overlap is enough. The README carries no prior-work statement until Andy decides what it should say. Whether to take legal advice on past employment contracts is Andy's call; Claude is not a lawyer.
 
 ### D5. Rework the original document [B4] · Open
 
