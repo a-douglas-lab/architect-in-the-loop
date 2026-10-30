@@ -699,7 +699,7 @@ The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (
 
 **Decided (20 Oct): the adversarial reviewer runs on every documentation PR now, by hand,** to [REVIEW.md](REVIEW.md), ahead of Step 7. It is a subagent with a fresh context that sees the diff and the sources, not the author's reasoning. It never approves: its findings and the author's responses go in the PR description, and Andy decides. *Revised 21 Oct (Andy):* while stages are hand-run, review comes before any push (D7), so findings are recorded on the run's loop card, committed on the branch for Andy's local review, then summarised in the PR. The first run, on batch 1 after it was merged, found 3 High problems the author had missed ([loop card](docs/loops/cards/2026-10-20-adr-batch1-review-run1.md)). Code review joins the policy when there is code.
 
-### D2. Timebox and milestones · Decided (ADR pending)
+### D2. Timebox and milestones · Closed (ADR-018)
 
 **Decided (5 Oct):** no hard deadline. Quality comes first; work continues beyond the nominal one-week date, and we see where we end up. Milestones are defined by the evidence they produce, so each phase leaves something publishable ([roadmap.md](roadmap.md)). Sizing at the time: about five to seven weeks for the full scope.
 
@@ -707,7 +707,7 @@ The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (
 
 Public repo, short video of a recorded run, and a one-command deploy. Decide what the video shows (likely one outcome in depth plus the scoreboard across all ten; rung 5, where the capability extends itself, is a strong candidate) and its length.
 
-### D4. Prior-work IP check · Decided (ADR pending)
+### D4. Prior-work IP check · Closed (ADR-018)
 
 **Decided (5 Oct):** we build the best engineering solution and do not avoid ideas because they overlap with previous work. Any overlap is flagged to Andy, who has the final say on whether and how it is used. The README carries no prior-work statement until Andy decides what it should say. Whether to take legal advice on past employment contracts is Andy's call; Claude is not a lawyer.
 
