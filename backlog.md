@@ -375,10 +375,11 @@ The decided part is recorded in [ADR-009](docs/adr/ADR-009-spec-kit-workflow.md)
 - **Community extension policy:** community extensions and presets are third-party code that the Spec Kit maintainers do not review. None is installed without a source review, a pinned version and an ADR.
 - **Spec persistence: flow-forward, anchored on decisions.** Each feature folder in `specs/` is a fixed historical record; new requirements get a new folder. What must stay true lives in the ADRs and the constitution, enforced by deterministic checks. This is our answer to the criticism that Spec Kit is spec-first but not spec-anchored: the system is anchored on decisions, not on specs kept current by hand.
 
-**Decided (1 Nov, Andy):** the constitution is thin. Principles point to ADRs without restating them; every plan cites the constraints that apply; the six hard rules are quoted word for word; the index (ID, title, scope, no version) is generated. Agents should load Constraints sections, opening a full ADR only when they need its reasoning. The constitution adds no rules of its own, and a conflict with an ADR is a decision gap. Recorded in [ADR-009](docs/adr/ADR-009-spec-kit-workflow.md) (v2).
+**Decided (1 Nov, Andy):** the constitution is thin. Principles point to ADRs without restating them; every plan cites the constraints that apply; the six hard rules are quoted word for word; the index (ID, title, scope, no version) is generated. Agents should load Constraints sections, opening a full ADR only when they need its reasoning. The constitution adds no rules of its own, and a conflict with an ADR is a decision gap. CLAUDE.md hard rule 2 now reads "In eShop, build only development outcomes by hand". Recorded in [ADR-009](docs/adr/ADR-009-spec-kit-workflow.md) (v2).
 
 **Open:**
 
+- When the eShop fork gets its own constitution. This one covers this repository only, so fork plans won't load it, and the hard-rule safety net doesn't reach eShop work until then. P9 says the constitution stays system-wide; reconcile that.
 - Whether the capability also produces Spec Kit artefacts for changes to the subject system (the second layer; with A1 and T4). Spec Kit will be initialised separately in the eShop fork for subject-side specs (P3).
 
 ### T2. Decision records · Closed (ADR-000) · Gate
@@ -426,7 +427,7 @@ How ADRs are stored, selected, referenced by agents and kept current, including 
 | Mature eShop | 117 | 38 | 204k | 28k | 70k | 13k | 5k |
 | Large estate, 30 domains | 520 | 95 | 908k | 123k | 182k | 39k | 8k |
 
-The model has no pass or fail test. Against an assumed 200,000-token window, loading every full ADR passes it at about 117 ADRs. Each steward's own context stays small, but stewards aren't cheaper in total: across every touched domain they cost about the same as or more than index plus relevant constraints. So this isn't evidence for T7's per-domain decision. The figures assume one combined index; in practice this repo's index stays small because subject ADRs live in the fork, and the fork's would need splitting by domain at large sizes. The relevant sets may be too low: 12 ADRs carry the `project` tag, so "scope applies" read literally selects far more.
+The model has no pass or fail test. Against an assumed 200,000-token window, loading every full ADR passes it at about 115 ADRs. Each steward's own context stays small, but stewards aren't cheaper in total: across every touched domain they cost about the same as or more than index plus relevant constraints. So this isn't evidence for T7's per-domain decision. The figures assume one combined index; in practice this repo's index stays small because subject ADRs live in the fork, and the fork's would need splitting by domain at large sizes. The relevant sets may be too low: 12 ADRs carry the `project` tag, so "scope applies" read literally selects far more.
 
 **The limits that matter more than context:**
 
@@ -435,7 +436,7 @@ The model has no pass or fail test. Against an assumed 200,000-token window, loa
 3. **Enforcement.** On 1 Nov, before ADR-009 v2, 2 of 161 active constraints were enforced. If constraints grow faster than checks, ADRs become prose again.
 4. **Human attention.** ADR acceptance is human, so ADR volume is review volume.
 
-**Parallel problems (1 Nov).** Where constraints live is a retrieval problem, and tool discovery and progressive disclosure solve the same one. Checked in their docs: skills keep descriptions in context and load bodies on invocation, or by a `paths` pattern; MCP tool search keeps tool names in context and loads definitions on search; path-scoped rules in `.claude/rules/` load when matching files are touched; adrkit selects decisions deterministically, by an `affects` glob or a `@adr` marker, with no embeddings. Its Spec Kit adapter requires Spec Kit below 1.1.0, so its design is worth borrowing, not the tool as it stands.
+**Parallel problems (1 Nov).** Where constraints live is a retrieval problem, and tool discovery and progressive disclosure solve the same one. Checked in their docs: skills keep descriptions in context and load bodies on invocation, or by a `paths` pattern; MCP tool search keeps tool names in context and loads definitions on search; path-scoped rules in `.claude/rules/` load when matching files are touched; adrkit selects decisions deterministically, by an `affects` glob or a `@adr` marker, with no embeddings. Its design is worth borrowing; installing it would need a source review and an ADR (ADR-009@v2 C4, C5).
 
 **Four routes, by kind of rule (proposed):**
 
@@ -446,11 +447,13 @@ The model has no pass or fail test. Against an assumed 200,000-token window, loa
 | Applies to a known area | Loaded by domain or path | A deterministic match |
 | Judgement | Selected at plan time, then graded | The model |
 
-**Spike:** on DEV-1 to DEV-3, compare model-selected ADRs with deterministic matching on an `affects` field, and measure recall. Paths don't exist at specify and plan, so test impact-set domains mapping to ADRs (with T7). For the fork, test generating ADR constraints into path-scoped rules. Nothing here has been measured for ADRs yet.
+**Spike:** on DEV-1 to DEV-3, compare model-selected ADRs with deterministic matching on an `affects` field, and measure recall. Paths don't exist at specify and plan, so test impact-set domains mapping to ADRs (with T7). Nothing here has been measured for ADRs yet.
+
+**A further idea, not part of the spike:** generate ADR constraints into path-scoped rules in the fork, so a domain's constraints load when an agent touches its code.
 
 **Prior art to review (found 8 Oct, Spec Kit community catalogue):**
 
-- *adrkit* (github.com/mbeacom/adrkit, Apache-2.0): pulls the decisions governing a piece of work into agent context, checks plans against them, and drafts ADRs from plans. Close to our selection and checking ideas; state what we add beyond it. Its Spec Kit adapter requires Spec Kit below 1.1.0.
+- *adrkit* (github.com/mbeacom/adrkit, Apache-2.0): pulls the decisions governing a piece of work into agent context, checks plans against them, and drafts ADRs from plans. Close to our selection and checking ideas; state what we add beyond it. Its Spec Kit extension is pinned to Spec Kit `>=0.13.0,<1.2.0` (checked 1 Nov; an earlier note said below 1.1.0), so v1.1.2 is in range. Installing it would need a source review and an ADR (ADR-009@v2 C4, C5).
 - *arch-governance* (github.com/ashbrener/spec-kit-arch-governance, MIT): citation slots linking specs to ADRs, with a read-only, fail-closed validator. Also relevant to Q1.
 
 ### T7. From outcome to impacted domains [B2] · Partly decided · Gate · Deep research
@@ -625,6 +628,27 @@ No single tool covers every kind of rule. This item maps each rule type to a mec
 | Infrastructure and deployment | No public endpoints except the storefront | OPA/Rego, IaC policy tools | |
 | Judgement residue | Trade-off explanation is clear to a merchant | Runtime and evaluation graders (A2) | Only what no deterministic check can cover |
 
+**A second axis: where in the flow a rule is checked (proposed 1 Nov).** The table above maps rule types to tools. T6's four routes cover how a rule reaches an agent. Neither says at which points it is validated.
+
+| Point | Mechanism | Can it be bypassed? | Today |
+| --- | --- | --- | --- |
+| Before work | Context loading (T6) | Yes, advisory | Designed |
+| Plan | Constitution Check, `analyze` | Partly: `analyze` is optional | Never run |
+| Edit | Claude Code hooks | Yes: scripts can get past them | Planned, Step 7 |
+| Commit | Pre-commit hook | Yes: `--no-verify` | Not planned yet |
+| Pull request | CI as a required check | No, once required | **No CI exists** |
+| Review | Adversarial reviewer and Andy | No, while Andy merges | Running |
+| Merge | Branch rulesets | No | Partial: no pull-request rule yet |
+
+Proposed principles:
+
+1. **One rule, one definition, checked at many points,** so the layers can't disagree (compare *gates*, D1).
+2. **Check as early as is cheap.** Hooks give an agent the fastest feedback.
+3. **The last layer must be one that can't be bypassed.** Early layers are for speed, late ones for assurance. A hook alone isn't a control.
+4. **Not every rule needs every layer.** Each rule's enforcement entry names the points that check it.
+
+**Gap this exposes:** ADR-011 treats hooks as the control, yet no CI exists, so no planned hook check has an unbypassable backstop. Step 7 needs CI and required checks as well as hooks.
+
 **Open:** does CUE earn its learning curve over JSON Schema plus OPA for the proposal and policy rows? Is NetArchTest or ArchUnitNET better maintained and more expressive today? Can the Aspire app model be checked reliably in tests?
 
 Output: the enforcement section of each baseline ADR (the ADR template, T2, defines the field), plus the published "share of ADR clauses enforced deterministically" metric.
@@ -721,7 +745,7 @@ The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (
 - The autonomy levels (0 to 4) and the readiness criteria in docs/loops are a first draft. Refine them after the first DEV-1 runs.
 - Where the skill eval sets live and how they are run (with A5 and Q2).
 - Whether low-risk stages (tasks, analyze) need a lighter loop card.
-- **Research skill: look for parallel problems first (proposed by Andy, 1 Nov).** Widen the planned research-spike skill into a discernment step in the flow: describe the problem; research or ideate on prior art, including the same problem solved under a different name in other fields; understand those results; then solve it with the prior art, or innovatively where it falls short. It came from asking whether ADR placement is the same problem as tool discovery, which reframed T6. Andy's working name is a "taste or discernment" skill. Build in Step 7.
+- **Research skill: look for parallel problems first (proposed by Andy, 1 Nov).** A discernment step in the flow, which may extend the planned research-spike skill: describe the problem; research or ideate on prior art, including the same problem solved under a different name in other fields; understand those results; then solve it with the prior art, or innovatively where it falls short. It came from asking whether ADR placement is the same problem as tool discovery, which reframed T6. Andy's working name is a "taste or discernment" skill. Build in Step 7.
 
 **Decided (20 Oct, revised 21 Oct): file access is an allowlist,** switched on and tested with the other D1 hooks in Step 7.
 

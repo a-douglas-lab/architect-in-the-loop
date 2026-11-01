@@ -70,13 +70,17 @@ enforcement:
     ref: null
     state: planned
   - constraint: C15
-    mechanism: ADR validator, comparing the quoted hard rules with CLAUDE.md; review for restated constraints
+    mechanism: review
     ref: null
-    state: planned
+    state: manual
   - constraint: C16
     mechanism: review
     ref: null
     state: manual
+  - constraint: C17
+    mechanism: ADR validator, comparing the quoted hard rules with CLAUDE.md
+    ref: null
+    state: planned
 backlog: [T1, T6]
 ---
 
@@ -88,7 +92,7 @@ The project needs one workflow for turning a request into a specified, planned, 
 
 This ADR covers building this project. Whether the capability also produces Spec Kit artefacts for changes to the subject system is open (T1).
 
-Spec Kit loads the constitution at eight stages. `plan` builds a Constitution Check from it, and `analyze` treats the constitution as non-negotiable: any conflict with its MUST statements is CRITICAL and requires the plan to change. So a paraphrased rule in the constitution beats the ADR it summarises, and `analyze` never reads ADRs themselves. A model of ADR counts (T6) estimates that loading every full ADR passes an assumed 200,000-token window at about 117 ADRs, while an index plus the relevant Constraints sections costs about 13,000 tokens at that size. Those figures rest on assumed ADR counts and a rough token estimate.
+Spec Kit loads the constitution at nine stages. `plan` builds a Constitution Check from it, and `analyze` and `converge` treat it as non-negotiable: a conflict is automatically CRITICAL and requires the spec, plan or tasks to change. So a paraphrased rule in the constitution beats the ADR it summarises, and `analyze` never reads ADRs themselves. A model of ADR counts (T6) estimates that loading every full ADR passes an assumed 200,000-token window at about 115 ADRs, while an index plus the relevant Constraints sections costs about 13,000 tokens at that size. Those figures rest on assumed ADR counts and a rough token estimate.
 
 ## Decision
 
@@ -104,11 +108,11 @@ Spec Kit loads the constitution at eight stages. `plan` builds a Constitution Ch
 
 **Spec persistence: flow-forward, anchored on decisions.** Each feature folder in `specs/` is a fixed historical record; new requirements get a new folder. What must stay true lives in the ADRs and the constitution, enforced by deterministic checks. This is our answer to the "spec-first but not spec-anchored" criticism: the system is anchored on decisions, not on specs kept current by hand.
 
-**How ADRs connect to the constitution (v2).** The constitution is thin. It holds six principles that point to ADRs without restating them, the two citing rules, the six hard rules quoted word for word, and an index of ADRs. Every plan lists the ADRs that apply and cites their constraints, so the plan carries the rules forward. `analyze` sees those citations, not the ADR text, and doesn't check that they are complete or honoured. Agents load an ADR's Constraints section, and open the full ADR only when they need the reasoning. The index holds ID, title and scope, no version, and is generated from the ADRs' front matter, so revising an ADR leaves it alone unless the title or scope changes. It sits inside the constitution because `plan` loads that file automatically.
+**How ADRs connect to the constitution (v2).** The constitution is thin. It holds six principles that point to ADRs without restating them, the two citing rules, the six hard rules quoted word for word, and an index of ADRs. Every plan lists the ADRs that apply and cites their constraints, so the plan carries the rules forward. `analyze` sees those citations, not the ADR text, and doesn't check that they are complete or honoured. Agents load an ADR's Constraints section, and open the full ADR only when they need the reasoning. The index holds ID, title and scope, no version, and is generated from the ADRs' front matter, so revising an ADR leaves it alone unless the title or scope changes. ADR titles state the decision, so the title replaces the "one-line decision" in the original Step 6 brief. The index sits inside the constitution because `plan` loads that file automatically.
 
 **The constitution adds no rules of its own.** Every principle cites its source. No ADR constraint is restated. If the constitution and an ADR disagree, neither wins automatically: it is a decision gap for the architecture coordinator.
 
-**Amendments** are approved by the architecture coordinator, and versioned as Spec Kit requires: MAJOR for a principle removed or redefined, MINOR for one added or materially expanded, PATCH for wording or a regenerated index.
+**Amendments** are approved by the architecture coordinator, and versioned under Spec Kit's semantic versioning rules (the `speckit-constitution` skill).
 
 Which ADRs "apply" is still a judgement. How to select them better is T6's question.
 
@@ -128,8 +132,9 @@ Which ADRs "apply" is still a judgement. How to select them better is T6's quest
 - **C12:** A conflict between the constitution and an ADR MUST be treated as a decision gap for the architecture coordinator.
 - **C13:** Every plan MUST cite the constraints that apply, as `ADR-nnn@vN Cn`.
 - **C14:** The index MUST be generated from the ADRs' front matter.
-- **C15:** The constitution MUST NOT restate ADR constraints. Its only rules are C8, C13 and the hard rules, quoted word for word from CLAUDE.md.
-- **C16:** Constitution amendments MUST be approved by the architecture coordinator, and versioned as this ADR describes.
+- **C15:** The constitution MUST NOT restate ADR constraints. Its only rules are C8, C13 and the hard rules.
+- **C16:** Constitution amendments MUST be approved by the architecture coordinator, and versioned under Spec Kit's semantic versioning rules.
+- **C17:** The constitution MUST quote the hard rules word for word from CLAUDE.md.
 
 ## Consequences
 
@@ -144,7 +149,9 @@ Harder:
 - Pinning means missing Spec Kit fixes until an upgrade is reviewed.
 - Principles point to ADRs without versions, so ADR revisions don't touch them. The constitution's own citations of this ADR do go stale when it is revised; a PATCH amendment fixes them.
 - Choosing the right ADRs is still a judgement until T6 settles selection. A missed ADR is silently not applied, and `analyze` won't notice: it sees citations, not ADR text.
-- Rule breaches that a plan doesn't cite stay invisible to `analyze`, except for the hard rules.
+- Rule breaches that a plan doesn't cite stay invisible to `analyze`. It may catch hard-rule breaches, because the constitution requires plans to comply with them, but that is unproven: `analyze` extracts MUST and SHOULD statements, and the rules themselves say "never" and "don't".
+- The hard rules keep two of the problems that sank the 22-rule draft, on a smaller scale. Rules 2, 5 and 6 overlap ADR-005 and ADR-004, and where they overlap `analyze` would side with the hard rule, so C12 doesn't hold there. Rules 1 and 3 describe conduct a plan can't show, so a false CRITICAL is possible. They are accepted because they are bright lines, quoted, and rarely change.
+- This constitution covers this repository only. Plans in the eShop fork won't load it, so the hard-rule safety net doesn't reach eShop work until the fork has its own. When that happens is open (T1).
 - A plan template's Complexity Tracking table can record "justified" violations, while project ADRs allow no exceptions (ADR-000@v3 C13). The first real plan should test how this behaves.
 - A generated index needs a generator, which doesn't exist yet in the repository.
 
@@ -175,6 +182,11 @@ Harder:
 - For: the spec always describes the system.
 - Against: specs drift unless someone keeps them current by hand, and the drift is silent.
 
+### Do nothing: leave the constitution as Spec Kit's blank template (added when writing v2)
+
+- For: no work.
+- Against: `plan` and `analyze` would have nothing to check, and no route to the ADRs.
+
 ### Naive: load every full ADR into every stage (added when writing v2)
 
 - For: nothing can be missed.
@@ -203,7 +215,12 @@ Harder:
 ### Thin, pointing to ADRs, with no hard rules (weighed 1 Nov)
 
 - For: smallest, with no drift.
-- Against: predicted to miss a bright-line breach, such as multi-tenancy, unless a plan happens to cite ADR-004.
+- Against: predicted to miss a bright-line breach, such as a plan needing a custom coding agent, unless it happens to cite ADR-004.
+
+### Thin, pointing to ADRs, plus the six hard rules (chosen for v2)
+
+- For: no ADR paraphrased, no drift from ADR revisions, and the bright lines stay visible.
+- Against: the limits listed under Consequences.
 
 ### Spec Kit core, pinned, flow-forward specs anchored on ADRs (chosen)
 
@@ -214,9 +231,9 @@ T1 also records three extensions as deferred, not rejected: *Brownfield Bootstra
 
 ## Enforcement
 
-C2 is checked by the bootstrap scripts, which compare the installed CLI's version with the pin and exit with code 2 on a mismatch. Nothing runs them as a gate yet (no CI, no hook), so the state is manual. C4 is a planned CI check, once it is confirmed how Spec Kit records installed presets and extensions. C6 needs a rule for when a feature folder becomes fixed (for example, when its feature is merged) before a check can enforce it; until then it is held by review. C8 and C13 are held by the plan's Constitution Check, which no plan has exercised yet; the comparison of options is predicted from Spec Kit's skill text, not observed. C10, C14 and C15 are planned for the ADR validator; today's index was generated by a throwaway script. The rest rely on review.
+C2 is checked by the bootstrap scripts, which compare the installed CLI's version with the pin and exit with code 2 on a mismatch. Nothing runs them as a gate yet (no CI, no hook), so the state is manual. C4 is a planned CI check, once it is confirmed how Spec Kit records installed presets and extensions. C6 needs a rule for when a feature folder becomes fixed (for example, when its feature is merged) before a check can enforce it; until then it is held by review. C8 and C13 are held by the plan's Constitution Check, which no plan has exercised yet; the comparison of options is predicted from Spec Kit's skill text, not observed. C13's "that apply" has no test yet, and review can't see what an agent loaded (C9). C10, C14 and C17 are planned for the ADR validator; today's index was generated by a throwaway script. The rest rely on review.
 
 ## History
 
 - **v1** · 2026-10-21 · accepted · Andy Douglas: first version, recording T1's decided part (5 and 8 Oct).
-- **v2** · 2026-11-01 · revision · approved by Andy Douglas in chat: closes T1's open question on how ADRs connect to the constitution. A thin constitution: pointers to ADRs, citing rules for plans, the hard rules word for word, a generated index, constraints-only loading, no automatic winner in a conflict, and amendments approved by Andy (C8 to C16).
+- **v2** · 2026-11-01 · revision · approved by Andy Douglas in chat: closes T1's open question on how ADRs connect to the constitution. A thin constitution: pointers to ADRs, citing rules for plans, the hard rules word for word, a generated index, constraints-first loading, no automatic winner in a conflict, and amendments approved by Andy (C8 to C17). CLAUDE.md hard rule 2 reworded to "In eShop, build only development outcomes by hand".

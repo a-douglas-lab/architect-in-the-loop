@@ -92,5 +92,5 @@ Also confirmed (backlog P7):
 - [roadmap.md](roadmap.md): the order for closing the backlog.
 - [architecture-sketch.md](docs/architecture/architecture-sketch.md): the capability's contexts, flow and walkthroughs.
 - [development-outcomes.md](docs/outcomes/development-outcomes.md): DEV-1 to DEV-3, for the Ordering exemplar.
-- [Constitution](.specify/memory/constitution.md): principles and the ADR index.
+- [Constitution](.specify/memory/constitution.md): principles, the hard rules and the ADR index.
 - [ADRs](docs/adr/): decisions recorded so far, starting with the format (ADR-000).

@@ -1,6 +1,6 @@
 # Architect in the Loop Constitution
 
-This constitution covers this repository. It points to the rules; it doesn't restate them. Constraints apply as written in their ADR (ADR-009@v2 C15). If this file and an ADR disagree, that is a decision gap for the architecture coordinator (ADR-009@v2 C12).
+This constitution covers this repository. It points to the rules; it doesn't restate them. How it relates to the ADRs is set out in ADR-009.
 
 ## Core Principles
 
@@ -33,7 +33,7 @@ See ADR-004.
 
 ## Hard Rules
 
-Quoted word for word from CLAUDE.md (ADR-009@v2 C15). A plan that breaks one of these is CRITICAL.
+Every plan MUST comply with these rules, quoted word for word from CLAUDE.md (ADR-009@v2 C17).
 
 1. **Never access the private evaluation repository.** It holds the held-out evaluation outcomes, hidden tests and labels. Never clone it into this repo or a worktree, and never ask for its contents.
 2. **In eShop, build only development outcomes by hand.** DEV-1 to DEV-3, centred on the Ordering exemplar, each changing only the areas listed for it in development-outcomes.md (ADR-005). Don't add eShop features beyond an approved spec.
@@ -74,6 +74,6 @@ See ADR-009 for the workflow and how specs relate to ADRs.
 
 ## Governance
 
-Amendments and versioning follow ADR-009@v2 C16.
+Amendments and versioning follow ADR-009@v2 C16. Compliance is checked at each plan's Constitution Check and by review (ADR-009).
 
 **Version**: 1.0.0 | **Ratified**: 2026-11-01 | **Last Amended**: 2026-11-01
