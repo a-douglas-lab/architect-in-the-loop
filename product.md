@@ -14,6 +14,8 @@ Working title: Architect in the Loop. The product name is parked (backlog P1).
 
 **Where it sits.** Published agentic delivery loops, such as Anthropic's AI-native SDLC playbook (reviewed 20 Oct 2026, backlog A1), take a request through intent, spec, plan, build, test and deploy, with organisational policy applied as generic skills. They don't work out which domains a change touches, which decisions govern it, or when those decisions conflict or are missing. That governance layer is what this capability adds.
 
+**Autonomy.** Full autonomy is a stretch goal, not a promise. The capability is exercised with the architecture coordinator in the loop first. As use cases and features are added, we may find that full autonomy is impossible or ineffective, and the repo will say so. Nothing is claimed beyond what the evidence supports.
+
 **How it improves.** Every claim starts as a stated direction, not a promise. Anything we need to know is tried, measured, reviewed and adapted, then the cycle repeats. Where we can't measure something (for example real-world value, without users), the repo says so rather than claiming it.
 
 **Why this repo exists.** This is a portfolio project, built in the open to demonstrate system design, engineering judgement and strategic thinking for early-stage CTO, Chief Architect and Head of Platform roles. It is not a live service with real customers and does not claim to be. It is production-grade in its engineering and reasoning, so an interviewer can inspect, run and question any part of it.
@@ -90,5 +92,5 @@ Also confirmed (backlog P7):
 - [roadmap.md](roadmap.md): the order for closing the backlog.
 - [architecture-sketch.md](docs/architecture/architecture-sketch.md): the capability's contexts, flow and walkthroughs.
 - [development-outcomes.md](docs/outcomes/development-outcomes.md): DEV-1 to DEV-3, for the Ordering exemplar.
-- Constitution: to follow in Phase 1, using the Spec Kit workflow (backlog T1).
-- ADRs: to follow, starting with the ADR template (backlog T2).
+- [Constitution](.specify/memory/constitution.md): principles and the ADR index.
+- [ADRs](docs/adr/): every decision, starting with the format (ADR-000).

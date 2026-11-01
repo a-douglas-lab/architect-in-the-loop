@@ -100,7 +100,7 @@ Proposed principle: **human involvement scales with risk.** Two points are alway
 
 Rung 5 is the most interesting: the capability extends itself. Accepting a domain charter adds a context to the subject knowledge and a new steward to the stewardship context. That is worth showing in the video.
 
-**Framing (proposed 5 Oct):** the ladder maps onto the published "in, on and out of the loop" model for architects working with AI. Rungs 1 and 2: the architect is *on* the loop (notified, can intervene). Rungs 3 to 5 and every negative path: *in* the loop (decides). Nothing is fully *out* of the loop, because merges and ADR acceptance are always human. A recognised model makes the approval design easy to explain.
+**Framing (proposed 5 Oct):** the ladder maps onto the published "in, on and out of the loop" model for architects working with AI. Rungs 1 and 2: the architect is *on* the loop (notified, can intervene). Rungs 3 to 5 and every negative path: *in* the loop (decides). Nothing is fully *out* of the loop, because merges and ADR acceptance are always human. (Updated 1 Nov: that holds for now. Full autonomy is a stretch goal, product.md.) A recognised model makes the approval design easy to explain.
 
 ## Typed handoffs (first list)
 

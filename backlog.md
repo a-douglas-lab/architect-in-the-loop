@@ -2,7 +2,7 @@
 
 > **Public version.** Evaluation outcomes, their labels, hidden examples and anything deliberately left in eShop for evaluation are held in the private evaluation repository. Where they were discussed, this file points there instead.
 
-Status: v0.2 · updated 30 Oct 2026
+Status: v0.2 · updated 1 Nov 2026
 
 Every open question and every decision so far, with its status. This file is the source of truth for what is decided. **Gate rule (8 Oct):** an item marked **Gate** must close before the [roadmap](roadmap.md) phase that depends on it starts. Each item closes with a short ADR recording the decision, the options considered and the evidence. Items carried over from the original capabilities document keep their old ID in brackets.
 
@@ -218,8 +218,11 @@ The end-to-end design of the capability: its components and agent roles, how wor
 - **The arbiter resolves conflicts between stewards, applying recorded ADR precedence only;** anything else is a decision gap for the coordinator (G5).
 - **Implementation flow:** stewards plan; an implementer (a coding agent) builds from the plan.
 
+**Decided (1 Nov, Andy): full autonomy is the eventual goal, as a stretch goal.** The path runs through exercising the capability with the architecture coordinator in the loop. As use cases and features are added, it may prove impossible or ineffective. Nothing is claimed beyond the evidence, and P1's "doesn't overclaim autonomy" still applies.
+
 **Open:**
 
+- **How autonomy rises: escalations become rules (proposed 1 Nov).** Log every escalation and its cause. When the same kind recurs, the coordinator decides once and it becomes a rule or precedence, which the system then applies. Autonomy grows because a human turns decisions into rules, not because the agent starts deciding. `product.md` already measures human interventions per outcome. DEV-1 to DEV-3 plus ten evaluation outcomes are too few samples to automate a class with confidence: this project can demonstrate the mechanism, not prove the numbers.
 - **Roles from strategic domain-driven design.** The subject system's bounded contexts shape the stewards; the capability's own context map (nine contexts in the sketch) decides which roles exist and which are LLM-driven or deterministic. Confirm the context map, including whether Evidence is its own context and where risk scoring lives.
 - **Human approval points.** The sketch's use-case ladder proposes them, scaled by risk. Confirm. Include which rule applies when a security defect is in touched code (ADR-016@v1 C9: fixed with a test and flagged) and also needed first (ADR-015@v1 S9: approval if it changes behaviour).
 - **Typed handoff limits.** A schema guarantees a message's shape, not the quality of the reasoning inside its text fields; those fields still need the runtime grader. Decide how schemas are versioned and where they are validated.
@@ -372,9 +375,10 @@ The decided part is recorded in [ADR-009](docs/adr/ADR-009-spec-kit-workflow.md)
 - **Community extension policy:** community extensions and presets are third-party code that the Spec Kit maintainers do not review. None is installed without a source review, a pinned version and an ADR.
 - **Spec persistence: flow-forward, anchored on decisions.** Each feature folder in `specs/` is a fixed historical record; new requirements get a new folder. What must stay true lives in the ADRs and the constitution, enforced by deterministic checks. This is our answer to the criticism that Spec Kit is spec-first but not spec-anchored: the system is anchored on decisions, not on specs kept current by hand.
 
+**Decided (1 Nov, Andy):** ADRs connect to the constitution through principles that cite their sources, a generated index (ID, title, scope, no version), and a rule that every plan cites the constraints that apply. Agents load Constraints sections, not full ADRs. The constitution adds no rules of its own, and a conflict with an ADR is a decision gap. Recorded in [ADR-009](docs/adr/ADR-009-spec-kit-workflow.md) (v2).
+
 **Open:**
 
-- How ADRs and the constitution's ADR index connect to Spec Kit's constitution (Phase 1, Step 6).
 - Whether the capability also produces Spec Kit artefacts for changes to the subject system (the second layer; with A1 and T4). Spec Kit will be initialised separately in the eShop fork for subject-side specs (P3).
 
 ### T2. Decision records · Closed (ADR-000) · Gate
@@ -413,6 +417,23 @@ Q1 treats enforcement as a map of rule types to mechanisms rather than a single 
 ### T6. ADR strategy across the system [B1] · Open
 
 How ADRs are stored, selected, referenced by agents and kept current, including the personas, nine use cases and evaluation criteria in the original document. The progressive-disclosure approach remains a hypothesis. Depends on T1, T2 and Q1.
+
+**Scaling model (1 Nov).** Measured on 19 ADRs: 162 constraints; about 1,750 tokens per full ADR and about 240 per Constraints section, estimated at 4 characters a token. ADR counts and relevant sets below are assumptions, not measurements.
+
+| Scenario | ADRs | Relevant | All full | All constraints | Index + relevant full | Index + relevant constraints | One domain steward |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Phase 2 baseline | 52 | 17 | 91k | 12k | 31k | 6k | 3k |
+| Mature eShop | 117 | 38 | 204k | 28k | 70k | 13k | 5k |
+| Large estate, 30 domains | 520 | 95 | 908k | 123k | 182k | 39k | 8k |
+
+Loading everything fails first; per-domain stewards hold up best, which is evidence for T7's per-domain decision, still to be tested. This repo's index stays small because subject ADRs live in the fork. The fork's index would need splitting by domain at large sizes.
+
+**The limits that matter more than context:**
+
+1. **Selection recall.** A missed ADR is silently not applied. Index titles and scope tags may not be enough. Not yet measured.
+2. **Conflict detection.** All-pairs comparison reaches 6,786 pairs at 117 ADRs and 134,940 at 520. It needs filtering by scope, or machine-checkable constraints (Q1).
+3. **Enforcement.** Today 2 of 161 active constraints are enforced. If constraints grow faster than checks, ADRs become prose again.
+4. **Human attention.** ADR acceptance is human, so ADR volume is review volume.
 
 **Prior art to review (found 8 Oct, Spec Kit community catalogue):**
 
