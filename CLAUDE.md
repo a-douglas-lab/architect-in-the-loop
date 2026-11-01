@@ -30,6 +30,7 @@ Thesis: deterministic where possible, probabilistic where necessary, measured ev
 - **Every decision becomes an ADR.** When a backlog item closes, write the ADR and update the item's status in backlog.md.
 - **Research method** (backlog.md, top): problem and criteria; options including the naive one and "do nothing"; a spike where evidence is needed; decision as an ADR. Depth follows value: deep for differentiating items, a sensible default for commodity ones.
 - **Try, measure, review, adapt.** No claim without a measurement; where something can't be measured, say so.
+- **Test behaviour before a PR.** A capability, skill, hook or constitution change opens no PR until its behaviour has been tested, with expected results written first (ADR-012).
 - **Dogfood the product's disciplines:** deterministic checks gate changes; keep the Co-Authored-By trailer on AI-authored commits so the project's own delivery metrics can be published.
 - **Prior work:** if an idea may overlap with Andy's previous employment, flag it to him; he decides.
 - **Writing:** plain British English, short sentences, no hype.

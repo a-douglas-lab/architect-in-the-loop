@@ -32,7 +32,7 @@ Two further markers may follow the status: **Gate** (see the rule above) and **D
 | Solution architecture | A1–A5 |
 | Tools and methods | T1–T9 |
 | Evaluation | E1–E6 |
-| Quality enforcement | Q1–Q5 |
+| Quality enforcement | Q1–Q6 |
 | Delivery | D1–D8 |
 
 ---
@@ -447,6 +447,8 @@ The model has no pass or fail test. Against an assumed 200,000-token window, loa
 | Applies to a known area | Loaded by domain or path | A deterministic match |
 | Judgement | Selected at plan time, then graded | The model |
 
+**First evidence (1 Nov, [tests/constitution/results.md](tests/constitution/results.md)).** One `plan` run on a small export feature selected 14 of 19 ADRs and took about 101,000 tokens, so the relevant sets above are probably too low, and over-selection looks likelier than a miss. `analyze` caught a blatant breach of an uncited ADR from its index title in 6 of 6 runs, so titles do real work; a subtle breach is untested. One feature and one plan run is a very small sample.
+
 **Spike:** on DEV-1 to DEV-3, compare model-selected ADRs with deterministic matching on an `affects` field, and measure recall. Paths don't exist at specify and plan, so test impact-set domains mapping to ADRs (with T7). Nothing here has been measured for ADRs yet.
 
 **A further idea, not part of the spike:** generate ADR constraints into path-scoped rules in the fork, so a domain's constraints load when an agent touches its code.
@@ -647,11 +649,11 @@ Proposed principles:
 3. **The last layer must be one that can't be bypassed.** Early layers are for speed, late ones for assurance. A hook alone isn't a control.
 4. **Not every rule needs every layer.** Each rule's enforcement entry names the points that check it.
 
-**Gap this exposes:** ADR-011 treats hooks as the control, yet no CI exists, so no planned hook check has an unbypassable backstop. Step 7 needs CI and required checks as well as hooks.
+**Gap this exposes:** ADR-011 treats hooks as the control, yet no CI exists, so no planned hook check has an unbypassable backstop. Step 7 needs CI and required checks as well as hooks. The outcomes that close this are Q6.
 
 **Open:** does CUE earn its learning curve over JSON Schema plus OPA for the proposal and policy rows? Is NetArchTest or ArchUnitNET better maintained and more expressive today? Can the Aspire app model be checked reliably in tests?
 
-Output: the enforcement section of each baseline ADR (the ADR template, T2, defines the field), plus the published "share of ADR clauses enforced deterministically" metric.
+Output: the enforcement section of each baseline ADR (the ADR template, T2, defines the field), plus the published "share of ADR clauses enforced deterministically" metric. Q1 closes when every rule type has a mechanism and each mechanism has a layer. A mechanism counts only once it has been tested blocking a violation (Q6, ADR-012@v2 C10).
 
 ### Q2. Quality layer tooling · Open
 
@@ -708,6 +710,27 @@ Candidate sources, each seeing only part of the picture:
 - **Lifecycle.** Flags become debt if never removed. Give each flag an owner and an expiry, like exceptions (G12), and propose a removal outcome once it has been fully on for a set period.
 - **Link to P8:** whether experiments are in scope or only on/off release.
 
+### Q6. Validation layers: every rule has a check that can't be bypassed · Open · Gate
+
+Added 1 Nov. Q1's second axis says where in the flow a rule is checked. This item is the delivery of it, built in Step 7. Under ADR-012@v2 C10, each outcome needs expected results written first, and tests that show it blocking as well as passing.
+
+| ID | Outcome | Done when |
+| --- | --- | --- |
+| VL-1 | One rule has one definition, whichever layer runs it | Changing a rule in one place changes its result at every layer that runs it, shown on one rule |
+| VL-2 | Plans are checked against the constitution | `tests/constitution/` runs on every constitution change, and each fixture matches in all three runs. Started: 15 of 21 runs match; the expected results for f5 and f6 need reviewing, and subtle breaches need fixtures |
+| VL-3 | Agents get fast feedback as they edit | Each hook in ADR-011 has a test showing it blocks a bad action and allows a good one, including a write outside the allowlist and a write to an acceptance test path during implement |
+| VL-4 | Reads outside the allowlist are refused | `blockReadsOutsideWorkingDirectories` is on in user settings, a test read outside is refused, and Claude's own housekeeping still works |
+| VL-5 | Mistakes are caught before they are committed | A pre-commit hook runs the same rules, and a commit that breaks one is refused. Whether this layer earns its cost is to decide while building it |
+| VL-6 | CI can't be skipped | CI exists and runs the same rules on every pull request as a required check. A deliberately failing pull request can't merge |
+| VL-7 | Bypassing an early layer changes nothing | A change committed with `--no-verify`, and one made by a script that a hook can't see, are both caught at CI |
+| VL-8 | Nothing reaches `main` except through the gate | Both repositories' rulesets require a pull request and passing checks (Andy adds these), and a direct push to `main` is refused |
+| VL-9 | The ADR format is checked | A validator enforces ADR-000's mechanical constraints, the constitution's index, and the quoted hard rules, with a test showing each failure caught |
+| VL-10 | Coverage is visible | Each ADR's enforcement entries name the layers that check it, and a report gives the share of constraints enforced deterministically, and the share with a check that can't be bypassed |
+
+**Proposed principles** are under Q1. **Not in scope:** the OS sandbox, which needs WSL2 (D1). Without it, a script can get past every local layer, which is why VL-6 and VL-7 matter.
+
+**Open:** the order of the outcomes in Step 7; whether VL-5 is needed once VL-3 and VL-6 exist; what CI runs on, given Windows and the eShop stack.
+
 ---
 
 ## Delivery
@@ -735,7 +758,7 @@ The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (
 
 **Decided (20 Oct), from a review of Anthropic's [AI-native SDLC playbook](https://claude.com/resources/articles/the-ai-native-sdlc-playbook):** Spec Kit stays the engine; the playbook supplies the loop around it (who acts at each stage, what each stage measures, how autonomy is granted).
 
-- **A hook blocks writes to acceptance test paths during implement.** Hard rule 3 becomes a deterministic control, not just an instruction in CLAUDE.md. Review *gates* (above) first.
+- **A hook blocks writes to acceptance test paths during implement.** Hard rule 3 becomes a deterministic control, not just an instruction in CLAUDE.md. Review *gates* (above) first. Done when Q6's VL-3 passes.
 - **The adversarial reviewer works to a written policy, `REVIEW.md`:** findings ranked by severity, nits capped. Without a policy its output can't be compared across runs. *Revised 20 Oct (Andy):* documentation PRs get four passes now (fidelity, facts, constraints, honest enforcement). The playbook's three code passes (bugs, security, compliance with spec and plan) are added when there is code.
 - **Each skill gets a small regression eval set,** re-run whenever the skill, CLAUDE.md or a hook changes. Configuration is treated as code.
 - **Each delivery stage is run by hand before it is automated, and each run is recorded on a loop card** ([docs/loops/](docs/loops/README.md)). A stage's autonomy is raised one level at a time, only when its cards meet the readiness criteria. The cards also give each stage a leading and a lagging indicator, which feeds the delivery metrics above.
@@ -755,6 +778,8 @@ The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (
 - **Limit:** shell commands aren't refused the same way, and none of these controls contain a script that opens files itself (Python, Node). Only the OS-level sandbox does. It runs on macOS, Linux and WSL2, not native Windows (Claude Code's sandboxing documentation). Whether to move to WSL2 is open.
 
 **Open:** the exact `additionalDirectories` list, settled while testing; whether the write hook also checks paths named in shell commands; which paths count as protected (the 5 Oct hook "blocking writes to protected paths" has no list).
+
+**Decided (1 Nov, Andy): behaviour is tested before a PR.** No capability, skill, hook or constitution change opens a PR until its behaviour has been tested, with expected results written first. Recorded in [ADR-012](docs/adr/ADR-012-independent-checks-and-staged-autonomy.md) (v2, C10). The first example is [tests/constitution/](tests/constitution/README.md).
 
 **Decided (20 Oct): the adversarial reviewer runs on every documentation PR now, by hand,** to [REVIEW.md](REVIEW.md), ahead of Step 7. It is a subagent with a fresh context that sees the diff and the sources, not the author's reasoning. It never approves: its findings and the author's responses go in the PR description, and Andy decides. *Revised 21 Oct (Andy):* while stages are hand-run, review comes before any push (D7), so findings are recorded on the run's loop card, committed on the branch for Andy's local review, then summarised in the PR. The first run, on batch 1 after it was merged, found 3 High problems the author had missed ([loop card](docs/loops/cards/2026-10-20-adr-batch1-review-run1.md)). Code review joins the policy when there is code.
 

@@ -108,7 +108,7 @@ Spec Kit loads the constitution at nine stages. `plan` builds a Constitution Che
 
 **Spec persistence: flow-forward, anchored on decisions.** Each feature folder in `specs/` is a fixed historical record; new requirements get a new folder. What must stay true lives in the ADRs and the constitution, enforced by deterministic checks. This is our answer to the "spec-first but not spec-anchored" criticism: the system is anchored on decisions, not on specs kept current by hand.
 
-**How ADRs connect to the constitution (v2).** The constitution is thin. It holds six principles that point to ADRs without restating them, the two citing rules, the six hard rules quoted word for word, and an index of ADRs. Every plan lists the ADRs that apply and cites their constraints, so the plan carries the rules forward. `analyze` sees those citations, not the ADR text, and doesn't check that they are complete or honoured. Agents load an ADR's Constraints section, and open the full ADR only when they need the reasoning. The index holds ID, title and scope, no version, and is generated from the ADRs' front matter, so revising an ADR leaves it alone unless the title or scope changes. ADR titles state the decision, so the title replaces the "one-line decision" in the original Step 6 brief. The index sits inside the constitution because `plan` loads that file automatically.
+**How ADRs connect to the constitution (v2).** The constitution is thin. It holds six principles that point to ADRs without restating them, the two citing rules, the six hard rules quoted word for word, and an index of ADRs. Every plan lists the ADRs that apply and cites their constraints, so the plan carries the rules forward. `analyze` sees those citations and the index, not the ADR text, so it checks citations for form only. Agents load an ADR's Constraints section, and open the full ADR only when they need the reasoning. The index holds ID, title and scope, no version, and is generated from the ADRs' front matter, so revising an ADR leaves it alone unless the title or scope changes. ADR titles state the decision, so the title replaces the "one-line decision" in the original Step 6 brief. The index sits inside the constitution because `plan` loads that file automatically.
 
 **The constitution adds no rules of its own.** Every principle cites its source. No ADR constraint is restated. If the constitution and an ADR disagree, neither wins automatically: it is a decision gap for the architecture coordinator.
 
@@ -148,11 +148,11 @@ Harder:
 - Knowing what is true now means reading ADRs and the constitution, not the latest spec. That only works if the ADRs are complete and enforced.
 - Pinning means missing Spec Kit fixes until an upgrade is reviewed.
 - Principles point to ADRs without versions, so ADR revisions don't touch them. The constitution's own citations of this ADR do go stale when it is revised; a PATCH amendment fixes them.
-- Choosing the right ADRs is still a judgement until T6 settles selection. A missed ADR is silently not applied, and `analyze` won't notice: it sees citations, not ADR text.
-- Rule breaches that a plan doesn't cite stay invisible to `analyze`. It may catch hard-rule breaches, because the constitution requires plans to comply with them, but that is unproven: `analyze` extracts MUST and SHOULD statements, and the rules themselves say "never" and "don't".
-- The hard rules keep two of the problems that sank the 22-rule draft, on a smaller scale. Rules 2, 5 and 6 overlap ADR-005 and ADR-004, and where they overlap `analyze` would side with the hard rule, so C12 doesn't hold there. Rules 1 and 3 describe conduct a plan can't show, so a false CRITICAL is possible. They are accepted because they are bright lines, quoted, and rarely change.
+- Choosing the right ADRs is still a judgement until T6 settles selection. The one `plan` run tested selected 14 of 19 ADRs for a small export feature, so over-selection is the likelier fault. A wrong but well-formed citation won't be noticed: `analyze` doesn't read ADRs.
+- Tested behaviour ([tests/constitution/results.md](../../tests/constitution/results.md)): over 21 `analyze` runs, the citing rules and two hard rules were caught every time, with no false alarm on compliant work. A blatant breach of an uncited ADR was also caught, from its index title and a principle's heading. So titles and headings act as rules: that helped, but a loose one could produce a CRITICAL with no constraint behind it. Whether a subtle breach, invisible from a title, is caught is untested.
+- The hard rules keep two of the problems that sank the 22-rule draft, on a smaller scale. Rules 2, 5 and 6 overlap ADR-005 and ADR-004, and where they overlap `analyze` would side with the hard rule, so C12 doesn't hold there. Rules 1 and 3 describe conduct a plan can't show; no false CRITICAL appeared in the six runs on compliant work. They are accepted because they are bright lines, quoted, and rarely change.
 - This constitution covers this repository only. Plans in the eShop fork won't load it, so the hard-rule safety net doesn't reach eShop work until the fork has its own. When that happens is open (T1).
-- A plan template's Complexity Tracking table can record "justified" violations, while project ADRs allow no exceptions (ADR-000@v3 C13). The first real plan should test how this behaves.
+- A plan template's Complexity Tracking table can record "justified" violations, while project ADRs allow no exceptions (ADR-000@v3 C13). This is untested: the table stayed empty in the plan run.
 - A generated index needs a generator, which doesn't exist yet in the repository.
 
 ## Alternatives
@@ -215,7 +215,7 @@ Harder:
 ### Thin, pointing to ADRs, with no hard rules (weighed 1 Nov)
 
 - For: smallest, with no drift.
-- Against: predicted to miss a bright-line breach, such as a plan needing a custom coding agent, unless it happens to cite ADR-004.
+- Against: predicted to miss a bright-line breach. Not tested separately: the hard rules were in place for every test run.
 
 ### Thin, pointing to ADRs, plus the six hard rules (chosen for v2)
 
@@ -231,7 +231,7 @@ T1 also records three extensions as deferred, not rejected: *Brownfield Bootstra
 
 ## Enforcement
 
-C2 is checked by the bootstrap scripts, which compare the installed CLI's version with the pin and exit with code 2 on a mismatch. Nothing runs them as a gate yet (no CI, no hook), so the state is manual. C4 is a planned CI check, once it is confirmed how Spec Kit records installed presets and extensions. C6 needs a rule for when a feature folder becomes fixed (for example, when its feature is merged) before a check can enforce it; until then it is held by review. C8 and C13 are held by the plan's Constitution Check, which no plan has exercised yet; the comparison of options is predicted from Spec Kit's skill text, not observed. C13's "that apply" has no test yet, and review can't see what an agent loaded (C9). C10, C14 and C17 are planned for the ADR validator; today's index was generated by a throwaway script. The rest rely on review.
+C2 is checked by the bootstrap scripts, which compare the installed CLI's version with the pin and exit with code 2 on a mismatch. Nothing runs them as a gate yet (no CI, no hook), so the state is manual. C4 is a planned CI check, once it is confirmed how Spec Kit records installed presets and extensions. C6 needs a rule for when a feature folder becomes fixed (for example, when its feature is merged) before a check can enforce it; until then it is held by review. C8 and C13 are held by the plan's Constitution Check, and `tests/constitution/` tests them against `analyze` and `plan`. It is a model following instructions, so its results are evidence, not enforcement. The comparison of rejected options is predicted from Spec Kit's skill text, not observed. C13's "that apply" has no deterministic test yet, and review can't see what an agent loaded (C9). C10, C14 and C17 are planned for the ADR validator; today's index was generated by a throwaway script. The rest rely on review.
 
 ## History
 

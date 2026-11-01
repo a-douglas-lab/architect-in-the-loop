@@ -1,9 +1,9 @@
 ---
 id: ADR-012
-version: 1
+version: 2
 title: Agent work is checked independently, and autonomy is raised in stages
 status: accepted
-date: 2026-10-21
+date: 2026-11-01
 decision-makers: [Andy Douglas]
 scope: [project, concern:delivery]
 precedence:
@@ -49,6 +49,10 @@ enforcement:
     mechanism: review when a stage's autonomy is raised
     ref: null
     state: manual
+  - constraint: C10
+    mechanism: review; the first example is tests/constitution/
+    ref: tests/constitution
+    state: manual
 backlog: [D1, D8]
 ---
 
@@ -68,6 +72,8 @@ Spec Kit stays the engine; the playbook supplies the loop around it: who acts at
 
 **Configuration is treated as code.** Each skill gets a small regression eval set, re-run whenever the skill, CLAUDE.md or a hook changes. Where the eval sets live and how they run is open (A5, Q2).
 
+**Behaviour is tested before a PR (v2).** No capability, skill, hook or constitution change opens a PR until its behaviour has been tested, with the expected results written first. Reading a change isn't enough: review checks what it says, and tests check what it does.
+
 ## Constraints
 
 - **C1:** Each delivery stage MUST be run by hand, and each run recorded on a loop card, before the stage is automated.
@@ -79,6 +85,7 @@ Spec Kit stays the engine; the playbook supplies the loop around it: who acts at
 - **C7:** Once there is code, code PRs MUST also be reviewed for bugs, security, and compliance with the spec and plan.
 - **C8:** Each skill MUST have a regression eval set, re-run whenever the skill, CLAUDE.md or a hook changes.
 - **C9:** A stage MUST NOT be raised above autonomy level 2 until ADR-013 has been revised as its C7 requires.
+- **C10:** A capability, skill, hook or constitution change MUST NOT open a PR until its behaviour has been tested, with the expected results written first.
 
 ## Consequences
 
@@ -119,8 +126,9 @@ The naive option (an LLM with everything in its prompt) is the "agent checks its
 
 ## Enforcement
 
-Everything here relies on review today. The loop cards and REVIEW.md are the records review works from. C8 becomes a triggered eval run once the eval sets exist (planned).
+Everything here relies on review today. The loop cards and REVIEW.md are the records review works from. C8 becomes a triggered eval run once the eval sets exist (planned). C10 is held by review; a PR description should link its test results.
 
 ## History
 
 - **v1** · 2026-10-21 · accepted · Andy Douglas: first version, recording D1's decisions of 20 Oct (loop cards, REVIEW.md, skill evals, the adversarial reviewer). Rulings by Andy on 21 Oct: the reviewer decisions belong in this ADR; findings go on the loop card for his local review, then into the PR; no stage goes above level 2 until ADR-013 is revised (C9).
+- **v2** · 2026-11-01 · revision · approved by Andy Douglas in chat: C10 added, the standing rule that behaviour is tested, with expected results written first, before a PR opens.
