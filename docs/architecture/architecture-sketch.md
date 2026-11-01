@@ -85,7 +85,7 @@ flowchart LR
 
 ## Human approval points from the use-case ladder
 
-Proposed principle: **human involvement scales with risk.** Two points are always human: accepting an ADR, and merging to main. Everything else depends on the rung.
+Proposed principle: **human involvement scales with risk.** Two points are always human for now: accepting an ADR, and merging to main. Everything else depends on the rung.
 
 | Rung | Example | Confirm impact set | Approve plan | Other human decisions | Merge review |
 | --- | --- | --- | --- | --- | --- |

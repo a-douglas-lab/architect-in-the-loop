@@ -1,6 +1,6 @@
 # Product
 
-Status: draft v0.2 · 8 Oct 2026 · owner: Andy Douglas
+Status: draft v0.2 · updated 1 Nov 2026 · owner: Andy Douglas
 
 This file defines what we are building, for whom, and why. It sits at the repo root and is the reference every spec, ADR and the constitution trace back to. It deliberately avoids *how*: tools and methods are decided in [backlog.md](backlog.md) and recorded as ADRs.
 
@@ -93,4 +93,4 @@ Also confirmed (backlog P7):
 - [architecture-sketch.md](docs/architecture/architecture-sketch.md): the capability's contexts, flow and walkthroughs.
 - [development-outcomes.md](docs/outcomes/development-outcomes.md): DEV-1 to DEV-3, for the Ordering exemplar.
 - [Constitution](.specify/memory/constitution.md): principles and the ADR index.
-- [ADRs](docs/adr/): every decision, starting with the format (ADR-000).
+- [ADRs](docs/adr/): decisions recorded so far, starting with the format (ADR-000).

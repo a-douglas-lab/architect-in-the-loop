@@ -49,7 +49,7 @@ The level at which a stage was run. It follows the playbook's advice to grant au
 | 3 | Gated | The agent produces the artefact; deterministic checks gate it; a human samples |
 | 4 | Autonomous | The agent produces the artefact and passes deterministic gates; no human in the loop for this stage |
 
-Most stages start at 1. Level 4 is for stages with no risk-bearing decision in them; the capability's approval points (architecture sketch) stay at 3 or below for now. Full autonomy is a stretch goal (product.md), reached only by evidence.
+Most stages start at 1. Level 4 is for stages with no risk-bearing decision in them; the capability's approval points (architecture sketch) stay at 3 or below for now. Full autonomy is a stretch goal (product.md).
 
 ## Ready to automate
 

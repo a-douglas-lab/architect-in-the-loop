@@ -1,62 +1,52 @@
 # Architect in the Loop Constitution
 
-This constitution covers this repository: the capability and how it is built. The eShop fork will have its own in Phase 2, indexing the subject's ADRs. This one summarises rules recorded elsewhere and adds none of its own (ADR-009@v2 C11). If it disagrees with an ADR, that is a decision gap for the architecture coordinator (ADR-009@v2 C12).
+This constitution covers this repository. It points to the rules; it doesn't restate them. Constraints apply as written in their ADR (ADR-009@v2 C15). If this file and an ADR disagree, that is a decision gap for the architecture coordinator (ADR-009@v2 C12).
 
 ## Core Principles
 
 ### I. Deterministic Where Possible, Probabilistic Where Necessary, Measured Everywhere
 
-- Deterministic checks MUST gate changes wherever a rule can be checked mechanically (ADR-011@v1).
-- A claim MUST be backed by a measurement. Where something can't be measured, the repo MUST say so (CLAUDE.md, "How we work").
-
-Rationale: this is the project's thesis, in product.md.
+The project's thesis. See product.md, CLAUDE.md ("How we work"), ADR-011 and ADR-012.
 
 ### II. Decisions Are Recorded and Honoured
 
-- When a backlog item closes, its decision MUST be recorded as an ADR (ADR-010@v1 C4).
-- Every plan MUST list the ADRs whose scope applies, and cite their constraints as `ADR-nnn@vN Cn` (ADR-009@v2 C8).
-- Where no decision exists, or decisions conflict, the work MUST stop and ask the architecture coordinator (CLAUDE.md, "How we work"; product.md, success criterion 4).
+See ADR-000, ADR-009 and ADR-010.
 
-Rationale: nothing else proves a decision was applied.
+- Every plan MUST list the ADRs that apply (ADR-009@v2 C8).
+- Every plan MUST cite the constraints that apply, as `ADR-nnn@vN Cn` (ADR-009@v2 C13).
 
 ### III. The Evaluation Stays Held Out
 
-- The private evaluation repository MUST NOT be accessed, or cloned into this repository or a worktree (hard rule 1; ADR-011@v1 C7).
-- Acceptance tests MUST NOT be edited to make them pass; a failing test is reported (hard rule 3).
-- Evaluation outcomes MUST NOT be built by hand (ADR-005@v3 C2).
-
-Rationale: the results mean nothing if the capability was tuned on them.
+See ADR-006, ADR-007 and ADR-008.
 
 ### IV. The Subject Stays Pinned and Separate
 
-- Work built by hand MUST come from a development outcome, and each outcome MUST change only its listed areas (hard rule 2; ADR-005@v3 C1, C6).
-- eShop MUST be included only as the submodule `subject/eshop`, and its files MUST NOT be copied into this repository (hard rule 4; ADR-002@v2 C1, C3).
-- Subject-side artefacts MUST live in the fork (ADR-003@v2 C1).
-- Existing eShop behaviour MUST NOT change outside an approved spec; defects noticed are reported (hard rule 5; ADR-005@v3 C3).
-- The capability's code and prompts MUST NOT contain subject-domain knowledge (ADR-001@v2 C1).
-
-Rationale: keeps the "used, not built" boundary, and keeps the capability portable.
+See ADR-001, ADR-002, ADR-003 and ADR-005.
 
 ### V. Agent Work Is Checked Independently, and Humans Approve
 
-- Every documentation PR MUST be reviewed by the adversarial reviewer to REVIEW.md, which MUST NOT approve a change (ADR-012@v1 C4, C6).
-- Each delivery stage MUST be run by hand, and recorded on a loop card, before it is automated (ADR-012@v1 C1).
-- A stage's autonomy MUST be raised one level at a time, and not above level 2 until ADR-013 is revised (ADR-012@v1 C2, C9).
-- While stages are hand-run, a change MUST NOT be pushed until Andy has reviewed it, and MUST reach `main` only through a pull request he merges (ADR-013@v1 C5, C6).
-
-Rationale: autonomy is earned with evidence, one stage at a time. Full autonomy is a stretch goal, which may prove impossible or ineffective (product.md).
+See ADR-011, ADR-012 and ADR-013. Full autonomy is a stretch goal (product.md).
 
 ### VI. Scope Holds
 
-- Shopper-facing AI features, multi-tenancy and a custom coding agent MUST NOT be built (hard rule 6; ADR-004@v2 C1, C2, C3).
+See ADR-004.
 
-Rationale: effort stays on governance, impact analysis and evaluation.
+## Hard Rules
+
+Quoted word for word from CLAUDE.md (ADR-009@v2 C15). A plan that breaks one of these is CRITICAL.
+
+1. **Never access the private evaluation repository.** It holds the held-out evaluation outcomes, hidden tests and labels. Never clone it into this repo or a worktree, and never ask for its contents.
+2. **In eShop, build only development outcomes by hand.** DEV-1 to DEV-3, centred on the Ordering exemplar, each changing only the areas listed for it in development-outcomes.md (ADR-005). Don't add eShop features beyond an approved spec.
+3. **Never edit acceptance tests to make them pass.** A failing test is reported, not changed.
+4. **eShop stays pinned and separate.** It lives only in the fork, a-douglas-lab/eShop, included as the submodule `subject/eshop`; never copy eShop files into this repo. Subject-side artefacts (contract, subject ADRs, domain specs, development acceptance tests) are committed in the fork. Its optional AI features stay switched off.
+5. **Don't change existing eShop behaviour outside an approved spec,** including defects you notice. Report them to Andy instead; some existing behaviour is deliberately left as it is.
+6. **No shopper-facing AI features, no multi-tenancy, no custom coding agent** (agreed non-goals).
 
 ## ADR Index
 
-Generated from the ADRs' front matter (ADR-009@v2 C10). Open an ADR for its current version and constraints.
+Generated from the ADRs' front matter (ADR-009@v2 C10, C14). Open an ADR for its current version and constraints.
 
-| ADR | Decision | Scope |
+| ADR | Title | Scope |
 | --- | --- | --- |
 | [ADR-000](../../docs/adr/ADR-000-decision-record-format.md) | Decision records use our own template, extending MADR 4.0.0 | capability, subject, concern:governance |
 | [ADR-001](../../docs/adr/ADR-001-generic-over-subject-knowledge.md) | The capability is generic over subject knowledge and specific to one stack | capability, concern:portability |
@@ -80,15 +70,10 @@ Generated from the ADRs' front matter (ADR-009@v2 C10). Open an ADR for its curr
 
 ## Development Workflow
 
-- Work MUST follow Spec Kit v1.1.2, core only: specify, plan, tasks, implement and converge (ADR-009@v2 C2, C3, C4).
-- Agents SHOULD load an ADR's Constraints section, and open the full ADR only when they need its reasoning (ADR-009@v2 C9).
-- What must stay true MUST live in the ADRs and this constitution, not in specs (ADR-009@v2 C7).
+See ADR-009 for the workflow and how specs relate to ADRs.
 
 ## Governance
 
-- Amendments MUST be approved by the architecture coordinator.
-- A new principle MUST cite its source ADR or hard rule (ADR-009@v2 C11).
-- Versions follow Spec Kit's semantic versioning: MAJOR for a principle removed or redefined, MINOR for one added or materially expanded, PATCH for wording, a refreshed citation or a regenerated index.
-- Compliance is checked at each plan's Constitution Check, and by review.
+Amendments and versioning follow ADR-009@v2 C16.
 
 **Version**: 1.0.0 | **Ratified**: 2026-11-01 | **Last Amended**: 2026-11-01
