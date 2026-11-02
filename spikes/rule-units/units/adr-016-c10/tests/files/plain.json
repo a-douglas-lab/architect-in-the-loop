@@ -1,0 +1,1 @@
+{"findings": [{"rule": "CA1062", "file": "src/Example.cs", "line": 12, "message": "Validate arguments of public methods"}]}

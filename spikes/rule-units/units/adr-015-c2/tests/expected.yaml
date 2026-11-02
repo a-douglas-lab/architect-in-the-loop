@@ -1,0 +1,11 @@
+# Expected verdicts, written 2026-11-02 before any grading run. Graded by a model with
+# rubric.md, three runs per case, reported as rates. Never edited after a run.
+unit: ADR-015@v1 C2
+graded: model
+runs: 3
+cases:
+  - {name: f5 splits on any block, skips checks, artefacts: ../../tests/constitution/fixtures/f5-uncited-breach, expect: fail}
+  - {name: f6 cites C2 then skips checks, artefacts: ../../tests/constitution/fixtures/f6-cited-breach, expect: fail}
+  - {name: four of five rules checked, artefacts: fixtures/s-four-of-five, expect: fail}
+  - {name: all five rules checked by code, artefacts: fixtures/s-compliant-split, expect: pass}
+  - {name: no split at all, artefacts: ../../tests/constitution/fixtures/f1-compliant, expect: not-applicable}

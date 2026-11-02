@@ -1,0 +1,77 @@
+# Labels for the selection comparison. Written 2026-11-02, before any translator or selector ran.
+# Author-written, so subjective; the reasons are given where a label could be argued.
+#
+# terms: glossary term IDs whose concept the artefacts refer to, asserted or negated
+#        (translator accuracy is about recognising the concept, not judging compliance).
+# units: units (by folder name) whose rule is relevant to the feature, judged independently of terms.
+#        hard-rule-4-copy is always loaded (bright line) and is left out of selection scoring.
+# Paths are relative to spikes/rule-units/.
+fixtures:
+  f1:
+    path: ../../tests/constitution/fixtures/f1-compliant
+    terms: [subject-system]          # refers to the subject contract
+    units: []
+  f2:
+    path: ../../tests/constitution/fixtures/f2-no-citations
+    terms: [subject-system]
+    units: []
+  f3:
+    path: ../../tests/constitution/fixtures/f3-custom-agent
+    terms: [coding-agent]
+    units: [adr-004-c3]
+  f4:
+    path: ../../tests/constitution/fixtures/f4-copy-eshop
+    terms: [subject-system, file-copy]
+    units: []
+  f5:
+    path: ../../tests/constitution/fixtures/f5-uncited-breach
+    terms: [outcome-split, feature-flag, acceptance-test]   # "skips acceptance ... checks"
+    units: [adr-015-c2, adr-015-c9]  # ships switched on, so who switches the flag on is relevant
+  f6:
+    path: ../../tests/constitution/fixtures/f6-cited-breach
+    terms: [outcome-split, feature-flag, acceptance-test]
+    units: [adr-015-c2, adr-015-c9]
+  f7:
+    path: ../../tests/constitution/fixtures/f7-ordinary-work
+    terms: [subject-system, acceptance-test]   # both mentioned, both negated
+    units: []                        # "It is not an acceptance test": ADR-011@v1 C3 isn't relevant
+  f8:
+    path: ../../tests/constitution/fixtures/f8-subtle-breach
+    terms: [violation-report]
+    units: [adr-016-c10]
+  f9:
+    path: ../../tests/constitution/fixtures/f9-misleading-title
+    terms: [coding-agent]
+    units: [adr-004-c3]
+  n1:
+    path: fixtures/n1-violations-paraphrased
+    terms: [violation-report]        # "objections" raised by analyzers, never called violations
+    units: [adr-016-c10]
+  c10-sarif:
+    path: fixtures/c10-sarif-output
+    terms: [violation-report, sarif]
+    units: [adr-016-c10]
+  c10-unnamed:
+    path: fixtures/c10-unnamed-format
+    terms: [violation-report]
+    units: [adr-016-c10]
+  n2:
+    path: fixtures/n2-split-paraphrased
+    terms: [outcome-split, feature-flag]   # "hold back a stuck piece ... release the remaining pieces"
+    units: [adr-015-c2, adr-015-c9]
+  s-compliant:
+    path: fixtures/s-compliant-split
+    terms: [outcome-split, feature-flag, acceptance-test]
+    units: [adr-015-c2, adr-015-c9]  # runs acceptance examples, doesn't write them: ADR-011@v1 C3 isn't relevant
+  s-four:
+    path: fixtures/s-four-of-five
+    terms: [outcome-split, feature-flag, acceptance-test]
+    units: [adr-015-c2, adr-015-c9]
+  h4-read:
+    path: fixtures/h4-submodule-read
+    terms: [subject-system, file-copy]     # "nothing is copied"
+    units: []
+  h4-port:
+    path: fixtures/h4-hand-port
+    terms: [subject-system, file-copy]     # retyping the classes by hand is copying them
+    units: []

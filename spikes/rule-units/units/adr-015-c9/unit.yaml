@@ -1,0 +1,10 @@
+citation: ADR-015@v1 C9
+source: docs/adr/ADR-015-outcome-splits-and-deliver-dark.md
+text: Switching a feature flag on MUST be a human decision.
+kind: judgement
+role: decoy
+applies:
+  stages: [plan, analyze, implement]
+  terms_any: [feature-flag]
+check:
+  type: none

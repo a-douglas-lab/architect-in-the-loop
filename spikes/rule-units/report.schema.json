@@ -1,0 +1,27 @@
+{
+  "$comment": "One record per fixture per run. Violations are SARIF-shaped; measurements are not (ADR-016: SARIF covers rule violations only). Early evidence for Q2, not a decision.",
+  "type": "object",
+  "required": ["record_version", "fixture", "stage", "translator", "terms", "selected_units", "findings", "measurements"],
+  "properties": {
+    "record_version": {"type": "string", "enum": ["0.1"]},
+    "fixture": {"type": "string"},
+    "stage": {"type": "string", "enum": ["plan", "analyze", "implement"]},
+    "translator": {"type": "string", "enum": ["alias", "bm25", "model", "baseline-titles"]},
+    "terms": {"type": "array", "items": {"type": "string"}},
+    "selected_units": {"type": "array", "items": {"type": "string"}},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["ruleId", "level", "message"],
+        "properties": {
+          "ruleId": {"type": "string"},
+          "level": {"type": "string", "enum": ["error", "warning", "note"]},
+          "message": {"type": "object", "required": ["text"], "properties": {"text": {"type": "string"}}},
+          "locations": {"type": "array", "items": {"type": "object"}}
+        }
+      }
+    },
+    "measurements": {"type": "object"}
+  }
+}

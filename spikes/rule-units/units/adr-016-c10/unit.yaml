@@ -1,0 +1,16 @@
+citation: ADR-016@v1 C10
+source: docs/adr/ADR-016-improving-legacy-code-the-capability-touches.md
+text: Tools that report rule violations MUST report in SARIF.
+kind: mechanical
+role: unit
+applies:
+  stages: [plan, analyze, implement]
+  terms_any: [violation-report]
+check:
+  type: python
+  file: check.py
+  describes: >-
+    Plan and analyze stages: a finding if the artefacts describe a violation report and name an
+    output format other than SARIF, without naming SARIF. Implement stage: a finding if a
+    violations file is not SARIF, judged by its "$schema" and "version" fields; any SARIF version
+    is accepted and reported, because ADR-016 names none.

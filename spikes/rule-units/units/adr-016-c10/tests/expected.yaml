@@ -1,0 +1,14 @@
+# Expected results, written 2026-11-02 before the check existed. Never edited after a run;
+# a wrong expectation gets a new dated entry. Paths are relative to spikes/rule-units/.
+# expect: finding | none. todo: true marks a case the check is predicted to get wrong
+# (after Semgrep's todoruleid); it is reported, and doesn't fail the run.
+unit: ADR-016@v1 C10
+cases:
+  - {name: f8 names CSV, stage: analyze, artefacts: ../../tests/constitution/fixtures/f8-subtle-breach, expect: finding}
+  - {name: paraphrase names a spreadsheet, stage: analyze, artefacts: fixtures/n1-violations-paraphrased, expect: finding}
+  - {name: SARIF named, stage: analyze, artefacts: fixtures/c10-sarif-output, expect: none}
+  - {name: no violation report at all, stage: analyze, artefacts: ../../tests/constitution/fixtures/f1-compliant, expect: none}
+  - {name: format described but not named, stage: analyze, artefacts: fixtures/c10-unnamed-format, expect: finding, todo: true}
+  - {name: SARIF file, stage: implement, file: units/adr-016-c10/tests/files/findings.sarif, expect: none, version: "2.1.0"}
+  - {name: CSV file, stage: implement, file: units/adr-016-c10/tests/files/findings.csv, expect: finding}
+  - {name: JSON that isn't SARIF, stage: implement, file: units/adr-016-c10/tests/files/plain.json, expect: finding}

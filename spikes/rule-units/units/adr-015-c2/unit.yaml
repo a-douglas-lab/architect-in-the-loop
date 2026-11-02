@@ -1,0 +1,14 @@
+citation: ADR-015@v1 C2
+source: docs/adr/ADR-015-outcome-splits-and-deliver-dark.md
+text: A split MUST NOT be made automatically unless all five rules hold, each checked deterministically.
+kind: judgement
+role: unit
+applies:
+  stages: [plan, analyze]
+  terms_any: [outcome-split]
+check:
+  type: rubric
+  file: rubric.md
+  describes: >-
+    Graded by a model: where the artefacts make a split automatically, all five rules of ADR-015
+    must hold, and each must be checked deterministically. Either condition failing is a finding.

@@ -1,8 +1,8 @@
 # Rule units: problem, criteria and prior art
 
-Status: draft for Andy's review · 2 Nov 2026 · Step 7, item 1 ([brief](../../docs/sessions/2026-11-02-step7-brief.md)); backlog T6, "Rule units"
+Status: v2, reviewed by Andy · 2 Nov 2026 · Step 7, item 1 ([brief](../../docs/sessions/2026-11-02-step7-brief.md)); backlog T6, "Rule units"
 
-This is steps 1 and 2 of the discernment method (backlog D1): the problem, the criteria, and prior art. Nothing has been built. The recommendation at the end needs Andy's go-ahead, and eight questions need his ruling. Reviewed once by the adversarial reviewer ([loop card](../../docs/loops/cards/2026-11-02-rule-units-prior-art-review-run11.md)); the fixes weren't re-reviewed.
+Steps 1 and 2 of the discernment method (backlog D1): the problem, the criteria, and prior art. v1 was reviewed by the adversarial reviewer ([run 11](../../docs/loops/cards/2026-11-02-rule-units-prior-art-review-run11.md)), then by Andy, whose challenges reshaped the spike. v2 adds CUE, BM25, ubiquitous language and SKOS, and replaces v1's eight questions with the shape Andy approved (see the end).
 
 ## Problem
 
@@ -103,37 +103,62 @@ From its README ([github.com/mbeacom/adrkit](https://github.com/mbeacom/adrkit))
 2. **In the tools examined, applicability is declared, not inferred:** Semgrep by `paths`, adrkit by typed `affects` and markers, Claude Code by `paths`. Nothing found selects by the content of a prose plan. That part is ours to design, and it is the part f8 needs.
 3. **Deterministic delivery needs something other than the model to trigger it:** a path match, a hook, or a step in the flow. Skills and tool search on their own leave the choice to the model.
 
-## Recommendation
 
-**Build, borrowing shapes; don't install adrkit.** A unit is a folder in `spikes/rule-units/units/`:
+## Added after Andy's review (v2)
 
-- `unit.yaml`: the citation (`ADR-016@v1 C10`, or `hard rule 4`), the rule text word for word, a link to its source, `kind` (`mechanical`, `judgement` or `bright-line`), and `applies` (stages; scope; `include` and `exclude` globs, after Semgrep; and `terms`, regular expressions over the artefacts' text, the plan-time trigger). The kinds take three of T6's four routes. The fourth, "applies to a known area", is the `include` globs, which matter only once code exists.
-- `check.py` for a mechanical or bright-line unit, or `rubric.md` for a judgement unit.
-- `tests/`: `pass/` and `fail/` fixtures, and `expected.yaml` naming the finding each failing fixture must raise. A `todo` list records known misses, after Semgrep.
-- An `index.yaml` lists every unit's citation, kind and `applies`, generated from the units. It is the always-present part (criterion 7); bodies are read only when selected.
+Andy's challenges, 2 Nov, quoted from chat: "Should CUE schema also be considered as part of the prior art capabilities?"; "if we're doing terms matching, this seems brittle, we'd likely need exact, near match etc. some BM25 like approach?. It feels like we need a compiler/translator to speak a consistent language."; "Feels like we need the concept of ubiquitous language/glossary as domain driven design establishes, to align everything."; "if we adopt the hook, we're relying on the LLM to run it aren't we?"; "we should run a set of tests to validate selection to see which works best, feels like we have selection, validation and reporting issues (which can be acted upon) a distinct process steps."; "i thought reporting in sarif didn't cover all aspects so we needed more than that?"
 
-A small runner in Python (size not estimated): `select(artefacts, stage)` returns units, in a fixed order; `check(unit, artefacts)` returns findings; `test` runs every unit's fixtures and fails on empty, after OPA.
+### CUE
 
-**Honest limit:** `terms` is keyword matching. It is deterministic, but its recall is only as good as the terms. Each unit's tests include a near miss, recorded as a `todo` where the unit doesn't catch it.
+- Types, constraints and values sit in one lattice; validating data means unifying it with a schema, and a conflict is an error. The result doesn't depend on the order of declarations or files ([the logic of CUE](https://cuelang.org/docs/concept/the-logic-of-cue/)). `cue vet` validates JSON, YAML, TOML and text files against CUE schemas, and is silent on success ([cue help vet](https://cuelang.org/docs/reference/command/cue-help-vet/)). That page documents no test runner.
+- **Borrow:** selection as unification. A feature's fact record either satisfies a unit's applicability constraint or doesn't, decided by order-free merging, not by search. Also a candidate for checking structured outputs.
+- **Lacks:** it reads structured data, not prose. It would be a new dependency, a Go binary. The spike writes the same idea in Python; adopting CUE would need its own decision.
 
-**The three units:**
+### BM25 and lexical matching
 
-| Unit | Kind | Check | Fixtures |
+- BM25 ranks documents by term frequency and rarity. It tolerates word order and repetition, but it ranks rather than decides, so it needs a cut-off, and it still works on words: "lint output" doesn't match "rule violations" unless both words are listed. (Standard information-retrieval method; not checked against a single source today.)
+- **Borrow:** a cheap first pass, tested against the same labels as the other translators.
+- **Lacks:** paraphrase. Andy's question, "do we need a different solution?", is answered by the translator below.
+
+### Ubiquitous language (domain-driven design) and SKOS
+
+- Domain-driven design's ubiquitous language is one vocabulary shared by people, documents and code within a bounded context (Evans; not re-checked today). Here it means one glossary that ADR constraints, unit applicability and the translator's output all use.
+- W3C SKOS (a Recommendation, 18 Aug 2009) models such a vocabulary: `skos:prefLabel`, `skos:altLabel`, `skos:hiddenLabel` (labels kept for search, not display), `skos:definition`, `skos:broader` and `skos:narrower`, grouped in a `skos:ConceptScheme`; a resource has "no more than one value of `skos:prefLabel` per language tag" ([SKOS reference](https://www.w3.org/TR/skos-reference/)).
+- **Borrow:** a term has one ID, one preferred label, a definition and aliases. The spike uses plain YAML in that shape, not RDF.
+- **Bounded contexts are required here, not optional.** ADR-001@v2 C1: the capability's code and prompts "MUST NOT contain subject-domain knowledge"; C2: that knowledge comes from the subject's contract. So the spike keeps two glossaries: capability terms, and subject terms (standing in for the contract, which in the real system lives in the fork, ADR-003).
+
+### Reporting
+
+You ruled on 30 Oct that SARIF covers rule violations only, and measurement tools keep their native formats; how outputs reach the capability is open (Q2), with a proposed "small typed evidence record per change" (backlog Q2, Q4). Rubric scores, rates and translator accuracy are measurements, not violations. So the spike emits one typed record per run, with violations in a SARIF-shaped part. It is early evidence for Q2 and decides neither ADR-016 nor Q2.
+
+### Hooks and determinism
+
+Yes: Spec Kit's `before_analyze` hook is instructions in SKILL.md that the agent follows, so the agent decides whether it runs. Two separate questions:
+
+- **Delivery:** does the unit reach the agent? Deterministic only if something outside the model does it: a harness hook, or a script that runs the selector and then starts `analyze`. In the capability, the orchestrator.
+- **Use:** does the agent act on it? Always a model question. The f8 re-run measures this.
+
+## The approved shape
+
+Andy, 2 Nov: "go ahead, glossary in the spike folder for now."
+
+Selection, validation and reporting are distinct steps, each tested on its own:
+
+| Step | Job | Deterministic? | Measured by |
 | --- | --- | --- | --- |
-| ADR-016@v1 C10 | Mechanical | Plan stage: an artefact names a violation output format other than SARIF. Implement stage: a violations file is SARIF, judged by its `$schema` and `version` fields (no version is named in ADR-016; question 7) | f8 (fail); a SARIF variant of f8 (pass); a near miss that describes the format without naming it |
-| ADR-015@v1 C2 | Judgement | Rubric, following C2's two conditions: where the plan splits automatically, all five rules must hold, and each must be checked deterministically. A plan that checks every rule but breaks one fails | f5 and f6 (fail); a compliant split plan (pass); a near miss that checks four of the five rules |
-| Hard rule 4, "never copy eShop files into this repo" clause | Bright line | Plan stage: copying eShop files into this repository. Diff: a file outside `subject/` identical to one in a fake eShop tree kept in the unit's own fixtures, not under `subject/` | f4 (fail); a plan that reads eShop through the submodule (pass); a near miss that vendors one eShop file under another name |
+| Translate | Artefacts → glossary term IDs | Alias lookup and BM25: yes. Constrained model: no, but its output is validated against the glossary | Accuracy against labelled terms per fixture |
+| Select | Terms and stage → units | Yes | Recall and precision against labelled units, compared with a model reading ADR titles (today's behaviour) |
+| Validate | A unit's check or rubric → findings | Mechanical and bright line: yes. Judgement: no | Each unit's pass, fail and near-miss fixtures; rubric verdicts over three runs |
+| Report | Findings and measurements → one typed record | Yes | A schema check on the record |
 
-f5 and f6 were already raised as CRITICAL in 6 of 6 runs, from ADR-015's title, so they test the rubric, not a gap the unit closes. Only the copy clause of hard rule 4 is covered; its other clauses (pinned, fork only, AI features off) are out of the spike. Hard rule 4 rather than hard rule 3, because the parallel track is building the acceptance-test hook for hard rule 3 (ADR-011@v1 C3).
+Then the f8 re-run: the selected units' text (not the check's findings) given to `analyze` by a script outside the model, three times, blind.
 
-## Questions for Andy
+How the rest of v1's questions were settled:
 
-1. **Build or borrow.** Recommended: build, borrowing the shapes above. Alternative: review and install adrkit, which means revising ADR-009 and doesn't solve plan-time selection.
-2. **Plan-time applicability.** Recommended: `terms` over artefact text, plus stage and scope, with recall measured and known misses recorded. Alternative: map impact-set domains to units (T7), which doesn't exist yet.
-3. **What reaches `analyze` in the f8 re-run.** Recommended: the selected units' text (citation, rule word for word, and the check's description), not the deterministic check's findings. Passing findings would only test whether `analyze` repeats them; passing the unit tests whether loading it closes the gap, as the brief asks. The deterministic check is run on f8 separately and reported on its own.
-4. **How the unit reaches `analyze`.** Recommended: the prompt tells the agent to read the selector's output file as well, with no change to the skill. This departs from the README's method ("read only what the skill tells it to"), and the results will say so. Alternatives: a `before_analyze` entry in `.specify/extensions.yml`, which is Spec Kit's own hook point but run by the agent and possibly an extension under ADR-009@v2 C4; or a `UserPromptSubmit` hook adding the units as `additionalContext`, closer to the MCP option but more to build now.
-5. **What counts as a catch, and false alarms.** Recommended: a finding at any severity that names ADR-016@v1 C10 or SARIF, with severity reported separately; `analyze` makes constitution conflicts automatically CRITICAL, and a loaded ADR unit may come out as HIGH. Also recommended: run the selector on f1 to f9. Where it selects nothing, the earlier results stand, since the only change is a prompt line pointing at an empty file (a small confound, stated). Where it selects something unexpected, run that fixture three times as a false-alarm check.
-6. **Judgement units: selected deterministically or by the model?** T6's "Rule units" paragraph and its four-routes table differ. Recommended for the spike: deterministic, by `terms`, so all three units are tested the same way; the four-routes table stays a proposal.
-7. **SARIF version.** ADR-016@v1 C10 says only "SARIF". Recommended: the check accepts any `version` field naming SARIF and reports which, rather than fixing 2.1.0, which no ADR names.
-8. **Where expectations and results live.** `tests/constitution/expected.md` is a protected path (2 Nov). Recommended: the spike keeps its own `expected.md` and `results.md` in `spikes/rule-units/`, and adds `spikes/` to the README's layout table.
+- **Build, borrowing shapes; don't install adrkit:** within "go ahead".
+- **Plan-time applicability:** glossary terms from a tested translator, replacing v1's raw `terms` regular expressions (Andy's challenge on brittleness).
+- **Judgement units:** selected deterministically, like the others, and the selection comparison measures it (Andy: "we should run a set of tests to validate selection").
+- **SARIF version, catch definition, false-alarm control and where results live:** v1's recommendations, applied under "go ahead" and stated in [expected.md](expected.md). Andy can overrule any of them at review; the results would then need a dated re-run.
+- **Not ruled, so left out:** plans declaring their own glossary terms (it would change the plan template), and embeddings (a new dependency).
 
+The three units are unchanged from v1: ADR-016@v1 C10 (mechanical), ADR-015@v1 C2 (judgement, following both of its conditions), and the copy clause of hard rule 4 (bright line, always loaded, as T6's four routes propose for bright lines).

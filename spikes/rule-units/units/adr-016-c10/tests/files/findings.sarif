@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {"driver": {"name": "ExampleAnalyzer"}},
+      "results": [
+        {"ruleId": "CA1062", "level": "warning", "message": {"text": "Validate arguments of public methods"},
+         "locations": [{"physicalLocation": {"artifactLocation": {"uri": "src/Example.cs"}, "region": {"startLine": 12}}}]}
+      ]
+    }
+  ]
+}

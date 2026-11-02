@@ -1,0 +1,10 @@
+citation: ADR-016@v1 C2
+source: docs/adr/ADR-016-improving-legacy-code-the-capability-touches.md
+text: Improvement MUST be limited to the code the change already modifies (files or methods in the diff).
+kind: mechanical
+role: decoy
+applies:
+  stages: [plan, analyze, implement]
+  terms_any: [legacy-improvement]
+check:
+  type: none
