@@ -447,9 +447,9 @@ The model has no pass or fail test. Against an assumed 200,000-token window, loa
 | Applies to a known area | Loaded by domain or path | A deterministic match |
 | Judgement | Selected at plan time, then graded | The model |
 
-**First evidence (1 Nov, [tests/constitution/results.md](tests/constitution/results.md)).** One `plan` run on a small export feature selected 14 of 19 ADRs and took about 101,000 tokens, so the relevant sets above are probably too low, and over-selection looks likelier than a miss. `analyze` caught a blatant breach of an uncited ADR from its index title in 6 of 6 runs, so titles do real work; a subtle breach is untested. One feature and one plan run is a very small sample.
+**First evidence ([tests/constitution/results.md](tests/constitution/results.md)).** One `plan` run on a small export feature listed 14 of this repository's 19 ADRs, for about 101,000 tokens. With no labelled correct set, that shows only that selection can be broad; it says nothing reliable about recall or precision. The table above models whole-system scenarios, so it isn't directly comparable. `analyze` caught a blatant breach of an uncited ADR in 3 of 3 runs, working from its index title and a principle's heading. One feature and one plan run is a very small sample.
 
-**Spike:** on DEV-1 to DEV-3, compare model-selected ADRs with deterministic matching on an `affects` field, and measure recall. Paths don't exist at specify and plan, so test impact-set domains mapping to ADRs (with T7). Nothing here has been measured for ADRs yet.
+**Spike:** on DEV-1 to DEV-3, compare model-selected ADRs with deterministic matching on an `affects` field, and measure recall. Paths don't exist at specify and plan, so test impact-set domains mapping to ADRs (with T7). Selection recall hasn't been measured.
 
 **A further idea, not part of the spike:** generate ADR constraints into path-scoped rules in the fork, so a domain's constraints load when an agent touches its code.
 
@@ -635,7 +635,7 @@ No single tool covers every kind of rule. This item maps each rule type to a mec
 | Point | Mechanism | Can it be bypassed? | Today |
 | --- | --- | --- | --- |
 | Before work | Context loading (T6) | Yes, advisory | Designed |
-| Plan | Constitution Check, `analyze` | Partly: `analyze` is optional | Never run |
+| Plan | Constitution Check, `analyze` | Partly: `analyze` is optional | First tested 1 Nov (`tests/constitution/`) |
 | Edit | Claude Code hooks | Yes: scripts can get past them | Planned, Step 7 |
 | Commit | Pre-commit hook | Yes: `--no-verify` | Not planned yet |
 | Pull request | CI as a required check | No, once required | **No CI exists** |
@@ -653,7 +653,7 @@ Proposed principles:
 
 **Open:** does CUE earn its learning curve over JSON Schema plus OPA for the proposal and policy rows? Is NetArchTest or ArchUnitNET better maintained and more expressive today? Can the Aspire app model be checked reliably in tests?
 
-Output: the enforcement section of each baseline ADR (the ADR template, T2, defines the field), plus the published "share of ADR clauses enforced deterministically" metric. Q1 closes when every rule type has a mechanism and each mechanism has a layer. A mechanism counts only once it has been tested blocking a violation (Q6, ADR-012@v2 C10).
+Output: the enforcement section of each baseline ADR (the ADR template, T2, defines the field), plus the published "share of ADR clauses enforced deterministically" metric. Each mechanism is tested blocking a violation when it is built, in the phase that builds it (*Andy, 2 Nov*; Q6).
 
 ### Q2. Quality layer tooling · Open
 
@@ -710,24 +710,26 @@ Candidate sources, each seeing only part of the picture:
 - **Lifecycle.** Flags become debt if never removed. Give each flag an owner and an expiry, like exceptions (G12), and propose a removal outcome once it has been fully on for a set period.
 - **Link to P8:** whether experiments are in scope or only on/off release.
 
-### Q6. Validation layers: every rule has a check that can't be bypassed · Open · Gate
+### Q6. Validation layers: checks at several points, ending in one that can't be bypassed · Open
 
-Added 1 Nov. Q1's second axis says where in the flow a rule is checked. This item is the delivery of it, built in Step 7. Under ADR-012@v2 C10, each outcome needs expected results written first, and tests that show it blocking as well as passing.
+Added 1 Nov. Q1's second axis says where in the flow a rule is checked. This item delivers the layers that exist for this repository, in Step 7 (*Andy, 2 Nov:* not a Gate; later mechanisms are tested in the phase that builds them). Under ADR-012@v2 C10, each outcome's expected results are written first. Q6 also asks for tests that show each check blocking as well as passing.
+
+Where a final layer that can't be bypassed exists, it is CI plus branch protection, and it only sees committed changes. A script that only reads, for example from outside the allowlist, leaves nothing for CI to see. Only the OS sandbox would stop that, and whether to move to WSL2 is open (D1).
 
 | ID | Outcome | Done when |
 | --- | --- | --- |
 | VL-1 | One rule has one definition, whichever layer runs it | Changing a rule in one place changes its result at every layer that runs it, shown on one rule |
-| VL-2 | Plans are checked against the constitution | `tests/constitution/` runs on every constitution change, and each fixture matches in all three runs. Started: 15 of 21 runs match; the expected results for f5 and f6 need reviewing, and subtle breaches need fixtures |
-| VL-3 | Agents get fast feedback as they edit | Each hook in ADR-011 has a test showing it blocks a bad action and allows a good one, including a write outside the allowlist and a write to an acceptance test path during implement |
-| VL-4 | Reads outside the allowlist are refused | `blockReadsOutsideWorkingDirectories` is on in user settings, a test read outside is refused, and Claude's own housekeeping still works |
-| VL-5 | Mistakes are caught before they are committed | A pre-commit hook runs the same rules, and a commit that breaks one is refused. Whether this layer earns its cost is to decide while building it |
-| VL-6 | CI can't be skipped | CI exists and runs the same rules on every pull request as a required check. A deliberately failing pull request can't merge |
-| VL-7 | Bypassing an early layer changes nothing | A change committed with `--no-verify`, and one made by a script that a hook can't see, are both caught at CI |
+| VL-2 | Plans are checked against the constitution | `tests/constitution/` runs whenever the constitution, CLAUDE.md or the `analyze` and `plan` skills change. Results are reported as catch and false-alarm rates per fixture, as evidence, not a gate (*Andy, 2 Nov*). Expected results are never edited; a wrong one gets a new dated expectation beside it. Started: see [results](tests/constitution/results.md) |
+| VL-3 | Agents get fast feedback as they edit | ADR-011's hooks are tested: the build, format and test hook (C1) runs after an edit, and each blocking hook (C2, C3, C5) refuses a bad write and allows a good one. Covers a write outside the allowlist, and a write to an acceptance test path during implement. C2 needs the list of protected paths first (D1, open) |
+| VL-4 | Reads outside the allowlist are refused | `blockReadsOutsideWorkingDirectories` is on in user settings, a test read outside is refused, and reads of memory, the scratchpad and skills still succeed |
+| VL-5 | Mistakes are caught before they are committed | A pre-commit hook runs the same rules, and a commit that breaks one is refused. Built only if it earns its cost (see Open) |
+| VL-6 | CI can't be skipped | CI in this repository runs the same rules on every pull request as a required check. A deliberately failing pull request can't merge. CI in the fork is a Phase 2 question, under hard rules 2 and 5 |
+| VL-7 | Bypassing an early layer is caught later | A change committed with `--no-verify`, and a change written by a script that a hook can't see, are both caught at CI. Reads leave nothing to catch (see above) |
 | VL-8 | Nothing reaches `main` except through the gate | Both repositories' rulesets require a pull request and passing checks (Andy adds these), and a direct push to `main` is refused |
 | VL-9 | The ADR format is checked | A validator enforces ADR-000's mechanical constraints, the constitution's index, and the quoted hard rules, with a test showing each failure caught |
 | VL-10 | Coverage is visible | Each ADR's enforcement entries name the layers that check it, and a report gives the share of constraints enforced deterministically, and the share with a check that can't be bypassed |
 
-**Proposed principles** are under Q1. **Not in scope:** the OS sandbox, which needs WSL2 (D1). Without it, a script can get past every local layer, which is why VL-6 and VL-7 matter.
+**Proposed principles** are under Q1. **Depends on:** the WSL2 question (D1, open). Without the sandbox, a script can get past every local layer, which is why VL-6 and VL-7 matter.
 
 **Open:** the order of the outcomes in Step 7; whether VL-5 is needed once VL-3 and VL-6 exist; what CI runs on, given Windows and the eShop stack.
 

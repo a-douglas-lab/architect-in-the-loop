@@ -23,7 +23,11 @@ This run checks that the constitution makes Spec Kit behave as ADR-009 intends. 
 
 ## Result
 
-15 of 21 `analyze` runs matched expectation. The six mismatches were f5 and f6, where a breach was caught when a miss was predicted. No false alarms on compliant work. `plan` filled the Constitution Check unprompted, selecting 14 of 19 ADRs.
+Run A: 15 of 21 `analyze` runs matched expectation. The six mismatches were f5 and f6, where blatant breaches were caught when a miss was predicted. No false CRITICAL on compliant work, but all three f1 runs raised one false finding. `plan` filled the Constitution Check unprompted, listing 14 of 19 ADRs.
+
+Run B (2 Nov), after the review and Andy's rulings: f8, a breach no title reveals, was missed 3 of 3 as predicted. f9, a misleading title, matched 1 of 3: ADR-011's title produced a contested CRITICAL in two runs.
+
+Full results: [results.md](../../../tests/constitution/results.md).
 
 ## What the run showed
 
@@ -40,11 +44,14 @@ About 63,000 tokens and under a minute per `analyze` run; about 101,000 tokens a
 
 | Failure | Root cause | Fix | Where the fix landed |
 | --- | --- | --- | --- |
-| Fixture names leaked the answers | Named for the author's convenience | Copied to neutral names for the run | Run procedure only; should go in the README's method |
+| Fixture names leaked the answers | Named for the author's convenience | Copied to neutral names for the run | The README's method |
 | 13 runs lost to an expired login | Long batch, no check before starting | Re-run | Nowhere yet |
+| The first write-up claimed more than the runs showed | Author summarised from memory of the reports | Review run 10 (15 High); rewritten as rates | results.md, ADR-009, backlog |
+
+This card leaves out several template sections, including the leading and lagging indicators ADR-012@v2 C3 asks for. Earlier review cards lack them too. To fix when the stage cards are next revised.
 
 ## Ready to automate?
 
 Not yet. It needs a script that makes the neutral copies, and fixtures for the gaps above. It is a model following instructions, so results are evidence, not a gate.
 
-**Next run changes:** review f5's and f6's expected results; add subtle-breach, wrong-citation and justified-violation fixtures.
+**Next run changes:** add wrong-citation and justified-violation fixtures (Step 7, VL-2); commit prompts and reports; re-run when the constitution, CLAUDE.md or the skills change.

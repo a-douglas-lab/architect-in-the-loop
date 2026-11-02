@@ -1,6 +1,6 @@
 # Roadmap: order for closing the backlog
 
-Status: proposal · updated 20 Oct 2026
+Status: proposal · updated 2 Nov 2026
 
 Ranks the open items in [backlog.md](backlog.md) by what they unblock. Items that are fully decided are not listed. Under the backlog's Gate rule, a Gate item must close before the phase that depends on it starts. Phases overlap where nothing blocks them; with Claude Code, two tracks can run in parallel.
 
@@ -40,7 +40,7 @@ Evidence: product.md, the backlog, outcome validation and the architecture sketc
 | T9 Durable workflow engine | Spike | Core of coordination; judged against walkthroughs W3, W8 and W9 |
 | Q2 Quality layer tools | Commodity | Defaults only (Roslyn and Sonar analyzers, SARIF, Playwright, axe, Stryker.NET) |
 | Q5 Feature flag provider | Commodity | Needed before the exemplar |
-| Q6 Validation layers | Outcomes VL-1 to VL-10, each tested | Every rule needs a check that can't be bypassed; D1's hooks alone don't give that |
+| Q6 Validation layers (this repository's layers) | Outcomes VL-1 to VL-10, each tested | D1's hooks can be bypassed; CI and branch protection give the final layer for committed changes |
 | A5 Runtime rubrics, first drafts | Deep, drafting only | Shapes each agent's typed output; calibration waits for Phase 5 |
 
 Prior-art reading for T7, T6 and A1 (including agentheim) can start here as a second track.

@@ -50,8 +50,8 @@ enforcement:
     ref: null
     state: manual
   - constraint: C10
-    mechanism: review; the first example is tests/constitution/
-    ref: tests/constitution
+    mechanism: review
+    ref: null
     state: manual
 backlog: [D1, D8]
 ---
@@ -126,7 +126,7 @@ The naive option (an LLM with everything in its prompt) is the "agent checks its
 
 ## Enforcement
 
-Everything here relies on review today. The loop cards and REVIEW.md are the records review works from. C8 becomes a triggered eval run once the eval sets exist (planned). C10 is held by review; a PR description should link its test results.
+Everything here relies on review today. The loop cards and REVIEW.md are the records review works from. C8 becomes a triggered eval run once the eval sets exist (planned). C10 is held by review.
 
 ## History
 
