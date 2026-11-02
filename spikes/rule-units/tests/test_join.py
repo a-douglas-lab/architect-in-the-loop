@@ -87,7 +87,8 @@ def test_j6_client_error_falls_back():
 
 
 def test_j6b_client_constructor_error_falls_back(monkeypatch):
-    # Added after the code: a failing constructor (no credentials) must also fall back.
+    # Added after the code, defensively: anthropic 2.3.0 builds a client without credentials and
+    # fails at the request (J6's path), so this mocks a failure the SDK doesn't currently produce.
     from ruleunits import translate_model
 
     def no_credentials():
@@ -123,6 +124,18 @@ def test_j9_rules_text_and_findings_kept_apart():
     context = res["context"]
     assert "Results of deterministic checks" in context
     assert context.index("Results of deterministic checks") > context.index("ADR-016@v1 C10")
+
+
+@pytest.mark.parametrize("rules_len, findings", [(20_000, 1), (100, 500), (20_000, 500)])
+def test_context_never_exceeds_limit(rules_len, findings):
+    # Added after review run 13: the shortening branch had no test.
+    rec = report.make_record("x", "analyze", "alias", [], [], [
+        {"ruleId": "R", "level": "error", "message": {"text": "a finding " * 10}} for _ in range(findings)],
+        {"translator": "alias", "translator_fallback": None, "duration_ms": 0})
+    text = join.context_text(rec, "r" * rules_len)
+    assert len(text) <= join.CONTEXT_LIMIT
+    if findings == 1:
+        assert "Results of deterministic checks" in text
 
 
 # H1 to H5: hook contract

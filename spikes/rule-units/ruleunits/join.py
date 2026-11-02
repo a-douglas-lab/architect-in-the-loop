@@ -68,11 +68,14 @@ def context_text(record: dict, rules: str) -> str:
         results += [f"- {f['ruleId']}: {f['message']['text']}" for f in record["findings"]]
     else:
         results.append("- No findings.")
-    text = "\n".join(head) + rules + "\n".join(results)
+    head_text, tail = "\n".join(head), "\n".join(results)
+    text = head_text + rules + tail
     if len(text) > CONTEXT_LIMIT:
-        # Keep the check results whole; shorten the rules.
-        tail = "\n".join(results)
-        text = "\n".join(head) + rules[: CONTEXT_LIMIT - len("\n".join(head)) - len(tail) - 40] + "\n[rules shortened]\n" + tail
+        # Shorten the rules first, keeping the check results; if the results alone are too long, cut them too.
+        marker = "\n[shortened to fit the 10,000-character limit]\n"
+        room = CONTEXT_LIMIT - len(head_text) - len(tail) - len(marker)
+        text = head_text + rules[: max(room, 0)] + marker + tail
+        text = text[:CONTEXT_LIMIT]
     return text
 
 

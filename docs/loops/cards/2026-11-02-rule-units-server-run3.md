@@ -27,10 +27,11 @@ Builds the step that joins translate, validate, select, check and report, as an 
 
 ## 4. What happened
 
-1. Expected results J1 to J9, H1 to H5, M1 to M4 and L1 to L4 written, with tests for all but L, and committed; the new tests failed.
+1. Expected results J1 to J9, H1 to H5, M1 to M4 and L1 to L4 written, with tests for all but L, and committed; the new tests failed (collection error, as no code existed; output not kept).
 2. `translate_model.py`, `join.py`, `server.py` and `hookfiles.py` written.
 3. pytest: J3 failed as written (below); everything else passed.
 4. Two tests added after the code, both passing: the generated config end to end, and a failing client constructor (J6b).
+5. After review run 13: the context's shortening branch fixed and three tests added for it.
 
 ## 5. Feedback loop
 
@@ -67,7 +68,7 @@ Builds the step that joins translate, validate, select, check and report, as an 
 | --- | --- | --- |
 | Wall time | Not timed | |
 | Tokens / cost | No model calls | |
-| Test run | 49 passed, 3 expected failures, about 10 s | pytest |
+| Test run | 52 passed, 3 expected failures, about 11 s (after review run 13) | pytest |
 | Fallback with no credentials | About 3 s, mostly importing the SDK | `measurements.duration_ms` |
 | Leading indicator | Hook contract tests passing: 5 of 5 | pytest |
 | Lagging indicator | f8 caught through the live hook: not known yet | Fill in after Andy's run |
@@ -77,7 +78,8 @@ Builds the step that joins translate, validate, select, check and report, as an 
 | Failure | Root cause | Fix | Where the fix landed | Recurred on the next run? |
 | --- | --- | --- | --- | --- |
 | J3's test asked for exactly one finding; f4 has two (spec and plan) | The test was stricter than its written expectation, "a finding" | Test corrected to match the expectation, with a comment; recorded in results.md | tests/test_join.py | Fill in on the next card |
-| The client was built outside the `try`, so missing credentials would have raised instead of falling back | Order of statements | Moved inside the `try`; test J6b added for a failing constructor | translate_model.py, tests/test_join.py | Fill in on the next card |
+| Thought the client was built outside the `try`, so missing credentials would raise | Wrong: review run 13 showed anthropic 2.3.0 builds without credentials and fails at the request, already inside the `try` | Kept the move as defensive; J6b's comment says it mocks a failure the SDK doesn't produce | translate_model.py, tests/test_join.py | n/a |
+| The context's shortening could exceed 10,000 characters when findings are long | Untested branch with a negative slice | Fixed; three tests | join.py, tests/test_join.py | Fill in on the next card |
 | "FastMCP" import failed | mcp 2.x renamed it `MCPServer` | Used the 2.x API, after reading the installed package | server.py | n/a |
 
 ## 11. Ready to automate?

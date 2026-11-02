@@ -9,13 +9,14 @@ Phase 1, Foundations. A session started from the Step 7 planning session, workin
 - **Spike built and run** ([results](../../spikes/rule-units/results.md)): a glossary, three units (ADR-016@v1 C10, ADR-015@v1 C2, hard rule 4's copy clause) and four decoys, 17 labelled fixtures, three translators against a title baseline, and the f8 re-run. Expectations committed first. Run card: [analyze with rule units, run 2](../loops/cards/2026-11-02-rule-units-analyze-run2.md).
 - **Delivery recommendation** ([delivery.md](../../spikes/rule-units/delivery.md)).
 - **Review run 12** on the whole spike: 2 High, 5 Medium, 9 Low, 5 nits, all fixed or answered ([card](../loops/cards/2026-11-02-rule-units-review-run12.md)).
-- **Agentic DDD check** at Andy's request (agentic-ddd, Ben Johns's steward agents): neither offers a way to match text to glossary terms; borrowed the vocabulary lock, the term-translation table and event triggers ([prior-art.md](../../spikes/rule-units/prior-art.md)).
-- **The joined step and MCP server built** ([server-expected.md](../../spikes/rule-units/server-expected.md), committed first; [results](../../spikes/rule-units/results.md)): 49 tests pass, including the server over stdio and the generated hook config end to end. Run card: [MCP server, run 3](../loops/cards/2026-11-02-rule-units-server-run3.md).
+- **Agentic DDD check** at Andy's request (agentic-ddd, Ben Johns's steward agents): neither offers a way to match text to glossary terms; borrowed the vocabulary lock, the anti-corruption layer for where subject and capability terms meet, and event triggers ([prior-art.md](../../spikes/rule-units/prior-art.md)).
+- **The joined step and MCP server built** ([server-expected.md](../../spikes/rule-units/server-expected.md), committed first; [results](../../spikes/rule-units/results.md)): 52 tests pass, including the server over stdio and the generated hook config with a simulated hook payload (Claude Code not in the loop). Run card: [MCP server, run 3](../loops/cards/2026-11-02-rule-units-server-run3.md).
+- **Review run 13** on the rulings and the build: 0 High, 3 Medium, 7 Low, 4 nits; all fixed but one nit in a pre-registered file ([card](../loops/cards/2026-11-02-rule-units-review-run13.md)).
 
 ## Decided
 
 - **Andy, 2 Nov:** "go ahead, glossary in the spike folder for now." This approved the reshaped spike: a glossary as the ubiquitous language, a translator to it as its own tested step, and selection, validation and reporting as distinct steps.
-- **Andy, 2 Nov, after the run:** "deterministic judgement-unit selection approved, keep hard rule 4 always loaded, make sure you add the step that joins the parts (MCP server called by a hook/orchestrator), this feels like a roadmap you decided." The "now a step, later a server" staging is dropped.
+- **Andy, 2 Nov, after the run:** "deterministic judgement-unit selection approved, keep hard rule 4 always loaded, make sure you add the step that joins the parts (MCP server called by a hook/orchestrator), this feels like a roadmap you decided." My reading, for Andy to confirm: one recommendation rather than "now a step, later a server", with the server built now. delivery.md is rewritten on that reading.
 - **Andy, build choices:** the Anthropic API translator with an alias fallback; the MCP Python SDK in a spike venv; a live hook run from a spike settings file, which he runs.
 - **Still not ruled,** applied as the author's choices: build rather than install adrkit; SARIF version, what counts as a catch, the f1 control, results kept in the spike folder.
 

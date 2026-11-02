@@ -447,7 +447,7 @@ The model has no pass or fail test. Against an assumed 200,000-token window, loa
 | Bright line | Always loaded | Nothing needed |
 | Mechanically checkable | Not loaded; a check fires, and the violation feeds the repair loop | The check |
 | Applies to a known area | Loaded by domain or path | A deterministic match |
-| Judgement | Selected at plan time, then graded | The model |
+| Judgement | Selected at plan time, then graded | A deterministic match on glossary terms (was "The model"; Andy, 2 Nov, after the rule-unit spike) |
 
 **First evidence ([tests/constitution/results.md](tests/constitution/results.md)).** One `plan` run on a small export feature listed 14 of this repository's 19 ADRs, for about 101,000 tokens. With no labelled correct set, that shows only that selection can be broad; it says nothing reliable about recall or precision. The table above models whole-system scenarios, so it isn't directly comparable. `analyze` caught a blatant breach of an uncited ADR in 3 of 3 runs, working from its index title and a principle's heading. One feature and one plan run is a very small sample.
 
