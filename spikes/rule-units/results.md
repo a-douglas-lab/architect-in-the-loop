@@ -117,16 +117,37 @@ Built after Andy asked for "the step that joins the parts (MCP server called by 
 | H1 to H5, the hook contract | All pass |
 | M1 to M4, the server over stdio, real subprocess, `legacy` and `auto` client modes | All pass |
 | The generated settings and MCP config, end to end (test written after the code) | Pass: the server started from the generated config outside the spike folder, called with the hook's input after `${...}` substitution from a sample `PreToolUse` payload, returned the C10 rule and finding, and logged the call |
-| L1 to L4, the live hook in a Claude Code session | **Not run.** There is no Claude CLI or API key in this environment. Andy runs it ([hook/README.md](hook/README.md)) |
+| L1 to L4, the live hook in a Claude Code session | **All four held, in one run,** after a first run failed on setup. See "The live hook run" below |
 
 pytest: 52 passed, 3 expected failures (the same three predicted misses). Five of the passing tests were written after the code: the generated config end to end; a failing client constructor (J6b), which is defensive, since anthropic 2.3.0 builds a client without credentials and fails at the request instead; and three cases of the 10,000-character limit, added after review run 13 found the shortening branch untested and able to exceed the limit (fixed).
 
 **Misses and deviations:**
 
 - **J3:** the test, as committed in `c7b89cb`, asked for exactly one hard rule 4 finding on f4. There are two, because f4 copies subject files in both spec.md and plan.md. The written expectation, "a finding for hard rule 4", holds, so the test was stricter than the expectation it encoded. I changed the test to match the expectation, with a comment that says so. That is an edit after a run, recorded here.
-- **The model translator against the real API wasn't run.** Its tests use a fake client with recorded outputs (J4 to J7). With no credentials, `auto` falls back to alias, and the record gives the reason: "Could not resolve authentication method". That fallback took about 3 s, mostly importing the SDK. The request's parameter names were checked against the installed SDK's signature, not against the API.
+- **The model translator's tests use a fake client** with recorded outputs (J4 to J7). With no credentials, `auto` falls back to alias, and the record gives the reason: "Could not resolve authentication method". That fallback took about 3 s, mostly importing the SDK. The real API call was first made in the live run below.
 
 **What this changes in the f8 method:** the hook puts the units into the session's context, so the spike's extra prompt line ("read this rules file"), which was a confound, isn't needed. The check descriptions are still in the context, so that confound remains.
+
+### The live hook run
+
+Run on 2 Nov 2026 by the author, not Andy as server-expected.md planned: Andy provided an API key in a file outside the repository, and Claude Code 2.1.316 was installed in a scratch folder and run headless (`claude -p`). Raw material is in [runs/live/](runs/live/): both transcripts, the hook log, the generated settings and MCP config, and the `analyze` report.
+
+**Setup:** the prompt was exactly "Use the speckit-analyze skill on the current feature.", on Claude Opus 5.5, from the repository root, with the generated settings and MCP config (`--strict-mcp-config`). To keep the repository's broad local allow rules (`git push`, `gh pr`) out of an unattended session, the run loaded only user and project settings, offered only Skill, Read, Glob, Grep, Bash and PowerShell, allowed only the prerequisites script as a shell command, and capped spend at $2.
+
+**Run 1 failed on setup** ($0.10, 17 s). Loading only user settings also dropped the project's skills, so the Skill call returned "Unknown skill", and the hook didn't fire (no log line). Two facts came out of it: the Skill tool's input is `{"skill": "speckit-analyze"}`, which confirms the assumed `tool_input.skill`; and the model could see the server's `get_rules` tool and offered to call it, which is review run 13's point that the other tools aren't hidden.
+
+**Run 2** ($0.19 for the session, 58 s; the translator's own API call isn't in that figure):
+
+| # | Expected | Result |
+| --- | --- | --- |
+| L1 | Hook fires once, before the skill; log records `speckit-analyze` | **Held.** One log line: skill `speckit-analyze`, `PreToolUse`, context returned, 8.0 s |
+| L2 | The context reaches the session | **Held, inferred.** The stream transcript doesn't carry `additionalContext` text (no match for its first line), but the report says "The rule-unit server's deterministic check flagged the same thing" and names the other units the server selected |
+| L3 | A finding naming ADR-016@v1 C10 or SARIF | **Held.** D1, CRITICAL, quoting C10. D2, CRITICAL, says the plan doesn't list ADR-016, as in all three spike runs |
+| L4 | No prompt line asks the model to read a rules file | **Held.** The prompt was the single sentence above |
+
+**The real translator differed from the recorded one.** The server's call to the API returned `acceptance-test`, `subject-system` and `violation-report` for f8; the labels, and the recorded spike run used in J4, have `violation-report` only. So ADR-011@v1 C3 was selected again, the same false selection the spike found, and `analyze` judged it "not triggered". One call, with a different prompt layout and effort setting from the spike's subagent runs, so it says nothing about the translator's rate, only that it isn't the recorded output.
+
+**Confounds:** not blind. The feature's path, in this session's scratch folder, contains "spike-rule-units", and the report said the feature "may be a fixture for the rule-unit spike". The hook's context names "the rule-unit MCP server". One run only. CLAUDE.md was loaded, as in every earlier run. The check description is still in the context.
 
 ## Against "what would count against rule units"
 

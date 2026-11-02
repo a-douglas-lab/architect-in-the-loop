@@ -12,6 +12,7 @@ Phase 1, Foundations. A session started from the Step 7 planning session, workin
 - **Agentic DDD check** at Andy's request (agentic-ddd, Ben Johns's steward agents): neither offers a way to match text to glossary terms; borrowed the vocabulary lock, the anti-corruption layer for where subject and capability terms meet, and event triggers ([prior-art.md](../../spikes/rule-units/prior-art.md)).
 - **The joined step and MCP server built** ([server-expected.md](../../spikes/rule-units/server-expected.md), committed first; [results](../../spikes/rule-units/results.md)): 52 tests pass, including the server over stdio and the generated hook config with a simulated hook payload (Claude Code not in the loop). Run card: [MCP server, run 3](../loops/cards/2026-11-02-rule-units-server-run3.md).
 - **Review run 13** on the rulings and the build: 0 High, 3 Medium, 7 Low, 4 nits; all fixed but one nit in a pre-registered file ([card](../loops/cards/2026-11-02-rule-units-review-run13.md)).
+- **Live hook run** with Andy's API key, headless Claude Code ([results](../../spikes/rule-units/results.md), [card](../loops/cards/2026-11-02-rule-units-live-hook-run4.md)): run 1 failed on setup (project skills not loaded); in run 2 the hook fired before `speckit-analyze`, the server's API translator ran, and `analyze` raised ADR-016@v1 C10 as CRITICAL. Not blind; one run.
 
 ## Decided
 
@@ -33,7 +34,8 @@ Phase 1, Foundations. A session started from the Step 7 planning session, workin
 
 ## Open for next step
 
-- Andy's live hook run ([hook/README.md](../../spikes/rule-units/hook/README.md)), which also tries the model translator against the real API.
+- Hiding the server's `get_rules` and `index` from the model in a session; the live run showed it sees them.
+- Delete the API key file, which sits in a OneDrive-synced folder.
 - Andy's local review, before any push or PR.
 - Which trigger runs the step in this repository: a Claude Code hook belongs to the controls track and touches protected paths.
 - Conjunctions in `applies`; real DEV-1 to DEV-3 plans as fixtures; a second labeller.

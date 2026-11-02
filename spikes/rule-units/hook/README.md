@@ -2,6 +2,8 @@
 
 Tests L1 to L4 in [server-expected.md](../server-expected.md): a Claude Code session in which a `PreToolUse` hook on the Skill tool calls the rule-unit MCP server, and `analyze` runs on a neutral copy of f8. Nothing under `.claude/` is edited; the hook and the server come from files passed on the command line.
 
+**Run on 2 Nov, headless,** by the author with Andy's key: L1 to L4 held ([results.md](../results.md), raw files in [runs/live/](../runs/live/)). For an unattended run, pass `--setting-sources "user,project"`, not `user` alone: `user` alone drops the project's skills, so the Skill call fails and the hook never fires. Leaving out `local` keeps `.claude/settings.local.json`'s broad allow rules out of the session.
+
 ## Steps (PowerShell, from this worktree)
 
 1. Write the files outside the repository:
