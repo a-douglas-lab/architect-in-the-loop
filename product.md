@@ -1,6 +1,6 @@
 # Product
 
-Status: draft v0.2 · 8 Oct 2026 · owner: Andy Douglas
+Status: draft v0.2 · updated 1 Nov 2026 · owner: Andy Douglas
 
 This file defines what we are building, for whom, and why. It sits at the repo root and is the reference every spec, ADR and the constitution trace back to. It deliberately avoids *how*: tools and methods are decided in [backlog.md](backlog.md) and recorded as ADRs.
 
@@ -13,6 +13,8 @@ Working title: Architect in the Loop. The product name is parked (backlog P1).
 **The thesis.** Deterministic where possible, probabilistic where necessary, measured everywhere. AI does the reasoning that needs judgement; deterministic checks hold it to the decisions that have already been made; every claim the system makes about its own quality is backed by a measurement.
 
 **Where it sits.** Published agentic delivery loops, such as Anthropic's AI-native SDLC playbook (reviewed 20 Oct 2026, backlog A1), take a request through intent, spec, plan, build, test and deploy, with organisational policy applied as generic skills. They don't work out which domains a change touches, which decisions govern it, or when those decisions conflict or are missing. That governance layer is what this capability adds.
+
+**Autonomy.** Full autonomy is a stretch goal, not a promise. The capability is exercised with the architecture coordinator in the loop first. As use cases and features are added, we may find that full autonomy is impossible or ineffective, and the repo will say so. Nothing is claimed beyond what the evidence supports.
 
 **How it improves.** Every claim starts as a stated direction, not a promise. Anything we need to know is tried, measured, reviewed and adapted, then the cycle repeats. Where we can't measure something (for example real-world value, without users), the repo says so rather than claiming it.
 
@@ -90,5 +92,5 @@ Also confirmed (backlog P7):
 - [roadmap.md](roadmap.md): the order for closing the backlog.
 - [architecture-sketch.md](docs/architecture/architecture-sketch.md): the capability's contexts, flow and walkthroughs.
 - [development-outcomes.md](docs/outcomes/development-outcomes.md): DEV-1 to DEV-3, for the Ordering exemplar.
-- Constitution: to follow in Phase 1, using the Spec Kit workflow (backlog T1).
-- ADRs: to follow, starting with the ADR template (backlog T2).
+- [Constitution](.specify/memory/constitution.md): principles, the hard rules and the ADR index.
+- [ADRs](docs/adr/): decisions recorded so far, starting with the format (ADR-000).

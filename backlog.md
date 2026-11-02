@@ -2,7 +2,7 @@
 
 > **Public version.** Evaluation outcomes, their labels, hidden examples and anything deliberately left in eShop for evaluation are held in the private evaluation repository. Where they were discussed, this file points there instead.
 
-Status: v0.2 · updated 30 Oct 2026
+Status: v0.2 · updated 1 Nov 2026
 
 Every open question and every decision so far, with its status. This file is the source of truth for what is decided. **Gate rule (8 Oct):** an item marked **Gate** must close before the [roadmap](roadmap.md) phase that depends on it starts. Each item closes with a short ADR recording the decision, the options considered and the evidence. Items carried over from the original capabilities document keep their old ID in brackets.
 
@@ -32,7 +32,7 @@ Two further markers may follow the status: **Gate** (see the rule above) and **D
 | Solution architecture | A1–A5 |
 | Tools and methods | T1–T9 |
 | Evaluation | E1–E6 |
-| Quality enforcement | Q1–Q5 |
+| Quality enforcement | Q1–Q6 |
 | Delivery | D1–D8 |
 
 ---
@@ -218,8 +218,12 @@ The end-to-end design of the capability: its components and agent roles, how wor
 - **The arbiter resolves conflicts between stewards, applying recorded ADR precedence only;** anything else is a decision gap for the coordinator (G5).
 - **Implementation flow:** stewards plan; an implementer (a coding agent) builds from the plan.
 
+**Decided (1 Nov, Andy): full autonomy is the eventual goal, as a stretch goal.** The path runs through exercising the capability with the architecture coordinator in the loop. As use cases and features are added, it may prove impossible or ineffective. Nothing is claimed beyond the evidence, and P1's "doesn't overclaim autonomy" still applies.
+
 **Open:**
 
+- **Rule units as the capability's core interface (proposed 2 Nov, T6).** Selecting the decisions that govern a change and checking it against them is the capability's job; the rule-unit spike in Step 7 is an early prototype of it.
+- **How autonomy rises: escalations become rules (proposed 1 Nov).** Log every escalation and its cause. When the same kind recurs, the coordinator decides once and it becomes a rule or precedence, which the system then applies. Autonomy grows because a human turns decisions into rules, not because the agent starts deciding. `product.md` already lists human interventions per outcome as a measure to report. DEV-1 to DEV-3 plus ten evaluation outcomes are too few samples to automate a class with confidence: this project can demonstrate the mechanism, not prove the numbers.
 - **Roles from strategic domain-driven design.** The subject system's bounded contexts shape the stewards; the capability's own context map (nine contexts in the sketch) decides which roles exist and which are LLM-driven or deterministic. Confirm the context map, including whether Evidence is its own context and where risk scoring lives.
 - **Human approval points.** The sketch's use-case ladder proposes them, scaled by risk. Confirm. Include which rule applies when a security defect is in touched code (ADR-016@v1 C9: fixed with a test and flagged) and also needed first (ADR-015@v1 S9: approval if it changes behaviour).
 - **Typed handoff limits.** A schema guarantees a message's shape, not the quality of the reasoning inside its text fields; those fields still need the runtime grader. Decide how schemas are versioned and where they are validated.
@@ -338,6 +342,7 @@ Option to evaluate in the T4 spike: use the hosted feature itself versus adoptin
 
 **Open:**
 
+0. Whether judgement rules from ADRs become rubrics inside rule units (T6, proposed 2 Nov), so each rubric carries its own test fixtures.
 1. Which rubrics are needed for the first thin slice? Likely R2, R3, R7 and R8.
 2. Binary criteria only, or graded scales for some?
 3. Which model tier grades, and is a different model family available and worth it?
@@ -372,9 +377,11 @@ The decided part is recorded in [ADR-009](docs/adr/ADR-009-spec-kit-workflow.md)
 - **Community extension policy:** community extensions and presets are third-party code that the Spec Kit maintainers do not review. None is installed without a source review, a pinned version and an ADR.
 - **Spec persistence: flow-forward, anchored on decisions.** Each feature folder in `specs/` is a fixed historical record; new requirements get a new folder. What must stay true lives in the ADRs and the constitution, enforced by deterministic checks. This is our answer to the criticism that Spec Kit is spec-first but not spec-anchored: the system is anchored on decisions, not on specs kept current by hand.
 
+**Decided (1 Nov, Andy):** the constitution is thin. Principles point to ADRs without restating them; every plan cites the constraints that apply; the six hard rules are quoted word for word; the index (ID, title, scope, no version) is generated. Agents should load Constraints sections, opening a full ADR only when they need its reasoning. The constitution adds no rules of its own, and a conflict with an ADR is a decision gap. CLAUDE.md hard rule 2 now reads "In eShop, build only development outcomes by hand". Recorded in [ADR-009](docs/adr/ADR-009-spec-kit-workflow.md) (v2).
+
 **Open:**
 
-- How ADRs and the constitution's ADR index connect to Spec Kit's constitution (Phase 1, Step 6).
+- When the eShop fork gets its own constitution. This one covers this repository only, so fork plans won't load it, and the hard-rule safety net doesn't reach eShop work until then. P9 says the constitution stays system-wide; reconcile that.
 - Whether the capability also produces Spec Kit artefacts for changes to the subject system (the second layer; with A1 and T4). Spec Kit will be initialised separately in the eShop fork for subject-side specs (P3).
 
 ### T2. Decision records · Closed (ADR-000) · Gate
@@ -412,11 +419,56 @@ Q1 treats enforcement as a map of rule types to mechanisms rather than a single 
 
 ### T6. ADR strategy across the system [B1] · Open
 
-How ADRs are stored, selected, referenced by agents and kept current, including the personas, nine use cases and evaluation criteria in the original document. The progressive-disclosure approach remains a hypothesis. Depends on T1, T2 and Q1.
+How ADRs are stored, selected, referenced by agents and kept current, including the personas, nine use cases and evaluation criteria in the original document. Depends on T1, T2 and Q1. ADR-009@v2 C9 adopts constraints-first loading; how ADRs are selected is still open, and the wider progressive-disclosure approach remains a hypothesis.
+
+**Scaling model (1 Nov).** Measured on the 19 ADRs before ADR-009 v2: 162 constraints; about 1,750 tokens per full ADR and about 240 per Constraints section, estimated at 4 characters a token. ADR counts and relevant sets below are assumptions, not measurements.
+
+| Scenario | ADRs | Relevant | All full | All constraints | Index + relevant full | Index + relevant constraints | One domain steward |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Phase 2 baseline | 52 | 17 | 91k | 12k | 31k | 6k | 3k |
+| Mature eShop | 117 | 38 | 204k | 28k | 70k | 13k | 5k |
+| Large estate, 30 domains | 520 | 95 | 908k | 123k | 182k | 39k | 8k |
+
+The model has no pass or fail test. Against an assumed 200,000-token window, loading every full ADR passes it at about 115 ADRs. Each steward's own context stays small, but stewards aren't cheaper in total: across every touched domain they cost about the same as or more than index plus relevant constraints. So this isn't evidence for T7's per-domain decision. The figures assume one combined index; in practice this repo's index stays small because subject ADRs live in the fork, and the fork's would need splitting by domain at large sizes. The relevant sets may be too low: 12 ADRs carry the `project` tag, so "scope applies" read literally selects far more.
+
+**The limits that matter more than context:**
+
+1. **Selection recall.** A missed ADR is silently not applied. Index titles and scope tags may not be enough. Not yet measured.
+2. **Conflict detection.** All-pairs comparison reaches 6,786 pairs at 117 ADRs and 134,940 at 520. It needs filtering by scope, or machine-checkable constraints (Q1).
+3. **Enforcement.** On 1 Nov, before ADR-009 v2, 2 of 161 active constraints were enforced. If constraints grow faster than checks, ADRs become prose again.
+4. **Human attention.** ADR acceptance is human, so ADR volume is review volume.
+
+**Parallel problems (1 Nov).** Where constraints live is a retrieval problem, and tool discovery and progressive disclosure solve the same one. Checked in their docs: skills keep descriptions in context and load bodies on invocation, or by a `paths` pattern; MCP tool search keeps tool names in context and loads definitions on search; path-scoped rules in `.claude/rules/` load when matching files are touched; adrkit selects decisions deterministically, by an `affects` glob or a `@adr` marker, with no embeddings. Its design is worth borrowing; installing it would need a source review and an ADR (ADR-009@v2 C4, C5).
+
+**Four routes, by kind of rule (proposed):**
+
+| Kind of rule | Route | Selected by |
+| --- | --- | --- |
+| Bright line | Always loaded | Nothing needed |
+| Mechanically checkable | Not loaded; a check fires, and the violation feeds the repair loop | The check |
+| Applies to a known area | Loaded by domain or path | A deterministic match |
+| Judgement | Selected at plan time, then graded | The model |
+
+**First evidence ([tests/constitution/results.md](tests/constitution/results.md)).** One `plan` run on a small export feature listed 14 of this repository's 19 ADRs, for about 101,000 tokens. With no labelled correct set, that shows only that selection can be broad; it says nothing reliable about recall or precision. The table above models whole-system scenarios, so it isn't directly comparable. `analyze` caught a blatant breach of an uncited ADR in 3 of 3 runs, working from its index title and a principle's heading. One feature and one plan run is a very small sample.
+
+**Spike:** on DEV-1 to DEV-3, compare model-selected ADRs with deterministic matching on an `affects` field, and measure recall. Paths don't exist at specify and plan, so test impact-set domains mapping to ADRs (with T7). Selection recall hasn't been measured.
+
+**A further idea, not part of the spike:** generate ADR constraints into path-scoped rules in the fork, so a domain's constraints load when an agent touches its code.
+
+**Rule units (proposed by Andy, 2 Nov).** The constitution test showed `analyze` misses a breach buried in ADR text (f8, 3 of 3), because it reads only the constitution. A bigger constitution doesn't fix that; a different shape might. Each ADR constraint becomes a self-contained, testable unit:
+
+- **identity:** ID, version, constraint text, a link to its ADR;
+- **applicability:** which stages, domains or paths it governs (the `affects` idea above);
+- **check:** deterministic for mechanical rules (run at the Q6 layers), or a rubric for judgement rules (graded at plan time, A2 and A5);
+- **tests:** fixtures that must pass and must fail, with expected results written first (ADR-012@v2 C10).
+
+Units load deterministically, selected by impact set or touched paths, not by a model reading titles: an index is always present, and units are fetched on demand. Delivery options: an MCP server (`get_rules`, `check`; deterministic, and it is the capability's own interface), skills (progressive loading, but model-triggered), or a step before `analyze` (smallest, but changing Spec Kit's flow needs an ADR, ADR-009@v2 C4). Prior art: ESLint and Semgrep rules ship with their own tests; OPA policies use `opa test`; adrkit pairs `affects` with `evaluate`.
+
+**Spike, first item of Step 7:** build three units of different kinds, each with tests: ADR-016@v1 C10 (mechanical), ADR-015@v1 C2 (judgement), and one hard rule. Re-run f8 with its unit loaded, and measure whether the miss becomes a catch. Run it through the discernment step (D1) before choosing to build or borrow. This is also an early prototype of the capability's own selection and checking (A1, T7).
 
 **Prior art to review (found 8 Oct, Spec Kit community catalogue):**
 
-- *adrkit* (github.com/mbeacom/adrkit, Apache-2.0): pulls the decisions governing a piece of work into agent context, checks plans against them, and drafts ADRs from plans. Close to our selection and checking ideas; state what we add beyond it. Its Spec Kit adapter requires Spec Kit below 1.1.0.
+- *adrkit* (github.com/mbeacom/adrkit, Apache-2.0): pulls the decisions governing a piece of work into agent context, checks plans against them, and drafts ADRs from plans. Close to our selection and checking ideas; state what we add beyond it. Its Spec Kit extension is pinned to Spec Kit `>=0.13.0,<1.2.0` (checked 1 Nov; an earlier note said below 1.1.0), so v1.1.2 is in range. Installing it would need a source review and an ADR (ADR-009@v2 C4, C5).
 - *arch-governance* (github.com/ashbrener/spec-kit-arch-governance, MIT): citation slots linking specs to ADRs, with a read-only, fail-closed validator. Also relevant to Q1.
 
 ### T7. From outcome to impacted domains [B2] · Partly decided · Gate · Deep research
@@ -591,9 +643,30 @@ No single tool covers every kind of rule. This item maps each rule type to a mec
 | Infrastructure and deployment | No public endpoints except the storefront | OPA/Rego, IaC policy tools | |
 | Judgement residue | Trade-off explanation is clear to a merchant | Runtime and evaluation graders (A2) | Only what no deterministic check can cover |
 
+**A second axis: where in the flow a rule is checked (proposed 1 Nov).** The table above maps rule types to tools. T6's four routes cover how a rule reaches an agent. Neither says at which points it is validated.
+
+| Point | Mechanism | Can it be bypassed? | Today |
+| --- | --- | --- | --- |
+| Before work | Context loading (T6) | Yes, advisory | Designed |
+| Plan | Constitution Check, `analyze` | Partly: `analyze` is optional | First tested 1 Nov (`tests/constitution/`) |
+| Edit | Claude Code hooks | Yes: scripts can get past them | Planned, Step 7 |
+| Commit | Pre-commit hook | Yes: `--no-verify` | Not planned yet |
+| Pull request | CI as a required check | No, once required | **No CI exists** |
+| Review | Adversarial reviewer and Andy | No, while Andy merges | Running |
+| Merge | Branch rulesets | No | Partial: no pull-request rule yet |
+
+Proposed principles:
+
+1. **One rule, one definition, checked at many points,** so the layers can't disagree (compare *gates*, D1).
+2. **Check as early as is cheap.** Hooks give an agent the fastest feedback.
+3. **The last layer must be one that can't be bypassed.** Early layers are for speed, late ones for assurance. A hook alone isn't a control.
+4. **Not every rule needs every layer.** Each rule's enforcement entry names the points that check it.
+
+**Gap this exposes:** ADR-011 treats hooks as the control, yet no CI exists, so no planned hook check has an unbypassable backstop. Step 7 needs CI and required checks as well as hooks. The outcomes that close this are Q6.
+
 **Open:** does CUE earn its learning curve over JSON Schema plus OPA for the proposal and policy rows? Is NetArchTest or ArchUnitNET better maintained and more expressive today? Can the Aspire app model be checked reliably in tests?
 
-Output: the enforcement section of each baseline ADR (the ADR template, T2, defines the field), plus the published "share of ADR clauses enforced deterministically" metric.
+Output: the enforcement section of each baseline ADR (the ADR template, T2, defines the field), plus the published "share of ADR clauses enforced deterministically" metric. Each mechanism is tested blocking a violation when it is built, in the phase that builds it (*Andy, 2 Nov*; Q6). Rule units (T6, proposed) would give each mechanism one testable shape.
 
 ### Q2. Quality layer tooling · Open
 
@@ -650,6 +723,29 @@ Candidate sources, each seeing only part of the picture:
 - **Lifecycle.** Flags become debt if never removed. Give each flag an owner and an expiry, like exceptions (G12), and propose a removal outcome once it has been fully on for a set period.
 - **Link to P8:** whether experiments are in scope or only on/off release.
 
+### Q6. Validation layers: checks at several points, ending in one that can't be bypassed · Open
+
+Added 1 Nov. Q1's second axis says where in the flow a rule is checked. This item delivers the layers that exist for this repository, in Step 7 (*Andy, 2 Nov:* not a Gate; later mechanisms are tested in the phase that builds them). Under ADR-012@v2 C10, each outcome's expected results are written first. Q6 also asks for tests that show each check blocking as well as passing.
+
+Where a final layer that can't be bypassed exists, it is CI plus branch protection, and it only sees committed changes. A script that only reads, for example from outside the allowlist, leaves nothing for CI to see. Only the OS sandbox would stop that, and whether to move to WSL2 is open (D1).
+
+| ID | Outcome | Done when |
+| --- | --- | --- |
+| VL-1 | One rule has one definition, whichever layer runs it | Changing a rule in one place changes its result at every layer that runs it, shown on one rule |
+| VL-2 | Plans are checked against the constitution | `tests/constitution/` runs whenever the constitution, CLAUDE.md or the `analyze` and `plan` skills change. Results are reported as catch and false-alarm rates per fixture, as evidence, not a gate (*Andy, 2 Nov*). Expected results are never edited; a wrong one gets a new dated expectation beside it. Started: see [results](tests/constitution/results.md) |
+| VL-3 | Agents get fast feedback as they edit | ADR-011's hooks are tested: the build, format and test hook (C1) runs after an edit, and each blocking hook (C2, C3, C5) refuses a bad write and allows a good one. Covers a write outside the allowlist, and a write to an acceptance test path during implement. C2 needs the list of protected paths first (D1, open) |
+| VL-4 | Reads outside the allowlist are refused | `blockReadsOutsideWorkingDirectories` is on in user settings, a test read outside is refused, and reads of memory, the scratchpad and skills still succeed |
+| VL-5 | Mistakes are caught before they are committed | A pre-commit hook runs the same rules, and a commit that breaks one is refused. Built only if it earns its cost (see Open) |
+| VL-6 | CI can't be skipped | CI in this repository runs the same rules on every pull request as a required check. A deliberately failing pull request can't merge. CI in the fork is a Phase 2 question, under hard rules 2 and 5 |
+| VL-7 | Bypassing an early layer is caught later | A change committed with `--no-verify`, and a change written by a script that a hook can't see, are both caught at CI. Reads leave nothing to catch (see above) |
+| VL-8 | Nothing reaches `main` except through the gate | Both repositories' rulesets require a pull request and passing checks (Andy adds these), and a direct push to `main` is refused |
+| VL-9 | The ADR format is checked | A validator enforces ADR-000's mechanical constraints, the constitution's index, and the quoted hard rules, with a test showing each failure caught |
+| VL-10 | Coverage is visible | Each ADR's enforcement entries name the layers that check it, and a report gives the share of constraints enforced deterministically, and the share with a check that can't be bypassed |
+
+**Proposed principles** are under Q1. **Depends on:** the WSL2 question (D1, open). Without the sandbox, a script can get past every local layer, which is why VL-6 and VL-7 matter.
+
+**Open:** the order of the outcomes in Step 7; whether VL-5 is needed once VL-3 and VL-6 exist; what CI runs on, given Windows and the eShop stack.
+
 ---
 
 ## Delivery
@@ -677,7 +773,7 @@ The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (
 
 **Decided (20 Oct), from a review of Anthropic's [AI-native SDLC playbook](https://claude.com/resources/articles/the-ai-native-sdlc-playbook):** Spec Kit stays the engine; the playbook supplies the loop around it (who acts at each stage, what each stage measures, how autonomy is granted).
 
-- **A hook blocks writes to acceptance test paths during implement.** Hard rule 3 becomes a deterministic control, not just an instruction in CLAUDE.md. Review *gates* (above) first.
+- **A hook blocks writes to acceptance test paths during implement.** Hard rule 3 becomes a deterministic control, not just an instruction in CLAUDE.md. Review *gates* (above) first. Done when Q6's VL-3 passes.
 - **The adversarial reviewer works to a written policy, `REVIEW.md`:** findings ranked by severity, nits capped. Without a policy its output can't be compared across runs. *Revised 20 Oct (Andy):* documentation PRs get four passes now (fidelity, facts, constraints, honest enforcement). The playbook's three code passes (bugs, security, compliance with spec and plan) are added when there is code.
 - **Each skill gets a small regression eval set,** re-run whenever the skill, CLAUDE.md or a hook changes. Configuration is treated as code.
 - **Each delivery stage is run by hand before it is automated, and each run is recorded on a loop card** ([docs/loops/](docs/loops/README.md)). A stage's autonomy is raised one level at a time, only when its cards meet the readiness criteria. The cards also give each stage a leading and a lagging indicator, which feeds the delivery metrics above.
@@ -687,6 +783,7 @@ The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (
 - The autonomy levels (0 to 4) and the readiness criteria in docs/loops are a first draft. Refine them after the first DEV-1 runs.
 - Where the skill eval sets live and how they are run (with A5 and Q2).
 - Whether low-risk stages (tasks, analyze) need a lighter loop card.
+- **Research skill: look for parallel problems first (proposed by Andy, 1 Nov).** A discernment step in the flow, which may extend the planned research-spike skill: describe the problem; research or ideate on prior art, including the same problem solved under a different name in other fields; understand those results; then solve it with the prior art, or innovatively where it falls short. It came from asking whether ADR placement is the same problem as tool discovery, which reframed T6. Andy's working name is a "taste or discernment" skill. Build in Step 7.
 
 **Decided (20 Oct, revised 21 Oct): file access is an allowlist,** switched on and tested with the other D1 hooks in Step 7.
 
@@ -696,6 +793,8 @@ The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (
 - **Limit:** shell commands aren't refused the same way, and none of these controls contain a script that opens files itself (Python, Node). Only the OS-level sandbox does. It runs on macOS, Linux and WSL2, not native Windows (Claude Code's sandboxing documentation). Whether to move to WSL2 is open.
 
 **Open:** the exact `additionalDirectories` list, settled while testing; whether the write hook also checks paths named in shell commands; which paths count as protected (the 5 Oct hook "blocking writes to protected paths" has no list).
+
+**Decided (1 Nov, Andy): behaviour is tested before a PR.** No capability, skill, hook or constitution change opens a PR until its behaviour has been tested, with expected results written first. Recorded in [ADR-012](docs/adr/ADR-012-independent-checks-and-staged-autonomy.md) (v2, C10). The first example is [tests/constitution/](tests/constitution/README.md).
 
 **Decided (20 Oct): the adversarial reviewer runs on every documentation PR now, by hand,** to [REVIEW.md](REVIEW.md), ahead of Step 7. It is a subagent with a fresh context that sees the diff and the sources, not the author's reasoning. It never approves: its findings and the author's responses go in the PR description, and Andy decides. *Revised 21 Oct (Andy):* while stages are hand-run, review comes before any push (D7), so findings are recorded on the run's loop card, committed on the branch for Andy's local review, then summarised in the PR. The first run, on batch 1 after it was merged, found 3 High problems the author had missed ([loop card](docs/loops/cards/2026-10-20-adr-batch1-review-run1.md)). Code review joins the policy when there is code.
 

@@ -30,6 +30,7 @@ Thesis: deterministic where possible, probabilistic where necessary, measured ev
 - **Every decision becomes an ADR.** When a backlog item closes, write the ADR and update the item's status in backlog.md.
 - **Research method** (backlog.md, top): problem and criteria; options including the naive one and "do nothing"; a spike where evidence is needed; decision as an ADR. Depth follows value: deep for differentiating items, a sensible default for commodity ones.
 - **Try, measure, review, adapt.** No claim without a measurement; where something can't be measured, say so.
+- **Test behaviour before a PR.** A capability, skill, hook or constitution change opens no PR until its behaviour has been tested, with expected results written first (ADR-012).
 - **Dogfood the product's disciplines:** deterministic checks gate changes; keep the Co-Authored-By trailer on AI-authored commits so the project's own delivery metrics can be published.
 - **Prior work:** if an idea may overlap with Andy's previous employment, flag it to him; he decides.
 - **Writing:** plain British English, short sentences, no hype.
@@ -37,7 +38,7 @@ Thesis: deterministic where possible, probabilistic where necessary, measured ev
 ## Hard rules
 
 1. **Never access the private evaluation repository.** It holds the held-out evaluation outcomes, hidden tests and labels. Never clone it into this repo or a worktree, and never ask for its contents.
-2. **Build only development outcomes by hand.** DEV-1 to DEV-3, centred on the Ordering exemplar, each changing only the areas listed for it in development-outcomes.md (ADR-005). Don't add eShop features beyond an approved spec.
+2. **In eShop, build only development outcomes by hand.** DEV-1 to DEV-3, centred on the Ordering exemplar, each changing only the areas listed for it in development-outcomes.md (ADR-005). Don't add eShop features beyond an approved spec.
 3. **Never edit acceptance tests to make them pass.** A failing test is reported, not changed.
 4. **eShop stays pinned and separate.** It lives only in the fork, a-douglas-lab/eShop, included as the submodule `subject/eshop`; never copy eShop files into this repo. Subject-side artefacts (contract, subject ADRs, domain specs, development acceptance tests) are committed in the fork. Its optional AI features stay switched off.
 5. **Don't change existing eShop behaviour outside an approved spec,** including defects you notice. Report them to Andy instead; some existing behaviour is deliberately left as it is.
