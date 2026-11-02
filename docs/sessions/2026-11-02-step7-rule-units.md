@@ -15,12 +15,14 @@ Phase 1, Foundations. A session started from the Step 7 planning session, workin
 - **Live hook run** with Andy's API key, headless Claude Code ([results](../../spikes/rule-units/results.md), [card](../loops/cards/2026-11-02-rule-units-live-hook-run4.md)): run 1 failed on setup (project skills not loaded); in run 2 the hook fired before `speckit-analyze`, the server's API translator ran, and `analyze` raised ADR-016@v1 C10 as CRITICAL. Not blind; one run.
 - **Review run 14** on the live run: 0 High, 2 Medium, 6 Low, 2 nits, all fixed ([card](../loops/cards/2026-11-02-rule-units-review-run14.md)).
 - **Andy's T6 decision recorded** in backlog T6 (now Partly decided). Review run 15: 2 High, 3 Medium, 4 Low, 5 nits; all but two nits fixed ([card](../loops/cards/2026-11-02-rule-units-review-run15.md)).
+- **Harness hook confirmed by Andy** and recorded. Review run 16: 0 High, 1 Medium, 1 Low, 2 nits, all fixed ([card](../loops/cards/2026-11-02-rule-units-review-run16.md)).
 
 ## Decided
 
 - **Andy, 2 Nov:** "go ahead, glossary in the spike folder for now." This approved the reshaped spike: a glossary as the ubiquitous language, a translator to it as its own tested step, and selection, validation and reporting as distinct steps.
 - **Andy, 2 Nov, after the run:** "deterministic judgement-unit selection approved, keep hard rule 4 always loaded, make sure you add the step that joins the parts (MCP server called by a hook/orchestrator), this feels like a roadmap you decided." My reading: one recommendation rather than "now a step, later a server", with the server built now. delivery.md was rewritten on that reading.
-- **Andy, 2 Nov, confirming:** "yes, one recommendation with the server built now. document the decision so we don't lose track of it later." Recorded as T6's Decided list in backlog.md, with T6 now Partly decided; the ADR is written when T6 closes. Delivery: an MCP server joining the parts, called by a hook or the orchestrator. That the hook is a harness hook, not a skill or `before_analyze`, is the author's reading, to confirm before the ADR.
+- **Andy, 2 Nov, confirming:** "yes, one recommendation with the server built now. document the decision so we don't lose track of it later." Recorded as T6's Decided list in backlog.md, with T6 now Partly decided; the ADR is written when T6 closes. Delivery: an MCP server joining the parts, called by a hook or the orchestrator. That the hook is a harness hook, not a skill or `before_analyze`, was the author's reading.
+- **Andy, 2 Nov, confirming the reading:** "yes, harness hook is right". Relabelled as decided in T6. The question put to him named the alternatives: not a skill or Spec Kit's `before_analyze` hook, since both leave the trigger to the model.
 - **Andy, build choices:** the Anthropic API translator with an alias fallback; the MCP Python SDK in a spike venv; a live hook run from a spike settings file, which he runs.
 - **Still not ruled,** applied as the author's choices: build rather than install adrkit; SARIF version, what counts as a catch, the f1 control, results kept in the spike folder.
 
@@ -35,7 +37,6 @@ Phase 1, Foundations. A session started from the Step 7 planning session, workin
 
 - Hiding the server's `get_rules` and `index` from the model in a session; the live run showed it sees them.
 - The API key: Andy reports he has deleted the file (2 Nov). It sat in a OneDrive-synced folder, so OneDrive's recycle bin or version history may still hold a copy; revoking the key in the Anthropic console would close that off.
-- Before T6's ADR: confirm that "a hook" means a harness hook, not a skill or `before_analyze`.
 - Andy's local review, before any push or PR.
 - Which trigger runs the step in this repository: a Claude Code hook belongs to the controls track and touches protected paths.
 - Conjunctions in `applies`; real DEV-1 to DEV-3 plans as fixtures; a second labeller.

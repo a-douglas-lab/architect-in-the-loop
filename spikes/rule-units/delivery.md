@@ -20,7 +20,7 @@ Status: decided by Andy, 2 Nov 2026 · from the spike's [results](results.md). R
 
 ## Decision
 
-An earlier version split this into "now, a step before `analyze`" and "later, an MCP server". Andy, 2 Nov: "make sure you add the step that joins the parts (MCP server called by a hook/orchestrator), this feels like a roadmap you decided." I read that as asking for one recommendation rather than stages, and for the server to be built now. Andy confirmed it, 2 Nov: "yes, one recommendation with the server built now." The decision, in the author's words; "a harness hook" and "not by the model's choice" are the author's reading of Andy's "a hook/orchestrator", not his ruling:
+An earlier version split this into "now, a step before `analyze`" and "later, an MCP server". Andy, 2 Nov: "make sure you add the step that joins the parts (MCP server called by a hook/orchestrator), this feels like a roadmap you decided." I read that as asking for one recommendation rather than stages, and for the server to be built now. Andy confirmed it, 2 Nov: "yes, one recommendation with the server built now." The author read "a hook" as a harness hook, not a skill or `before_analyze`. Andy confirmed that too, 2 Nov: "yes, harness hook is right". The decision follows, in the author's words. "Not by the model's choice" is the author's wording of the intent, not Andy's:
 
 **An MCP server that joins the parts, called by a harness hook or by the capability's orchestrator, not by the model's choice.** One call translates the feature's artefacts, validates the terms, selects units, runs the mechanical and bright-line checks against the feature, and returns the selected units' text and any findings. A hook returns these to the session as `additionalContext`; the orchestrator would read the same result. The author's rationale, not ruled: that would make rule units the capability's interface for selection and checking, as A1 proposes.
 
@@ -30,7 +30,7 @@ In this repository, wiring the hook is the controls track's area (ADR-011@v1, D1
 
 The server would need the subject glossary (it holds eShop terms such as "eshop" and "ordering.domain") to come from the fork's contract, not the capability (ADR-001@v2 C1, C2).
 
-**Not chosen, on the author's reading:** a skill, or Spec Kit's `before_analyze` hook, as the trigger. Both leave the decision to the model.
+**Not chosen:** a skill, or Spec Kit's `before_analyze` hook, as the trigger. Both leave the decision to the model.
 
 ## What the spike leaves open
 
