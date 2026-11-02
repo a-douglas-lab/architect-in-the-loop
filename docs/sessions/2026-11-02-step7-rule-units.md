@@ -9,11 +9,15 @@ Phase 1, Foundations. A session started from the Step 7 planning session, workin
 - **Spike built and run** ([results](../../spikes/rule-units/results.md)): a glossary, three units (ADR-016@v1 C10, ADR-015@v1 C2, hard rule 4's copy clause) and four decoys, 17 labelled fixtures, three translators against a title baseline, and the f8 re-run. Expectations committed first. Run card: [analyze with rule units, run 2](../loops/cards/2026-11-02-rule-units-analyze-run2.md).
 - **Delivery recommendation** ([delivery.md](../../spikes/rule-units/delivery.md)).
 - **Review run 12** on the whole spike: 2 High, 5 Medium, 9 Low, 5 nits, all fixed or answered ([card](../loops/cards/2026-11-02-rule-units-review-run12.md)).
+- **Agentic DDD check** at Andy's request (agentic-ddd, Ben Johns's steward agents): neither offers a way to match text to glossary terms; borrowed the vocabulary lock, the term-translation table and event triggers ([prior-art.md](../../spikes/rule-units/prior-art.md)).
+- **The joined step and MCP server built** ([server-expected.md](../../spikes/rule-units/server-expected.md), committed first; [results](../../spikes/rule-units/results.md)): 49 tests pass, including the server over stdio and the generated hook config end to end. Run card: [MCP server, run 3](../loops/cards/2026-11-02-rule-units-server-run3.md).
 
 ## Decided
 
 - **Andy, 2 Nov:** "go ahead, glossary in the spike folder for now." This approved the reshaped spike: a glossary as the ubiquitous language, a translator to it as its own tested step, and selection, validation and reporting as distinct steps.
-- **Not ruled by Andy, applied as the author's choices** and listed in prior-art.md for his ruling: build rather than install adrkit; judgement units selected deterministically (v1 question 6); hard rule 4 always loaded (a change from v1); SARIF version, what counts as a catch, the f1 control, results kept in the spike folder.
+- **Andy, 2 Nov, after the run:** "deterministic judgement-unit selection approved, keep hard rule 4 always loaded, make sure you add the step that joins the parts (MCP server called by a hook/orchestrator), this feels like a roadmap you decided." The "now a step, later a server" staging is dropped.
+- **Andy, build choices:** the Anthropic API translator with an alias fallback; the MCP Python SDK in a spike venv; a live hook run from a spike settings file, which he runs.
+- **Still not ruled,** applied as the author's choices: build rather than install adrkit; SARIF version, what counts as a catch, the f1 control, results kept in the spike folder.
 
 ## Found
 
@@ -24,10 +28,11 @@ Phase 1, Foundations. A session started from the Step 7 planning session, workin
 
 ## Proposed
 
-- **Delivery:** a deterministic step before `analyze` now, built from the spike's parts (the joined step doesn't exist yet); the same core behind an MCP server later, called by a harness hook or the capability's orchestrator. Not a skill, and not Spec Kit's `before_analyze` hook, since both leave the trigger to the model.
+- **Delivery:** an MCP server that joins the parts, called by a harness hook or the capability's orchestrator; now built. Not a skill, and not Spec Kit's `before_analyze` hook, since both leave the trigger to the model.
 
 ## Open for next step
 
+- Andy's live hook run ([hook/README.md](../../spikes/rule-units/hook/README.md)), which also tries the model translator against the real API.
 - Andy's local review, before any push or PR.
 - Which trigger runs the step in this repository: a Claude Code hook belongs to the controls track and touches protected paths.
 - Conjunctions in `applies`; real DEV-1 to DEV-3 plans as fixtures; a second labeller.

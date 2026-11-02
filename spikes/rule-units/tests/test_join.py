@@ -52,8 +52,11 @@ def test_j2_f1_alias():
 
 
 def test_j3_f4_alias_hard_rule_4():
+    # As first committed (c7b89cb), this asked for exactly one finding and failed: f4 copies in
+    # both spec.md and plan.md, so there are two. server-expected.md says "a finding", which holds.
     rec = run("f4", translator="alias")["record"]
-    assert [f["ruleId"] for f in rec["findings"]] == ["CLAUDE.md hard rule 4 (copy clause)"]
+    ids = [f["ruleId"] for f in rec["findings"]]
+    assert ids and set(ids) == {"CLAUDE.md hard rule 4 (copy clause)"}
 
 
 # J4 to J7: model translator, with a fake client
@@ -81,6 +84,18 @@ def test_j6_client_error_falls_back():
     rec = run("f8", client=FakeClient(error=ConnectionError("offline")))["record"]
     assert rec["translator"] == "alias"
     assert "ConnectionError" in rec["measurements"]["translator_fallback"]
+
+
+def test_j6b_client_constructor_error_falls_back(monkeypatch):
+    # Added after the code: a failing constructor (no credentials) must also fall back.
+    from ruleunits import translate_model
+
+    def no_credentials():
+        raise TypeError("Could not resolve authentication method")
+    monkeypatch.setattr(translate_model, "default_client", no_credentials)
+    rec = run("f8", translator="auto")["record"]
+    assert rec["translator"] == "alias"
+    assert "authentication" in rec["measurements"]["translator_fallback"]
 
 
 def test_j7_refusal_falls_back():

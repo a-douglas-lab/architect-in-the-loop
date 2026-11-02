@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 
-from . import SPIKE, evaluate
+from . import SPIKE, evaluate, hookfiles
 from .artefacts import load_dir
 from .glossary import load_default
 from .select import rules_file, select
@@ -22,6 +22,9 @@ def main(argv=None):
     r = sub.add_parser("rules-file", help="select units for a feature folder (alias translator) and write their text")
     r.add_argument("feature", type=Path)
     r.add_argument("out", type=Path)
+    h = sub.add_parser("hook-files", help="write a neutral feature copy, settings and MCP config for the live hook run")
+    h.add_argument("out", type=Path)
+    h.add_argument("--fixture", default="f8")
     sub.add_parser("eval-deterministic", help="score the alias and BM25 translators")
     m = sub.add_parser("eval-model", help="score model runs")
     m.add_argument("kind", choices=["model", "baseline-titles"])
@@ -45,6 +48,9 @@ def main(argv=None):
         names = select(units, terms, "analyze")
         a.out.write_text(rules_file(units, names), encoding="utf-8", newline="\n")
         print(json.dumps({"terms": terms, "units": names}))
+    elif a.cmd == "hook-files":
+        paths = hookfiles.write(a.out, a.fixture)
+        print(json.dumps({k: str(v) for k, v in paths.items()}, indent=2))
     elif a.cmd == "eval-deterministic":
         for name in ("alias", "bm25"):
             res = evaluate.deterministic(name)

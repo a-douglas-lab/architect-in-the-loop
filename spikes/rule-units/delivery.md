@@ -15,7 +15,7 @@ Status: recommendation for Andy · 2 Nov 2026 · from the spike's [results](resu
 | --- | --- | --- | --- | --- |
 | Skill | No: model-invoked, or `paths`, which can't tell features apart at plan time | Poor | Small | The failure mode it is meant to fix |
 | Spec Kit `before_analyze` hook | No: the agent follows SKILL.md's instruction to run it | Partial | Small | Possibly an extension under ADR-009@v2 C4 |
-| **Step before `analyze`**: a script runs translate, select and check, then hands the rules file to `analyze` | Yes | **This is what the spike ran: 3 of 3** | Small, but not built yet. `python -m ruleunits rules-file` does alias translation and selection only; it doesn't call the constrained model translator or run any unit's check on a feature (checks run only on test cases) | Someone must run it. In this repository that means a hook or a wrapper, and the hook belongs to the controls track |
+| **Step before `analyze`**: a script runs translate, select and check, then hands the rules file to `analyze` | Yes | **This is what the spike ran: 3 of 3** | Small. Now built as `join.py`, the core the MCP server calls; on its own it still needs something to run it | Someone must run it. In this repository that means a hook or a wrapper, and the hook belongs to the controls track |
 | **MCP server**: `get_rules(artefacts, stage)`, `check(unit, artefacts)`, `index()` | Only when called by a harness hook (`"type": "mcp_tool"`) or by the capability's orchestrator; tool search alone is model-triggered | Good, and it is the capability's own interface (A1, T4) | Medium | More to build and test; still needs the hook or orchestrator to call it |
 
 ## Recommendation
@@ -25,6 +25,8 @@ An earlier version split this into "now, a step before `analyze`" and "later, an
 **An MCP server that joins the parts, called by a harness hook or by the capability's orchestrator, never by the model's choice.** One call translates the feature's artefacts, validates the terms, selects units, runs the mechanical and bright-line checks against the feature, and returns the selected units' text and any findings. A hook returns these to the session as `additionalContext`; the orchestrator would read the same result. That makes rule units the capability's interface for selection and checking, as A1 proposes.
 
 In this repository, wiring the hook is the controls track's area (ADR-011, D1), and `.claude/settings*.json` is a protected path. So the spike tests the hook's contract without editing settings, and the wiring needs Andy's approval.
+
+**Built:** `ruleunits/join.py` (the joined step) and `ruleunits/server.py` (the MCP server, tools `rule_units_hook`, `get_rules` and `index`), with tests against [server-expected.md](server-expected.md). The server passes over stdio, and from the generated hook config with a simulated hook payload. **Not yet shown:** a live Claude Code session in which the hook fires (L1 to L4), and the model translator against the real API ([results.md](results.md)).
 
 The server would need the subject glossary (it holds eShop terms such as "eshop" and "ordering.domain") to come from the fork's contract, not the capability (ADR-001@v2 C1, C2).
 

@@ -107,6 +107,27 @@ Subagent totals as reported by the harness, including agent overhead.
 
 Against Run B's `analyze` (about 62,000 to 64,000 tokens, 26 to 51 s), loading units added a few thousand tokens per run. Part of that is the extra file and part is the agents' longer reports, so the share due to the units isn't separable. About 980,000 tokens across the 15 model runs. The deterministic translators, selection and checks run in under a second.
 
+## The joined step and its MCP server (added 2 Nov, after Andy's rulings)
+
+Built after Andy asked for "the step that joins the parts (MCP server called by a hook/orchestrator)". Expectations and tests were committed first in `c7b89cb` ([server-expected.md](server-expected.md)); the code followed.
+
+| Expectation | Result |
+| --- | --- |
+| J1 to J9, the joined step | All pass. Two misses as first written, below |
+| H1 to H5, the hook contract | All pass |
+| M1 to M4, the server over stdio, real subprocess, `legacy` and `auto` client modes | All pass |
+| The generated settings and MCP config, end to end (test written after the code) | Pass: the server started from the generated config outside the spike folder, called with the hook's input after `${...}` substitution from a sample `PreToolUse` payload, returned the C10 rule and finding, and logged the call |
+| L1 to L4, the live hook in a Claude Code session | **Not run.** There is no Claude CLI or API key in this environment. Andy runs it ([hook/README.md](hook/README.md)) |
+
+pytest: 49 passed, 3 expected failures (the same three predicted misses). Two of the passing tests were written after the code: the generated config end to end, and a failing client constructor (J6b).
+
+**Misses as first written:**
+
+- **J3:** the test, as committed in `c7b89cb`, asked for exactly one hard rule 4 finding on f4. There are two, because f4 copies subject files in both spec.md and plan.md. The written expectation, "a finding for hard rule 4", holds, so the test was stricter than the expectation it encoded. I changed the test to match the expectation, with a comment that says so. That is an edit after a run, recorded here.
+- **The model translator against the real API wasn't run.** Its tests use a fake client with recorded outputs (J4 to J7). With no credentials, `auto` falls back to alias, and the record gives the reason: "Could not resolve authentication method". That fallback took about 3 s, mostly importing the SDK. The request's parameter names were checked against the installed SDK's signature, not against the API.
+
+**What this changes in the f8 method:** the hook puts the units into the session's context, so the spike's extra prompt line ("read this rules file"), which was a confound, isn't needed. The check descriptions are still in the context, so that confound remains.
+
 ## Against "what would count against rule units"
 
 - f8 caught in fewer than 2 of 3: **no**, 3 of 3.

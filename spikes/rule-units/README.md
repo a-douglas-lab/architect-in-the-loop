@@ -2,7 +2,7 @@
 
 Step 7, item 1 (backlog T6, "Rule units"). Python, in a spike folder; it doesn't decide the capability's stack (T5).
 
-Each ADR constraint, or hard rule, becomes a unit with an identity, applicability, a check or rubric, and tests. Units are selected deterministically from glossary terms, then checked, and the result is reported as one typed record.
+Each ADR constraint, or hard rule, becomes a unit with an identity, applicability, a check or rubric, and tests. Units are selected deterministically from glossary terms, then checked, and the result is reported as one typed record. An MCP server joins these steps in one call, for a harness hook or an orchestrator to call.
 
 | File | Holds |
 | --- | --- |
@@ -14,14 +14,30 @@ Each ADR constraint, or hard rule, becomes a unit with an identity, applicabilit
 | [units/](units/) | Three units and four decoys; `index.yaml` is generated from them |
 | [fixtures/](fixtures/), [labels.yaml](labels.yaml) | Eight new fixtures; labels for all 17 |
 | [runs/](runs/) | Prompts, raw model outputs, scores and `analyze` reports |
-| `ruleunits/`, `tests/` | The runner and its tests |
+| [server-expected.md](server-expected.md) | Expectations for the joined step and its MCP server, committed before the code |
+| [hook/](hook/README.md) | How to run the live hook session |
+| `ruleunits/`, `tests/` | The runner, the joined step (`join.py`), the MCP server (`server.py`) and their tests |
 
 ## Run it
 
-From this folder, with Python 3.13, PyYAML and pytest:
+From this folder, with Python 3.13. Dependencies are pinned in `requirements.txt`, in a local venv:
 
 ```bash
-python -m pytest -q
+python -m venv .venv
+```
+
+```bash
+.venv/Scripts/python -m pip install -r requirements.txt
+```
+
+```bash
+.venv/Scripts/python -m pytest -q
+```
+
+The MCP server, over stdio:
+
+```bash
+.venv/Scripts/python -m ruleunits.server
 ```
 
 ```bash
