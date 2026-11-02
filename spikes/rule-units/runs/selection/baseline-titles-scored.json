@@ -1,0 +1,503 @@
+{
+  "kind": "baseline-titles",
+  "runs": [
+    {
+      "adrs": {
+        "c10-sarif": [
+          "ADR-001",
+          "ADR-016"
+        ],
+        "c10-unnamed": [
+          "ADR-001",
+          "ADR-016"
+        ],
+        "f1": [
+          "ADR-001",
+          "ADR-003",
+          "ADR-017"
+        ],
+        "f2": [
+          "ADR-001",
+          "ADR-003",
+          "ADR-017"
+        ],
+        "f3": [
+          "ADR-001",
+          "ADR-004"
+        ],
+        "f4": [
+          "ADR-001",
+          "ADR-002",
+          "ADR-003"
+        ],
+        "f5": [
+          "ADR-001",
+          "ADR-015"
+        ],
+        "f6": [
+          "ADR-001",
+          "ADR-015"
+        ],
+        "f7": [
+          "ADR-017"
+        ],
+        "f8": [
+          "ADR-001",
+          "ADR-016"
+        ],
+        "f9": [
+          "ADR-001",
+          "ADR-004",
+          "ADR-011"
+        ],
+        "h4-port": [
+          "ADR-001",
+          "ADR-002",
+          "ADR-003"
+        ],
+        "h4-read": [
+          "ADR-002",
+          "ADR-003"
+        ],
+        "n1": [
+          "ADR-001",
+          "ADR-016"
+        ],
+        "n2": [
+          "ADR-001",
+          "ADR-015"
+        ],
+        "s-compliant": [
+          "ADR-001",
+          "ADR-015"
+        ],
+        "s-four": [
+          "ADR-001",
+          "ADR-015"
+        ]
+      },
+      "translator": "baseline-titles",
+      "unit_score": {
+        "errors": [
+          "f8: extra adr-016-c2",
+          "f9: extra adr-011-c3",
+          "n1: extra adr-016-c2",
+          "c10-sarif: extra adr-016-c2",
+          "c10-unnamed: extra adr-016-c2"
+        ],
+        "fn": 0,
+        "fp": 5,
+        "precision": "16 of 21",
+        "recall": "16 of 16",
+        "tp": 16
+      },
+      "units": {
+        "c10-sarif": [
+          "adr-016-c10",
+          "adr-016-c2",
+          "hard-rule-4-copy"
+        ],
+        "c10-unnamed": [
+          "adr-016-c10",
+          "adr-016-c2",
+          "hard-rule-4-copy"
+        ],
+        "f1": [
+          "hard-rule-4-copy"
+        ],
+        "f2": [
+          "hard-rule-4-copy"
+        ],
+        "f3": [
+          "adr-004-c3",
+          "hard-rule-4-copy"
+        ],
+        "f4": [
+          "hard-rule-4-copy"
+        ],
+        "f5": [
+          "adr-015-c2",
+          "adr-015-c9",
+          "hard-rule-4-copy"
+        ],
+        "f6": [
+          "adr-015-c2",
+          "adr-015-c9",
+          "hard-rule-4-copy"
+        ],
+        "f7": [
+          "hard-rule-4-copy"
+        ],
+        "f8": [
+          "adr-016-c10",
+          "adr-016-c2",
+          "hard-rule-4-copy"
+        ],
+        "f9": [
+          "adr-004-c3",
+          "adr-011-c3",
+          "hard-rule-4-copy"
+        ],
+        "h4-port": [
+          "hard-rule-4-copy"
+        ],
+        "h4-read": [
+          "hard-rule-4-copy"
+        ],
+        "n1": [
+          "adr-016-c10",
+          "adr-016-c2",
+          "hard-rule-4-copy"
+        ],
+        "n2": [
+          "adr-015-c2",
+          "adr-015-c9",
+          "hard-rule-4-copy"
+        ],
+        "s-compliant": [
+          "adr-015-c2",
+          "adr-015-c9",
+          "hard-rule-4-copy"
+        ],
+        "s-four": [
+          "adr-015-c2",
+          "adr-015-c9",
+          "hard-rule-4-copy"
+        ]
+      }
+    },
+    {
+      "adrs": {
+        "c10-sarif": [
+          "ADR-001",
+          "ADR-016"
+        ],
+        "c10-unnamed": [
+          "ADR-001",
+          "ADR-016"
+        ],
+        "f1": [
+          "ADR-001",
+          "ADR-003",
+          "ADR-017"
+        ],
+        "f2": [
+          "ADR-001",
+          "ADR-003",
+          "ADR-017"
+        ],
+        "f3": [
+          "ADR-001",
+          "ADR-004"
+        ],
+        "f4": [
+          "ADR-001",
+          "ADR-002",
+          "ADR-003"
+        ],
+        "f5": [
+          "ADR-001",
+          "ADR-015"
+        ],
+        "f6": [
+          "ADR-001",
+          "ADR-015"
+        ],
+        "f7": [
+          "ADR-017"
+        ],
+        "f8": [
+          "ADR-001",
+          "ADR-016"
+        ],
+        "f9": [
+          "ADR-001",
+          "ADR-004"
+        ],
+        "h4-port": [
+          "ADR-001",
+          "ADR-002",
+          "ADR-003"
+        ],
+        "h4-read": [
+          "ADR-002",
+          "ADR-003"
+        ],
+        "n1": [
+          "ADR-001",
+          "ADR-016"
+        ],
+        "n2": [
+          "ADR-001",
+          "ADR-015"
+        ],
+        "s-compliant": [
+          "ADR-001",
+          "ADR-015"
+        ],
+        "s-four": [
+          "ADR-001",
+          "ADR-015"
+        ]
+      },
+      "translator": "baseline-titles",
+      "unit_score": {
+        "errors": [
+          "f8: extra adr-016-c2",
+          "n1: extra adr-016-c2",
+          "c10-sarif: extra adr-016-c2",
+          "c10-unnamed: extra adr-016-c2"
+        ],
+        "fn": 0,
+        "fp": 4,
+        "precision": "16 of 20",
+        "recall": "16 of 16",
+        "tp": 16
+      },
+      "units": {
+        "c10-sarif": [
+          "adr-016-c10",
+          "adr-016-c2",
+          "hard-rule-4-copy"
+        ],
+        "c10-unnamed": [
+          "adr-016-c10",
+          "adr-016-c2",
+          "hard-rule-4-copy"
+        ],
+        "f1": [
+          "hard-rule-4-copy"
+        ],
+        "f2": [
+          "hard-rule-4-copy"
+        ],
+        "f3": [
+          "adr-004-c3",
+          "hard-rule-4-copy"
+        ],
+        "f4": [
+          "hard-rule-4-copy"
+        ],
+        "f5": [
+          "adr-015-c2",
+          "adr-015-c9",
+          "hard-rule-4-copy"
+        ],
+        "f6": [
+          "adr-015-c2",
+          "adr-015-c9",
+          "hard-rule-4-copy"
+        ],
+        "f7": [
+          "hard-rule-4-copy"
+        ],
+        "f8": [
+          "adr-016-c10",
+          "adr-016-c2",
+          "hard-rule-4-copy"
+        ],
+        "f9": [
+          "adr-004-c3",
+          "hard-rule-4-copy"
+        ],
+        "h4-port": [
+          "hard-rule-4-copy"
+        ],
+        "h4-read": [
+          "hard-rule-4-copy"
+        ],
+        "n1": [
+          "adr-016-c10",
+          "adr-016-c2",
+          "hard-rule-4-copy"
+        ],
+        "n2": [
+          "adr-015-c2",
+          "adr-015-c9",
+          "hard-rule-4-copy"
+        ],
+        "s-compliant": [
+          "adr-015-c2",
+          "adr-015-c9",
+          "hard-rule-4-copy"
+        ],
+        "s-four": [
+          "adr-015-c2",
+          "adr-015-c9",
+          "hard-rule-4-copy"
+        ]
+      }
+    },
+    {
+      "adrs": {
+        "c10-sarif": [
+          "ADR-001",
+          "ADR-016"
+        ],
+        "c10-unnamed": [
+          "ADR-001",
+          "ADR-016"
+        ],
+        "f1": [
+          "ADR-001",
+          "ADR-003",
+          "ADR-017"
+        ],
+        "f2": [
+          "ADR-001",
+          "ADR-003",
+          "ADR-017"
+        ],
+        "f3": [
+          "ADR-001",
+          "ADR-004",
+          "ADR-011"
+        ],
+        "f4": [
+          "ADR-001",
+          "ADR-002",
+          "ADR-003"
+        ],
+        "f5": [
+          "ADR-001",
+          "ADR-015"
+        ],
+        "f6": [
+          "ADR-001",
+          "ADR-015"
+        ],
+        "f7": [
+          "ADR-017"
+        ],
+        "f8": [
+          "ADR-001",
+          "ADR-016"
+        ],
+        "f9": [
+          "ADR-001",
+          "ADR-004",
+          "ADR-011"
+        ],
+        "h4-port": [
+          "ADR-001",
+          "ADR-002",
+          "ADR-003"
+        ],
+        "h4-read": [
+          "ADR-001",
+          "ADR-002",
+          "ADR-003"
+        ],
+        "n1": [
+          "ADR-001",
+          "ADR-016"
+        ],
+        "n2": [
+          "ADR-001",
+          "ADR-015"
+        ],
+        "s-compliant": [
+          "ADR-001",
+          "ADR-015"
+        ],
+        "s-four": [
+          "ADR-001",
+          "ADR-015"
+        ]
+      },
+      "translator": "baseline-titles",
+      "unit_score": {
+        "errors": [
+          "f3: extra adr-011-c3",
+          "f8: extra adr-016-c2",
+          "f9: extra adr-011-c3",
+          "n1: extra adr-016-c2",
+          "c10-sarif: extra adr-016-c2",
+          "c10-unnamed: extra adr-016-c2"
+        ],
+        "fn": 0,
+        "fp": 6,
+        "precision": "16 of 22",
+        "recall": "16 of 16",
+        "tp": 16
+      },
+      "units": {
+        "c10-sarif": [
+          "adr-016-c10",
+          "adr-016-c2",
+          "hard-rule-4-copy"
+        ],
+        "c10-unnamed": [
+          "adr-016-c10",
+          "adr-016-c2",
+          "hard-rule-4-copy"
+        ],
+        "f1": [
+          "hard-rule-4-copy"
+        ],
+        "f2": [
+          "hard-rule-4-copy"
+        ],
+        "f3": [
+          "adr-004-c3",
+          "adr-011-c3",
+          "hard-rule-4-copy"
+        ],
+        "f4": [
+          "hard-rule-4-copy"
+        ],
+        "f5": [
+          "adr-015-c2",
+          "adr-015-c9",
+          "hard-rule-4-copy"
+        ],
+        "f6": [
+          "adr-015-c2",
+          "adr-015-c9",
+          "hard-rule-4-copy"
+        ],
+        "f7": [
+          "hard-rule-4-copy"
+        ],
+        "f8": [
+          "adr-016-c10",
+          "adr-016-c2",
+          "hard-rule-4-copy"
+        ],
+        "f9": [
+          "adr-004-c3",
+          "adr-011-c3",
+          "hard-rule-4-copy"
+        ],
+        "h4-port": [
+          "hard-rule-4-copy"
+        ],
+        "h4-read": [
+          "hard-rule-4-copy"
+        ],
+        "n1": [
+          "adr-016-c10",
+          "adr-016-c2",
+          "hard-rule-4-copy"
+        ],
+        "n2": [
+          "adr-015-c2",
+          "adr-015-c9",
+          "hard-rule-4-copy"
+        ],
+        "s-compliant": [
+          "adr-015-c2",
+          "adr-015-c9",
+          "hard-rule-4-copy"
+        ],
+        "s-four": [
+          "adr-015-c2",
+          "adr-015-c9",
+          "hard-rule-4-copy"
+        ]
+      }
+    }
+  ],
+  "stability": "14 of 17",
+  "unit_stability": "15 of 17"
+}

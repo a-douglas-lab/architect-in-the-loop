@@ -466,6 +466,17 @@ Units load deterministically, selected by impact set or touched paths, not by a 
 
 **Spike, first item of Step 7:** build three units of different kinds, each with tests: ADR-016@v1 C10 (mechanical), ADR-015@v1 C2 (judgement), and one hard rule. Re-run f8 with its unit loaded, and measure whether the miss becomes a catch. Run it through the discernment step (D1) before choosing to build or borrow. This is also an early prototype of the capability's own selection and checking (A1, T7).
 
+**Spike run (2 Nov), awaiting Andy's review** ([spikes/rule-units/](spikes/rule-units/README.md)). After the prior art, Andy reshaped it: "Feels like we need the concept of ubiquitous language/glossary as domain driven design establishes, to align everything", and selection, validation and reporting as distinct steps. Approved: "go ahead, glossary in the spike folder for now." Built: a glossary (capability and subject terms kept apart, ADR-001@v2 C1), three units (ADR-016@v1 C10, ADR-015@v1 C2, hard rule 4's copy clause) and four decoys, 17 labelled fixtures, expectations committed first. Results ([results.md](spikes/rule-units/results.md)):
+
+- **f8 caught in 3 of 3** runs with its unit loaded (was 0 of 3), all CRITICAL, with no ADR opened. No CRITICAL on the f1 control; one LOW advisory row naming the loaded hard rule.
+- **Translators:** a constrained model mapping artefacts to glossary IDs scored 31 of 31 terms in each of three runs, with identical outputs. Alias matching missed every paraphrase (24 of 31); BM25 matched almost everything (precision 30 of 92).
+- **Selection:** the best translator and a model reading ADR titles both reached 16 of 16 unit recall, so on this small set selection by title wasn't what failed f8: the constraint text never reached `analyze`. Units added constraint-level delivery and stable output (17 of 17 fixtures against 14 of 17).
+- **Applicability:** all five false selections by the best translator were ADR-011@v1 C3 matched on one term; applicability needs conjunctions.
+- **Checks:** the mechanical and bright-line checks blocked and passed as expected (27 cases), with three predicted misses; the ADR-015@v1 C2 rubric gave 15 of 15 expected verdicts.
+- **Delivery, recommended, not decided** ([delivery.md](spikes/rule-units/delivery.md)): a deterministic step before `analyze` now, and the same core behind an MCP server later, called by a harness hook or the orchestrator. Not a skill or Spec Kit's `before_analyze` hook, which leave the trigger to the model.
+
+Limits: 17 small fixtures and labels written by the author, and one model family throughout. Selection recall on real plans (the DEV-1 to DEV-3 spike above) is still unmeasured.
+
 **Prior art to review (found 8 Oct, Spec Kit community catalogue):**
 
 - *adrkit* (github.com/mbeacom/adrkit, Apache-2.0): pulls the decisions governing a piece of work into agent context, checks plans against them, and drafts ADRs from plans. Close to our selection and checking ideas; state what we add beyond it. Its Spec Kit extension is pinned to Spec Kit `>=0.13.0,<1.2.0` (checked 1 Nov; an earlier note said below 1.1.0), so v1.1.2 is in range. Installing it would need a source review and an ADR (ADR-009@v2 C4, C5).
