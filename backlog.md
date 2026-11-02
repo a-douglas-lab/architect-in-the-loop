@@ -792,7 +792,13 @@ The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (
 - **Backstop:** a deny rule naming the private evaluation repo's path (hard rule 1) was added to Andy's user settings on 20 Oct. It lives outside this public repo and hasn't been tested, because testing it means trying to read the repo. In one documented setup (no managed settings, and no Team or Enterprise login), a mod can approve a call that a deny rule refuses, so the rule is a backstop, not a guarantee.
 - **Limit:** shell commands aren't refused the same way, and none of these controls contain a script that opens files itself (Python, Node). Only the OS-level sandbox does. It runs on macOS, Linux and WSL2, not native Windows (Claude Code's sandboxing documentation). Whether to move to WSL2 is open.
 
-**Open:** the exact `additionalDirectories` list, settled while testing; whether the write hook also checks paths named in shell commands; which paths count as protected (the 5 Oct hook "blocking writes to protected paths" has no list).
+**Open:** the exact `additionalDirectories` list, settled while testing; whether the write hook also checks paths named in shell commands.
+
+**Decided (2 Nov, Andy), for Step 7** ([brief](docs/sessions/2026-11-02-step7-brief.md)):
+
+- **Protected paths:** `.specify/memory/constitution.md`, `docs/adr/`, `REVIEW.md`, `CLAUDE.md`, `.claude/settings*.json`, `tests/constitution/expected.md`, and `subject/` from this repository's side. Edits there need Andy's approval: they are asked for, not blocked outright.
+- **Order:** the rule-unit spike (T6) first. The Claude Code controls and the bootstrap guard run in parallel as a second track, in their own worktree (ADR-010@v1 C2, exercised for the first time).
+- **The rule-unit spike is written in Python,** in a spike folder. This doesn't decide T5.
 
 **Decided (1 Nov, Andy): behaviour is tested before a PR.** No capability, skill, hook or constitution change opens a PR until its behaviour has been tested, with expected results written first. Recorded in [ADR-012](docs/adr/ADR-012-independent-checks-and-staged-autonomy.md) (v2, C10). The first example is [tests/constitution/](tests/constitution/README.md).
 
