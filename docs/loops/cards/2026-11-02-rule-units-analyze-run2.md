@@ -37,7 +37,7 @@ Tests whether loading selected rule units before `analyze` turns f8's miss (a br
 
 - **Signal:** for the deterministic checks, pytest against each unit's expected cases. For model runs, none inside the run: each ran once and was scored afterwards.
 - **Stop condition:** each run wrote its output file.
-- **Iteration cap:** one attempt per run. Not reached; none failed.
+- **Iteration cap:** one attempt per run, with no retries; none needed one.
 - **Iterations taken:** 1.
 
 ## 6. Output
@@ -49,12 +49,12 @@ Tests whether loading selected rule units before `analyze` turns f8's miss (a br
 
 | Check | Type | Pass criterion | Result |
 | --- | --- | --- | --- |
-| Unit tests for ADR-016@v1 C10 and hard rule 4 | Deterministic | Every non-todo case as expected; at least one case runs | 27 passed; 3 todo cases missed as predicted |
+| Unit tests for ADR-016@v1 C10 and hard rule 4 | Deterministic | Every non-todo case as expected; at least one case runs | 13 of 13 cases as expected; 3 todo cases missed as predicted (pytest overall: 27 passed, including 12 pipeline tests and 2 meta-tests) |
 | Rubric for ADR-015@v1 C2 | Rubric, 3 runs | Verdicts as expected | 15 of 15 |
 | Translator selection | Rates against labels | Reported, not gated | Constrained model 31 of 31 terms, each run |
 | f8 catch | Model, 3 runs | A finding naming C10 or SARIF | 3 of 3, all CRITICAL |
 | f1 control | Model, 3 runs | No CRITICAL; no finding naming hard rule 4 | No CRITICAL 3 of 3; a LOW advisory row in 1 of 3 |
-| Record schema | Deterministic | Records validate | Pass, for the deterministic records |
+| Record schema | Deterministic | Records validate | Pass, for the deterministic records, which all have empty findings and measurements |
 
 The labels are a human judgement. They could become a check only with a second labeller, or with labels drawn from real plans and their reviews.
 
@@ -82,13 +82,14 @@ The labels are a human judgement. They could become a check only with a second l
 | --- | --- | --- | --- | --- |
 | A shell script writing fixtures broke on apostrophes | Quoting prose in bash | Wrote the fixtures with a Python script | Nowhere (author's practice) | Fill in on the next card |
 | Five false selections of ADR-011@v1 C3 by the best translator | One term is too coarse for that rule's applicability | Proposed: conjunctions in `applies` | delivery.md, open items | Fill in on the next card |
+| Constrained model's unit precision predicted 85% or more; came out 76% | One-term applicability for ADR-011@v1 C3 | Recorded, not edited; conjunctions proposed | results.md | n/a |
 | Severity predicted as HIGH; came out CRITICAL | Didn't anticipate Principle II making loaded ADR constraints binding | Recorded, not edited | results.md | n/a |
 | The "(test fixture)" label and folder names would leak answers | As in run 1 | Neutral copies made by a script this time (`python -m ruleunits neutral`) | The runner | Fixed |
 
 ## 11. Ready to automate?
 
 - [ ] Stable inputs and outputs: the rules-file shape is new
-- [x] A trustworthy check: the deterministic checks are; the translator was stable across three runs
+- [ ] A trustworthy check: the deterministic checks pass their cases, but on 17 author-written fixtures; the translator is a model step, stable across three runs, which isn't the same as trustworthy
 - [ ] Known failures: the conjunction fix isn't built
 - [ ] An evidence-based gate: Andy hasn't reviewed yet
 - [x] Known cost

@@ -8,22 +8,23 @@ Phase 1, Foundations. A session started from the Step 7 planning session, workin
 - **v2 after Andy's challenges:** CUE, BM25, ubiquitous language and SKOS added; selection, validation and reporting split into distinct, separately tested steps.
 - **Spike built and run** ([results](../../spikes/rule-units/results.md)): a glossary, three units (ADR-016@v1 C10, ADR-015@v1 C2, hard rule 4's copy clause) and four decoys, 17 labelled fixtures, three translators against a title baseline, and the f8 re-run. Expectations committed first. Run card: [analyze with rule units, run 2](../loops/cards/2026-11-02-rule-units-analyze-run2.md).
 - **Delivery recommendation** ([delivery.md](../../spikes/rule-units/delivery.md)).
+- **Review run 12** on the whole spike: 2 High, 5 Medium, 9 Low, 5 nits, all fixed or answered ([card](../loops/cards/2026-11-02-rule-units-review-run12.md)).
 
 ## Decided
 
 - **Andy, 2 Nov:** "go ahead, glossary in the spike folder for now." This approved the reshaped spike: a glossary as the ubiquitous language, a translator to it as its own tested step, and selection, validation and reporting as distinct steps.
-- v1's other recommendations (SARIF version, what counts as a catch, the f1 control, results kept in the spike folder) were applied under that go-ahead, and stated in expected.md for Andy to overrule.
+- **Not ruled by Andy, applied as the author's choices** and listed in prior-art.md for his ruling: build rather than install adrkit; judgement units selected deterministically (v1 question 6); hard rule 4 always loaded (a change from v1); SARIF version, what counts as a catch, the f1 control, results kept in the spike folder.
 
 ## Found
 
-- **f8 is caught in 3 of 3 runs** with its unit loaded (Run B: 0 of 3), all CRITICAL, with no ADR opened. No CRITICAL on the f1 control.
-- **The constrained model translator made no term errors** (31 of 31, three runs, identical outputs). Alias missed every paraphrase; BM25 matched almost everything.
-- **A model reading ADR titles matched the best translator on unit recall** (16 of 16). It named ADR-016 for f8 every time when asked directly. So f8's miss in Run B was the constraint text never reaching `analyze`, not a failure to identify the ADR. This was a pre-registered counter-indicator, and it fired.
+- **f8 is caught in 3 of 3 runs** with its unit loaded (Run B: 0 of 3), all CRITICAL, with no ADR opened (self-reported). No CRITICAL on the f1 control.
+- **The constrained model translator made no term errors** (31 of 31, three runs, the same sets each run). Its unit precision, 76%, missed the 85% prediction. Alias missed every paraphrase; BM25 matched almost everything.
+- **A model reading ADR titles matched the best translator on unit recall** (16 of 16). It named ADR-016 for f8 every time when asked directly. So f8's miss in Run B was the unit never reaching `analyze`, not a failure to identify the ADR. The unit carried the constraint and its check's description; the spike can't separate the two. This was a pre-registered counter-indicator, and it fired.
 - **Applicability by one term is too coarse** for some rules: every false selection by the best translator was ADR-011@v1 C3.
 
 ## Proposed
 
-- **Delivery:** a deterministic step before `analyze` now, using the spike's core; the same core behind an MCP server later, called by a harness hook or the capability's orchestrator. Not a skill, and not Spec Kit's `before_analyze` hook, since both leave the trigger to the model.
+- **Delivery:** a deterministic step before `analyze` now, built from the spike's parts (the joined step doesn't exist yet); the same core behind an MCP server later, called by a harness hook or the capability's orchestrator. Not a skill, and not Spec Kit's `before_analyze` hook, since both leave the trigger to the model.
 
 ## Open for next step
 

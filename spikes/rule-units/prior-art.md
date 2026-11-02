@@ -1,8 +1,8 @@
 # Rule units: problem, criteria and prior art
 
-Status: v2, reviewed by Andy · 2 Nov 2026 · Step 7, item 1 ([brief](../../docs/sessions/2026-11-02-step7-brief.md)); backlog T6, "Rule units"
+Status: v2 · 2 Nov 2026 · v1 reviewed by Andy; the v2 sections were written after his challenges and first reviewed in [run 12](../../docs/loops/cards/2026-11-02-rule-units-review-run12.md), not yet by Andy · Step 7, item 1 ([brief](../../docs/sessions/2026-11-02-step7-brief.md)); backlog T6, "Rule units"
 
-Steps 1 and 2 of the discernment method (backlog D1): the problem, the criteria, and prior art. v1 was reviewed by the adversarial reviewer ([run 11](../../docs/loops/cards/2026-11-02-rule-units-prior-art-review-run11.md)), then by Andy, whose challenges reshaped the spike. v2 adds CUE, BM25, ubiquitous language and SKOS, and replaces v1's eight questions with the shape Andy approved (see the end).
+Steps 1 and 2 of the discernment method (backlog D1): the problem, the criteria, and prior art. v1 was reviewed by the adversarial reviewer ([run 11](../../docs/loops/cards/2026-11-02-rule-units-prior-art-review-run11.md)), then by Andy, whose challenges reshaped the spike. v2 adds CUE, BM25, ubiquitous language and SKOS, and replaces v1's eight questions with the shape Andy approved and the choices still open to his ruling (see the end).
 
 ## Problem
 
@@ -103,7 +103,6 @@ From its README ([github.com/mbeacom/adrkit](https://github.com/mbeacom/adrkit))
 2. **In the tools examined, applicability is declared, not inferred:** Semgrep by `paths`, adrkit by typed `affects` and markers, Claude Code by `paths`. Nothing found selects by the content of a prose plan. That part is ours to design, and it is the part f8 needs.
 3. **Deterministic delivery needs something other than the model to trigger it:** a path match, a hook, or a step in the flow. Skills and tool search on their own leave the choice to the model.
 
-
 ## Added after Andy's review (v2)
 
 Andy's challenges, 2 Nov, quoted from chat: "Should CUE schema also be considered as part of the prior art capabilities?"; "if we're doing terms matching, this seems brittle, we'd likely need exact, near match etc. some BM25 like approach?. It feels like we need a compiler/translator to speak a consistent language."; "Feels like we need the concept of ubiquitous language/glossary as domain driven design establishes, to align everything."; "if we adopt the hook, we're relying on the LLM to run it aren't we?"; "we should run a set of tests to validate selection to see which works best, feels like we have selection, validation and reporting issues (which can be acted upon) a distinct process steps."; "i thought reporting in sarif didn't cover all aspects so we needed more than that?"
@@ -129,7 +128,7 @@ Andy's challenges, 2 Nov, quoted from chat: "Should CUE schema also be considere
 
 ### Reporting
 
-You ruled on 30 Oct that SARIF covers rule violations only, and measurement tools keep their native formats; how outputs reach the capability is open (Q2), with a proposed "small typed evidence record per change" (backlog Q2, Q4). Rubric scores, rates and translator accuracy are measurements, not violations. So the spike emits one typed record per run, with violations in a SARIF-shaped part. It is early evidence for Q2 and decides neither ADR-016 nor Q2.
+Andy ruled on 30 Oct that SARIF covers rule violations only, and measurement tools keep their native formats; how outputs reach the capability is open (Q2), with a proposed "small typed evidence record per change" (backlog Q2, Q4). Rubric scores, rates and translator accuracy are measurements, not violations. So the spike emits one typed record per run, with violations in a SARIF-shaped part. It is early evidence for Q2 and decides neither ADR-016 nor Q2.
 
 ### Hooks and determinism
 
@@ -153,12 +152,17 @@ Selection, validation and reporting are distinct steps, each tested on its own:
 
 Then the f8 re-run: the selected units' text (not the check's findings) given to `analyze` by a script outside the model, three times, blind.
 
-How the rest of v1's questions were settled:
+What Andy's challenges settled:
 
-- **Build, borrowing shapes; don't install adrkit:** within "go ahead".
-- **Plan-time applicability:** glossary terms from a tested translator, replacing v1's raw `terms` regular expressions (Andy's challenge on brittleness).
-- **Judgement units:** selected deterministically, like the others, and the selection comparison measures it (Andy: "we should run a set of tests to validate selection").
-- **SARIF version, catch definition, false-alarm control and where results live:** v1's recommendations, applied under "go ahead" and stated in [expected.md](expected.md). Andy can overrule any of them at review; the results would then need a dated re-run.
-- **Not ruled, so left out:** plans declaring their own glossary terms (it would change the plan template), and embeddings (a new dependency).
+- **Plan-time applicability:** glossary terms from a tested translator, replacing v1's raw `terms` regular expressions (his challenge on brittleness, and the glossary he proposed).
 
-The three units are unchanged from v1: ADR-016@v1 C10 (mechanical), ADR-015@v1 C2 (judgement, following both of its conditions), and the copy clause of hard rule 4 (bright line, always loaded, as T6's four routes propose for bright lines).
+What Andy has not ruled on. Each was applied in the spike as the author's choice, under "go ahead"; all but the first are stated in [expected.md](expected.md). It isn't clear that "go ahead" covered these, so each needs his ruling at review; overruling one would need a dated re-run:
+
+- **Build, borrowing shapes; don't install adrkit** (v1 question 1).
+- **Judgement units selected deterministically, like the others** (v1 question 6). T6's "Rule units" paragraph says units load deterministically; its four-routes table, a proposal, says judgement rules are selected by the model. The spike followed the paragraph. Andy's "we should run a set of tests to validate selection" asked for selection to be tested, not for this choice.
+- **Hard rule 4 always loaded,** taken from the bright-line row of the same proposed four-routes table. This is a change from v1, which selected it by plan-stage `terms`. It shaped the f1 control: hard rule 4 was loaded on a feature that never mentions copying.
+- **SARIF version, catch definition, false-alarm control and where results live** (v1's recommendations).
+
+**Not ruled, so left out:** plans declaring their own glossary terms (it would change the plan template), and embeddings (a new dependency).
+
+The three units are the same rules as in v1: ADR-016@v1 C10 (mechanical), ADR-015@v1 C2 (judgement, following both of its conditions), and the copy clause of hard rule 4 (bright line). Only how they are selected changed.
