@@ -9,7 +9,7 @@ Each ADR constraint, or hard rule, becomes a unit with an identity, applicabilit
 | [prior-art.md](prior-art.md) | Problem, criteria, prior art, and the shape Andy approved |
 | [expected.md](expected.md) | Method and predictions, committed before any run |
 | [results.md](results.md) | What happened, as rates |
-| [delivery.md](delivery.md) | Recommendation: MCP server, skill, or a step before `analyze` |
+| [delivery.md](delivery.md) | Delivery options and Andy's decision (2 Nov): an MCP server joining the parts, called by a hook or the orchestrator |
 | [glossary/](glossary/) | The ubiquitous language: capability terms, and subject terms standing in for the contract |
 | [units/](units/) | Three units and four decoys; `index.yaml` is generated from them |
 | [fixtures/](fixtures/), [labels.yaml](labels.yaml) | Eight new fixtures; labels for all 17 |

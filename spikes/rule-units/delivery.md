@@ -1,6 +1,6 @@
 # Delivery: how rule units should reach the agents
 
-Status: recommendation for Andy · 2 Nov 2026 · from the spike's [results](results.md). Not decided; adopting any option closes part of T6 and needs an ADR.
+Status: decided by Andy, 2 Nov 2026 · from the spike's [results](results.md). Recorded under T6's Decided list in [backlog.md](../../backlog.md); the ADR is written when T6 closes.
 
 ## What the evidence says delivery must do
 
@@ -16,13 +16,13 @@ Status: recommendation for Andy · 2 Nov 2026 · from the spike's [results](resu
 | Skill | No: model-invoked, or `paths`, which can't tell features apart at plan time | Poor | Small | The failure mode it is meant to fix |
 | Spec Kit `before_analyze` hook | No: the agent follows SKILL.md's instruction to run it | Partial | Small | Possibly an extension under ADR-009@v2 C4 |
 | **Step before `analyze`**: a script runs translate, select and check, then hands the rules file to `analyze` | Yes | **This is what the spike ran: 3 of 3** | Small. Now built as `join.py`, the core the MCP server calls; on its own it still needs something to run it | Someone must run it. In this repository that means a hook or a wrapper, and the hook belongs to the controls track |
-| **MCP server**: `get_rules(artefacts, stage)`, `check(unit, artefacts)`, `index()` | Only when called by a harness hook (`"type": "mcp_tool"`) or by the capability's orchestrator; tool search alone is model-triggered | Good, and it is the capability's own interface (A1, T4) | Medium | More to build and test; still needs the hook or orchestrator to call it |
+| **MCP server**: `get_rules(artefacts, stage)`, `check(unit, artefacts)`, `index()`, as first proposed (built with `rule_units_hook`, `get_rules` and `index`; checks run inside the first two) | Only when called by a harness hook (`"type": "mcp_tool"`) or by the capability's orchestrator; tool search alone is model-triggered | Good, and it is the capability's own interface (A1, T4) | Medium | More to build and test; still needs the hook or orchestrator to call it |
 
-## Recommendation
+## Decision
 
-An earlier version split this into "now, a step before `analyze`" and "later, an MCP server". Andy, 2 Nov: "make sure you add the step that joins the parts (MCP server called by a hook/orchestrator), this feels like a roadmap you decided." I read that as asking for one recommendation rather than stages, and for the server to be built now. That reading is mine and needs Andy's confirmation:
+An earlier version split this into "now, a step before `analyze`" and "later, an MCP server". Andy, 2 Nov: "make sure you add the step that joins the parts (MCP server called by a hook/orchestrator), this feels like a roadmap you decided." I read that as asking for one recommendation rather than stages, and for the server to be built now. Andy confirmed it, 2 Nov: "yes, one recommendation with the server built now." The decision, in the author's words; "a harness hook" and "not by the model's choice" are the author's reading of Andy's "a hook/orchestrator", not his ruling:
 
-**An MCP server that joins the parts, called by a harness hook or by the capability's orchestrator, not by the model's choice.** One call translates the feature's artefacts, validates the terms, selects units, runs the mechanical and bright-line checks against the feature, and returns the selected units' text and any findings. A hook returns these to the session as `additionalContext`; the orchestrator would read the same result. That makes rule units the capability's interface for selection and checking, as A1 proposes.
+**An MCP server that joins the parts, called by a harness hook or by the capability's orchestrator, not by the model's choice.** One call translates the feature's artefacts, validates the terms, selects units, runs the mechanical and bright-line checks against the feature, and returns the selected units' text and any findings. A hook returns these to the session as `additionalContext`; the orchestrator would read the same result. The author's rationale, not ruled: that would make rule units the capability's interface for selection and checking, as A1 proposes.
 
 In this repository, wiring the hook is the controls track's area (ADR-011@v1, D1), and `.claude/settings*.json` is a protected path. So the spike tests the hook's contract without editing settings, and the wiring needs Andy's approval.
 
@@ -30,7 +30,7 @@ In this repository, wiring the hook is the controls track's area (ADR-011@v1, D1
 
 The server would need the subject glossary (it holds eShop terms such as "eshop" and "ordering.domain") to come from the fork's contract, not the capability (ADR-001@v2 C1, C2).
 
-**Not recommended:** a skill, or Spec Kit's `before_analyze` hook, as the trigger. Both leave the decision to the model.
+**Not chosen, on the author's reading:** a skill, or Spec Kit's `before_analyze` hook, as the trigger. Both leave the decision to the model.
 
 ## What the spike leaves open
 

@@ -417,9 +417,18 @@ Q1 treats enforcement as a map of rule types to mechanisms rather than a single 
 
 **Open:** whether agent orchestration also runs in .NET (driving Claude Code through its command-line interface) or in a small TypeScript or Python worker using the Claude Agent SDK, called from the C# API. The tension: the subject is .NET, but the agent orchestration ecosystem is strongest in TypeScript and Python. Criteria: delivery speed, how it reads to target employers, and fit with the CV story.
 
-### T6. ADR strategy across the system [B1] · Open
+### T6. ADR strategy across the system [B1] · Partly decided
 
-How ADRs are stored, selected, referenced by agents and kept current, including the personas, nine use cases and evaluation criteria in the original document. Depends on T1, T2 and Q1. ADR-009@v2 C9 adopts constraints-first loading; how ADRs are selected is still open, and the wider progressive-disclosure approach remains a hypothesis.
+How ADRs are stored, selected, referenced by agents and kept current, including the personas, nine use cases and evaluation criteria in the original document. Depends on T1, T2 and Q1. ADR-009@v2 C9 adopts constraints-first loading; selection of judgement rules is decided (below), selection in general (by domain, path or impact set) is still open, and the wider progressive-disclosure approach remains a hypothesis.
+
+**Decided (2 Nov), by Andy after the rule-unit spike** ([spikes/rule-units/](spikes/rule-units/README.md)). The ADR is written when T6 closes.
+
+- **Judgement units are selected deterministically from glossary terms:** "deterministic judgement-unit selection approved". The step that turns artefacts into terms may use a model, as the spike's translator does, with its output validated against the glossary; the selection after it is deterministic.
+- **Hard rule 4 stays always loaded:** "keep hard rule 4 always loaded".
+- **Delivery: an MCP server that joins the parts, built now, called by a hook or by the capability's orchestrator.** Andy: "make sure you add the step that joins the parts (MCP server called by a hook/orchestrator), this feels like a roadmap you decided", then, asked to confirm that this meant one recommendation rather than "now a step, later a server": "yes, one recommendation with the server built now."
+- **Author's reading, not ruled by Andy:** "a hook" means a harness hook, such as Claude Code's `PreToolUse`, and not a skill or Spec Kit's `before_analyze` hook, which leave the trigger to the model ([delivery.md](spikes/rule-units/delivery.md)). Andy raised the `before_analyze` point himself; confirm with him before the ADR.
+
+**Open:** the rest of T6's scope (how ADRs are stored, referenced and kept current; selection by domain, path or impact set; conflict detection; enforcement and human attention, as listed under the limits below); build rather than install adrkit; the spike's other choices (SARIF version, what counts as a catch, the f1 control, where results live); hiding the server's `get_rules` and `index` from the model, and which trigger runs it in this repository (both part of the hook wiring, with the controls track, D1); wiring needs Andy's approval; conjunctions in applicability; selection recall on real plans (the spike below), with a second labeller; the subject glossary coming from the fork's contract (ADR-001@v2 C1, C2); a generator and validator for authoring units at scale; CUE for applicability; and whether the glossary becomes a first-class artefact.
 
 **Scaling model (1 Nov).** Measured on the 19 ADRs before ADR-009 v2: 162 constraints; about 1,750 tokens per full ADR and about 240 per Constraints section, estimated at 4 characters a token. ADR counts and relevant sets below are assumptions, not measurements.
 
@@ -440,7 +449,7 @@ The model has no pass or fail test. Against an assumed 200,000-token window, loa
 
 **Parallel problems (1 Nov).** Where constraints live is a retrieval problem, and tool discovery and progressive disclosure solve the same one. Checked in their docs: skills keep descriptions in context and load bodies on invocation, or by a `paths` pattern; MCP tool search keeps tool names in context and loads definitions on search; path-scoped rules in `.claude/rules/` load when matching files are touched; adrkit selects decisions deterministically, by an `affects` glob or a `@adr` marker, with no embeddings. Its design is worth borrowing; installing it would need a source review and an ADR (ADR-009@v2 C4, C5).
 
-**Four routes, by kind of rule (proposed):**
+**Four routes, by kind of rule (proposed; the judgement row decided by Andy, 2 Nov):**
 
 | Kind of rule | Route | Selected by |
 | --- | --- | --- |
@@ -466,14 +475,14 @@ Units load deterministically, selected by impact set or touched paths, not by a 
 
 **Spike, first item of Step 7:** build three units of different kinds, each with tests: ADR-016@v1 C10 (mechanical), ADR-015@v1 C2 (judgement), and one hard rule. Re-run f8 with its unit loaded, and measure whether the miss becomes a catch. Run it through the discernment step (D1) before choosing to build or borrow. This is also an early prototype of the capability's own selection and checking (A1, T7).
 
-**Spike run (2 Nov), awaiting Andy's review** ([spikes/rule-units/](spikes/rule-units/README.md)). After the prior art, Andy reshaped it: "Feels like we need the concept of ubiquitous language/glossary as domain driven design establishes, to align everything", and selection, validation and reporting as distinct steps. Approved: "go ahead, glossary in the spike folder for now." Built: a glossary (capability and subject terms kept apart, ADR-001@v2 C1), three units (ADR-016@v1 C10, ADR-015@v1 C2, hard rule 4's copy clause) and four decoys, 17 labelled fixtures, expectations committed first. Results ([results.md](spikes/rule-units/results.md)):
+**Spike run (2 Nov); Andy's decisions are listed under Decided above; the branch awaits his local review** ([spikes/rule-units/](spikes/rule-units/README.md)). After the prior art, Andy reshaped it: "Feels like we need the concept of ubiquitous language/glossary as domain driven design establishes, to align everything", and selection, validation and reporting as distinct steps. Approved: "go ahead, glossary in the spike folder for now." Built: a glossary (capability and subject terms kept apart, ADR-001@v2 C1), three units (ADR-016@v1 C10, ADR-015@v1 C2, hard rule 4's copy clause) and four decoys, 17 labelled fixtures, expectations committed first. Results ([results.md](spikes/rule-units/results.md)):
 
 - **f8 caught in 3 of 3** runs with its unit loaded (was 0 of 3), all CRITICAL, with no ADR opened (self-reported). No CRITICAL on the f1 control; one LOW advisory row naming the loaded hard rule.
 - **Translators:** a constrained model mapping artefacts to glossary IDs scored 31 of 31 terms in each of three runs, the same sets each run; its unit precision, 76%, missed the 85% prediction. Alias matching missed every paraphrase (24 of 31); BM25 matched almost everything (precision 30 of 92).
 - **Selection:** the best translator and a model reading ADR titles both reached 16 of 16 unit recall, so on this small set selection by title wasn't what failed f8: the unit never reached `analyze`. The unit carried the constraint and its check's description, and the spike can't separate the two. Units added constraint-level delivery and stable selection (17 of 17 fixtures against the baseline's 15 of 17).
 - **Applicability:** all five false selections by the best translator were ADR-011@v1 C3 matched on one term; applicability needs conjunctions.
 - **Checks:** the mechanical and bright-line checks blocked and passed as expected (13 cases), with three predicted misses; the ADR-015@v1 C2 rubric gave 15 of 15 expected verdicts.
-- **Delivery, recommended, not decided** ([delivery.md](spikes/rule-units/delivery.md)): an MCP server joining the parts, called by a harness hook or the orchestrator. Not a skill or Spec Kit's `before_analyze` hook, which leave the trigger to the model.
+- **Delivery, decided by Andy on 2 Nov** (see Decided above; [delivery.md](spikes/rule-units/delivery.md)): an MCP server joining the parts, called by a harness hook or the orchestrator. Not a skill or Spec Kit's `before_analyze` hook, which leave the trigger to the model.
 - **Andy, 2 Nov, after the run:** "deterministic judgement-unit selection approved, keep hard rule 4 always loaded, make sure you add the step that joins the parts (MCP server called by a hook/orchestrator), this feels like a roadmap you decided." Build rather than install adrkit, and v1's other recommendations, are still not ruled.
 - **Joined step and MCP server built** (expectations first, [server-expected.md](spikes/rule-units/server-expected.md)): one call translates (Anthropic API, alias fallback), validates, selects, checks and returns hook output or a record. Passes over stdio and from the generated hook config. Live, in one headless Claude Code run by the author with Andy's key: the hook fired before `speckit-analyze`, the API translator ran, and `analyze` raised C10 as CRITICAL; not blind, and the model could see the server's other tools.
 
