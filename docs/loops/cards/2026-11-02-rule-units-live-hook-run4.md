@@ -18,12 +18,12 @@ Tests L1 to L4 in [server-expected.md](../../../spikes/rule-units/server-expecte
 
 - **Trigger:** Andy, 2 Nov: "i can provide an API key if it means you can run the live hook run?", then "key file saved, go ahead and run it."
 - **Inputs:** the spike at `e16fad0`; a neutral copy of f8 (`x02`); the generated settings and MCP config; Andy's key, read from a file outside the repository into the environment of each run only, never printed or written elsewhere.
-- **Context loaded:** user and project settings (not local), CLAUDE.md, the project's skills, the rule-unit server.
+- **Context loaded:** user and project settings (not local), CLAUDE.md, the auto-memory path the init event lists, the project's skills, the rule-unit server and its tool names.
 
 ## 3. Actor
 
 - **Who:** the author ran Claude Code 2.1.316 headless (`claude -p`), installed in a scratch folder and removed afterwards.
-- **Agent setup:** Claude Opus 5.5; tools Skill, Read, Glob, Grep, Bash and PowerShell; the only allowed shell command was the prerequisites script; spend capped at $2.
+- **Agent setup:** Claude Opus 5.5; tools Skill, Read, Glob, Grep, Bash and PowerShell; allowed shell command: the prerequisites script (two read-only `ls` commands were also accepted, one Bash command denied); spend capped at $2. The exact command is in results.md.
 - **Human role:** Andy provided the key and the go-ahead. server-expected.md planned for Andy to run the session; the author did.
 
 ## 4. What happened
@@ -65,7 +65,7 @@ Tests L1 to L4 in [server-expected.md](../../../spikes/rule-units/server-expecte
 
 | Measure | Value | How measured |
 | --- | --- | --- |
-| Wall time | Run 1, 17 s; run 2, 58 s, of which the hook took 8.0 s | Shell timer; hook log |
+| Wall time | Run 1, 14 s; run 2, 54 s, of which the hook took 8.0 s (shell timer: 17 s and 58 s) | `duration_ms` in each transcript; hook log |
 | Tokens / cost | Run 1, $0.10; run 2, $0.19, excluding the translator's own API call | `total_cost_usd` in each transcript |
 | Iterations | 2 | |
 | Leading indicator | f8 caught through the live hook: 1 of 1 | Report |
@@ -76,7 +76,7 @@ Tests L1 to L4 in [server-expected.md](../../../spikes/rule-units/server-expecte
 | Failure | Root cause | Fix | Where the fix landed | Recurred on the next run? |
 | --- | --- | --- | --- | --- |
 | Run 1: skills not loaded | `--setting-sources user` also drops project skills | `user,project` | hook/README.md | No |
-| Not blind | The scratch folder's path (it contains "spike-rule-units"), and the hook's text, name the spike | Not fixed; recorded | results.md | Fill in on the next card |
+| Not blind | The worktree's folder name, "spike-rule-units-0fd90a", is in every path the session saw; the hook's text and the server's tool names name it too | Not fixed; recorded | results.md | Fill in on the next card |
 | The model sees `get_rules` and `index` | The server offers every tool to the session | Not fixed; part of the wiring | delivery.md | Fill in on the next card |
 | Translator returned 2 terms beyond the labels | Unknown from one call | Not fixed; recorded | results.md | Fill in on the next card |
 
@@ -86,8 +86,8 @@ Tests L1 to L4 in [server-expected.md](../../../spikes/rule-units/server-expecte
 - [ ] A trustworthy check: L2 is inferred, and the translator's live output differs from the recorded one
 - [ ] Known failures: blindness and tool visibility are open
 - [ ] An evidence-based gate: Andy hasn't reviewed
-- [x] Known cost: about $0.19 a session plus one translator call
+- [ ] Known cost: about $0.19 a session; the translator call's cost isn't measured
 
 **Verdict:** keep at level 1. **Why:** one unblind run.
 
-**Next run changes:** a feature path that doesn't name the spike; hide `get_rules` and `index` from the session; three runs; log the translator call's tokens.
+**Next run changes:** a checkout whose path doesn't name the spike; hide `get_rules` and `index` from the session; three runs; log the translator call's tokens.

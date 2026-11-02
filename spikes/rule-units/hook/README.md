@@ -2,7 +2,7 @@
 
 Tests L1 to L4 in [server-expected.md](../server-expected.md): a Claude Code session in which a `PreToolUse` hook on the Skill tool calls the rule-unit MCP server, and `analyze` runs on a neutral copy of f8. Nothing under `.claude/` is edited; the hook and the server come from files passed on the command line.
 
-**Run on 2 Nov, headless,** by the author with Andy's key: L1 to L4 held ([results.md](../results.md), raw files in [runs/live/](../runs/live/)). For an unattended run, pass `--setting-sources "user,project"`, not `user` alone: `user` alone drops the project's skills, so the Skill call fails and the hook never fires. Leaving out `local` keeps `.claude/settings.local.json`'s broad allow rules out of the session.
+**Run on 2 Nov, headless,** by the author with Andy's key: L1 to L4 held in one unblind run, L2 by inference ([results.md](../results.md), raw files in [runs/live/](../runs/live/)). For an unattended run, pass `--setting-sources "user,project"`, not `user` alone: `user` alone drops the project's skills, so the Skill call fails and the hook never fires. Leaving out `local` keeps `.claude/settings.local.json`'s broad allow rules out of the session.
 
 ## Steps (PowerShell, from this worktree)
 
@@ -20,7 +20,7 @@ Tests L1 to L4 in [server-expected.md](../server-expected.md): a Claude Code ses
    $env:SPECIFY_FEATURE_DIRECTORY = "$env:TEMP\rule-units-live\x02"; $env:SPECIFY_FEATURE_NO_PERSIST = "1"
    ```
 
-3. For the model translator, set your API key in this shell first. Without one, the server falls back to alias and the log says so. I haven't confirmed that Claude Code passes the shell's environment to a stdio server; if the log's fallback reason is about authentication with the key set, it doesn't. The key never goes in a file.
+3. For the model translator, set your API key in this shell first. Without one, the server falls back to alias and the log says so. I haven't confirmed that Claude Code passes the shell's environment to a stdio server; if the log's fallback reason is about authentication with the key set, it doesn't. Don't put the key in this repository. (For the 2 Nov run, Andy kept it in a `.env` file outside the repository, read into the run's environment only.)
 
 4. Start the session from the repository root (Spec Kit resolves relative feature paths under the git root, the server under `${cwd}`; they agree only there):
 

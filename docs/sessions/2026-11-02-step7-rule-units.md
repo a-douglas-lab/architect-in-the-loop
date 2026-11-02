@@ -13,6 +13,7 @@ Phase 1, Foundations. A session started from the Step 7 planning session, workin
 - **The joined step and MCP server built** ([server-expected.md](../../spikes/rule-units/server-expected.md), committed first; [results](../../spikes/rule-units/results.md)): 52 tests pass, including the server over stdio and the generated hook config with a simulated hook payload (Claude Code not in the loop). Run card: [MCP server, run 3](../loops/cards/2026-11-02-rule-units-server-run3.md).
 - **Review run 13** on the rulings and the build: 0 High, 3 Medium, 7 Low, 4 nits; all fixed but one nit in a pre-registered file ([card](../loops/cards/2026-11-02-rule-units-review-run13.md)).
 - **Live hook run** with Andy's API key, headless Claude Code ([results](../../spikes/rule-units/results.md), [card](../loops/cards/2026-11-02-rule-units-live-hook-run4.md)): run 1 failed on setup (project skills not loaded); in run 2 the hook fired before `speckit-analyze`, the server's API translator ran, and `analyze` raised ADR-016@v1 C10 as CRITICAL. Not blind; one run.
+- **Review run 14** on the live run: 0 High, 2 Medium, 6 Low, 2 nits, all fixed ([card](../loops/cards/2026-11-02-rule-units-review-run14.md)).
 
 ## Decided
 
