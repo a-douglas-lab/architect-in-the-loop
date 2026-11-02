@@ -1,6 +1,6 @@
 # Rule units: problem, criteria and prior art
 
-Status: v2 · 2 Nov 2026 · v1 reviewed by Andy; the v2 sections were written after his challenges and first reviewed in [run 12](../../docs/loops/cards/2026-11-02-rule-units-review-run12.md), not yet by Andy · Step 7, item 1 ([brief](../../docs/sessions/2026-11-02-step7-brief.md)); backlog T6, "Rule units"
+Status: v2 · 2 Nov 2026 · v1 reviewed by Andy; the v2 sections were written after his challenges and first reviewed in [run 12](../../docs/loops/cards/2026-11-02-rule-units-review-run12.md), not yet by Andy; Andy's later rulings recorded near the end · Step 7, item 1 ([brief](../../docs/sessions/2026-11-02-step7-brief.md)); backlog T6, "Rule units"
 
 Steps 1 and 2 of the discernment method (backlog D1): the problem, the criteria, and prior art. v1 was reviewed by the adversarial reviewer ([run 11](../../docs/loops/cards/2026-11-02-rule-units-prior-art-review-run11.md)), then by Andy, whose challenges reshaped the spike. v2 adds CUE, BM25, ubiquitous language and SKOS, and replaces v1's eight questions with the shape Andy approved and the choices still open to his ruling (see the end).
 
@@ -172,9 +172,12 @@ Ruled by Andy after the run, 2 Nov: "deterministic judgement-unit selection appr
 - **Judgement units selected deterministically, like the others** (v1 question 6): approved. T6's four-routes table, which proposed model selection for judgement rules, no longer holds for them.
 - **Hard rule 4 always loaded,** a change from v1, which selected it by plan-stage `terms`: approved. It shaped the f1 control: hard rule 4 was loaded on a feature that never mentions copying.
 
-Still not ruled. Each was applied in the spike as the author's choice, under "go ahead"; all but the first are stated in [expected.md](expected.md). Overruling one would need a dated re-run:
+Ruled by Andy later on 2 Nov, asked whether to record the author's recommendation as decided: "yes, record it as decided".
 
-- **Build, borrowing shapes; don't install adrkit** (v1 question 1).
+- **Build, borrowing shapes; don't install adrkit** (v1 question 1): decided, recorded in backlog T6.
+
+Still not ruled. Applied in the spike as the author's choices, under "go ahead", and stated in [expected.md](expected.md). Overruling one would need a dated re-run:
+
 - **SARIF version, catch definition, false-alarm control and where results live** (v1's recommendations).
 
 **Not ruled, so left out:** plans declaring their own glossary terms (it would change the plan template), and embeddings (a new dependency).

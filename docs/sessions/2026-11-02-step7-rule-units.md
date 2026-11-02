@@ -16,6 +16,7 @@ Phase 1, Foundations. A session started from the Step 7 planning session, workin
 - **Review run 14** on the live run: 0 High, 2 Medium, 6 Low, 2 nits, all fixed ([card](../loops/cards/2026-11-02-rule-units-review-run14.md)).
 - **Andy's T6 decision recorded** in backlog T6 (now Partly decided). Review run 15: 2 High, 3 Medium, 4 Low, 5 nits; all but two nits fixed ([card](../loops/cards/2026-11-02-rule-units-review-run15.md)).
 - **Harness hook confirmed by Andy** and recorded. Review run 16: 0 High, 1 Medium, 1 Low, 2 nits, all fixed ([card](../loops/cards/2026-11-02-rule-units-review-run16.md)).
+- **adrkit decision recorded** (build, borrow shapes, don't install). Review run 17: 0 High, 0 Medium, 3 Low, 1 nit, all fixed ([card](../loops/cards/2026-11-02-rule-units-review-run17.md)).
 
 ## Decided
 
@@ -24,7 +25,8 @@ Phase 1, Foundations. A session started from the Step 7 planning session, workin
 - **Andy, 2 Nov, confirming:** "yes, one recommendation with the server built now. document the decision so we don't lose track of it later." Recorded as T6's Decided list in backlog.md, with T6 now Partly decided; the ADR is written when T6 closes. Delivery: an MCP server joining the parts, called by a hook or the orchestrator. That the hook is a harness hook, not a skill or `before_analyze`, was the author's reading.
 - **Andy, 2 Nov, confirming the reading:** "yes, harness hook is right". Relabelled as decided in T6. The question put to him named the alternatives: not a skill or Spec Kit's `before_analyze` hook, since both leave the trigger to the model.
 - **Andy, build choices:** the Anthropic API translator with an alias fallback; the MCP Python SDK in a spike venv; a live hook run from a spike settings file, which he runs.
-- **Still not ruled,** applied as the author's choices: build rather than install adrkit; SARIF version, what counts as a catch, the f1 control, results kept in the spike folder.
+- **Andy, 2 Nov, on adrkit:** "didn't you state adrkit didn't cover our requirements?" The author confirmed the prior art's three gaps and asked whether to record "build our own, borrowing adrkit's shapes; don't install it" as decided. Andy: "yes, record it as decided". Recorded in T6.
+- **Still not ruled,** applied as the author's choices: SARIF version, what counts as a catch, the f1 control, results kept in the spike folder.
 
 ## Found
 
