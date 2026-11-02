@@ -222,6 +222,7 @@ The end-to-end design of the capability: its components and agent roles, how wor
 
 **Open:**
 
+- **Rule units as the capability's core interface (proposed 2 Nov, T6).** Selecting the decisions that govern a change and checking it against them is the capability's job; the rule-unit spike in Step 7 is an early prototype of it.
 - **How autonomy rises: escalations become rules (proposed 1 Nov).** Log every escalation and its cause. When the same kind recurs, the coordinator decides once and it becomes a rule or precedence, which the system then applies. Autonomy grows because a human turns decisions into rules, not because the agent starts deciding. `product.md` already lists human interventions per outcome as a measure to report. DEV-1 to DEV-3 plus ten evaluation outcomes are too few samples to automate a class with confidence: this project can demonstrate the mechanism, not prove the numbers.
 - **Roles from strategic domain-driven design.** The subject system's bounded contexts shape the stewards; the capability's own context map (nine contexts in the sketch) decides which roles exist and which are LLM-driven or deterministic. Confirm the context map, including whether Evidence is its own context and where risk scoring lives.
 - **Human approval points.** The sketch's use-case ladder proposes them, scaled by risk. Confirm. Include which rule applies when a security defect is in touched code (ADR-016@v1 C9: fixed with a test and flagged) and also needed first (ADR-015@v1 S9: approval if it changes behaviour).
@@ -341,6 +342,7 @@ Option to evaluate in the T4 spike: use the hosted feature itself versus adoptin
 
 **Open:**
 
+0. Whether judgement rules from ADRs become rubrics inside rule units (T6, proposed 2 Nov), so each rubric carries its own test fixtures.
 1. Which rubrics are needed for the first thin slice? Likely R2, R3, R7 and R8.
 2. Binary criteria only, or graded scales for some?
 3. Which model tier grades, and is a different model family available and worth it?
@@ -452,6 +454,17 @@ The model has no pass or fail test. Against an assumed 200,000-token window, loa
 **Spike:** on DEV-1 to DEV-3, compare model-selected ADRs with deterministic matching on an `affects` field, and measure recall. Paths don't exist at specify and plan, so test impact-set domains mapping to ADRs (with T7). Selection recall hasn't been measured.
 
 **A further idea, not part of the spike:** generate ADR constraints into path-scoped rules in the fork, so a domain's constraints load when an agent touches its code.
+
+**Rule units (proposed by Andy, 2 Nov).** The constitution test showed `analyze` misses a breach buried in ADR text (f8, 3 of 3), because it reads only the constitution. A bigger constitution doesn't fix that; a different shape might. Each ADR constraint becomes a self-contained, testable unit:
+
+- **identity:** ID, version, constraint text, a link to its ADR;
+- **applicability:** which stages, domains or paths it governs (the `affects` idea above);
+- **check:** deterministic for mechanical rules (run at the Q6 layers), or a rubric for judgement rules (graded at plan time, A2 and A5);
+- **tests:** fixtures that must pass and must fail, with expected results written first (ADR-012@v2 C10).
+
+Units load deterministically, selected by impact set or touched paths, not by a model reading titles: an index is always present, and units are fetched on demand. Delivery options: an MCP server (`get_rules`, `check`; deterministic, and it is the capability's own interface), skills (progressive loading, but model-triggered), or a step before `analyze` (smallest, but changing Spec Kit's flow needs an ADR, ADR-009@v2 C4). Prior art: ESLint and Semgrep rules ship with their own tests; OPA policies use `opa test`; adrkit pairs `affects` with `evaluate`.
+
+**Spike, first item of Step 7:** build three units of different kinds, each with tests: ADR-016@v1 C10 (mechanical), ADR-015@v1 C2 (judgement), and one hard rule. Re-run f8 with its unit loaded, and measure whether the miss becomes a catch. Run it through the discernment step (D1) before choosing to build or borrow. This is also an early prototype of the capability's own selection and checking (A1, T7).
 
 **Prior art to review (found 8 Oct, Spec Kit community catalogue):**
 
@@ -653,7 +666,7 @@ Proposed principles:
 
 **Open:** does CUE earn its learning curve over JSON Schema plus OPA for the proposal and policy rows? Is NetArchTest or ArchUnitNET better maintained and more expressive today? Can the Aspire app model be checked reliably in tests?
 
-Output: the enforcement section of each baseline ADR (the ADR template, T2, defines the field), plus the published "share of ADR clauses enforced deterministically" metric. Each mechanism is tested blocking a violation when it is built, in the phase that builds it (*Andy, 2 Nov*; Q6).
+Output: the enforcement section of each baseline ADR (the ADR template, T2, defines the field), plus the published "share of ADR clauses enforced deterministically" metric. Each mechanism is tested blocking a violation when it is built, in the phase that builds it (*Andy, 2 Nov*; Q6). Rule units (T6, proposed) would give each mechanism one testable shape.
 
 ### Q2. Quality layer tooling · Open
 
