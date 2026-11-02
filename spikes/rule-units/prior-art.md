@@ -126,6 +126,17 @@ Andy's challenges, 2 Nov, quoted from chat: "Should CUE schema also be considere
 - **Borrow:** a term has one ID, one preferred label, a definition and aliases. The spike uses plain YAML in that shape, not RDF.
 - **Bounded contexts are required here, not optional.** ADR-001@v2 C1: the capability's code and prompts "MUST NOT contain subject-domain knowledge"; C2: that knowledge comes from the subject's contract. So the spike keeps two glossaries: capability terms, and subject terms (standing in for the contract, which in the real system lives in the fork, ADR-003).
 
+### Agentic DDD: a check for glossary matching (added 2 Nov, at Andy's request)
+
+Andy asked for "a quick check against alternatives for matching on glossary" in two sources. Neither offers a way to match text to glossary terms.
+
+- **agentic-ddd** ([DarrenLyons/agentic-ddd](https://github.com/DarrenLyons/agentic-ddd), MIT, plain markdown, no release version): a codebook for applying DDD's strategic patterns and event storming when agents write most of the code. Its `glossary.md` is prose for people: a heading per term and a sentence or two, with no IDs, aliases or schema. Nothing on the README or the glossary describes matching text to terms, enforcing them, or testing either. Delivery is a skill (`toolkit/skills/event-storm/SKILL.md`), role prompts and templates.
+  - **Borrow:** its "vocabulary lock", a term list agreed before modelling starts, and its table for translating terms between contexts. Both fit the two-glossary split above: subject terms agreed in the fork's contract, and an explicit map where a subject term meets a capability term.
+- **Steward agents** ([Ben Johns, 22 Feb 2026](https://www.bennyjohns.com/posts/20260222-steward-agents-agentic-ddd)): one agent owns each bounded context (code, review, operation, quality and project roles), with an Architect Agent keeping the context map. It doesn't mention a glossary, term matching or any measurement. Agents start on events: code changed, PR opened, a comment, an alert, a schedule.
+  - **Borrow:** the triggers. Agents start on events, not on their own choice, which is the same point as the hook or orchestrator calling the MCP server. Owning a context per agent matches keeping the subject glossary with the subject (ADR-001@v2 C1, C2).
+
+**What this changes:** nothing in the matching design. The glossary with IDs and aliases, the constrained model translator and its validator have no alternative in either source. Checked from the README, the glossary file and the article only, not the rest of the repository.
+
 ### Reporting
 
 Andy ruled on 30 Oct that SARIF covers rule violations only, and measurement tools keep their native formats; how outputs reach the capability is open (Q2), with a proposed "small typed evidence record per change" (backlog Q2, Q4). Rubric scores, rates and translator accuracy are measurements, not violations. So the spike emits one typed record per run, with violations in a SARIF-shaped part. It is early evidence for Q2 and decides neither ADR-016 nor Q2.
@@ -156,11 +167,14 @@ What Andy's challenges settled:
 
 - **Plan-time applicability:** glossary terms from a tested translator, replacing v1's raw `terms` regular expressions (his challenge on brittleness, and the glossary he proposed).
 
-What Andy has not ruled on. Each was applied in the spike as the author's choice, under "go ahead"; all but the first are stated in [expected.md](expected.md). It isn't clear that "go ahead" covered these, so each needs his ruling at review; overruling one would need a dated re-run:
+Ruled by Andy after the run, 2 Nov: "deterministic judgement-unit selection approved, keep hard rule 4 always loaded, make sure you add the step that joins the parts (MCP server called by a hook/orchestrator), this feels like a roadmap you decided."
+
+- **Judgement units selected deterministically, like the others** (v1 question 6): approved. T6's four-routes table, which proposed model selection for judgement rules, no longer holds for them.
+- **Hard rule 4 always loaded,** a change from v1, which selected it by plan-stage `terms`: approved. It shaped the f1 control: hard rule 4 was loaded on a feature that never mentions copying.
+
+Still not ruled. Each was applied in the spike as the author's choice, under "go ahead"; all but the first are stated in [expected.md](expected.md). Overruling one would need a dated re-run:
 
 - **Build, borrowing shapes; don't install adrkit** (v1 question 1).
-- **Judgement units selected deterministically, like the others** (v1 question 6). T6's "Rule units" paragraph says units load deterministically; its four-routes table, a proposal, says judgement rules are selected by the model. The spike followed the paragraph. Andy's "we should run a set of tests to validate selection" asked for selection to be tested, not for this choice.
-- **Hard rule 4 always loaded,** taken from the bright-line row of the same proposed four-routes table. This is a change from v1, which selected it by plan-stage `terms`. It shaped the f1 control: hard rule 4 was loaded on a feature that never mentions copying.
 - **SARIF version, catch definition, false-alarm control and where results live** (v1's recommendations).
 
 **Not ruled, so left out:** plans declaring their own glossary terms (it would change the plan template), and embeddings (a new dependency).

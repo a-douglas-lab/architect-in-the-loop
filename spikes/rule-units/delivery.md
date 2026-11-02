@@ -20,12 +20,13 @@ Status: recommendation for Andy · 2 Nov 2026 · from the spike's [results](resu
 
 ## Recommendation
 
-**Two stages, one core.**
+An earlier version split this into "now, a step before `analyze`" and "later, an MCP server". Andy, 2 Nov: "make sure you add the step that joins the parts (MCP server called by a hook/orchestrator), this feels like a roadmap you decided." So there is one recommendation, and the spike builds it:
 
-1. **Now: a deterministic step before `analyze`,** built from the spike's parts: the constrained model translator with its validator, selection, the checks run against the feature, and the rules file. The spike has these parts but not the single step that joins them. Mechanical findings would be reported directly, and the rules file goes to `analyze` for judgement and explanation. In this repository the trigger would be a Claude Code hook. The hook is the controls track's area (ADR-011, D1) and `.claude/settings*.json` is a protected path, so this needs coordinating and Andy's approval, not a change from this spike.
-2. **Later: the same core behind an MCP server,** called by a harness hook in Claude Code sessions and by the capability's orchestrator. That makes rule units the capability's interface for selection and checking, as A1 proposes, without changing the core.
+**An MCP server that joins the parts, called by a harness hook or by the capability's orchestrator, never by the model's choice.** One call translates the feature's artefacts, validates the terms, selects units, runs the mechanical and bright-line checks against the feature, and returns the selected units' text and any findings. A hook returns these to the session as `additionalContext`; the orchestrator would read the same result. That makes rule units the capability's interface for selection and checking, as A1 proposes.
 
-Either stage would need the subject glossary (it holds eShop terms such as "eshop" and "ordering.domain") to come from the fork's contract, not the capability (ADR-001@v2 C1, C2).
+In this repository, wiring the hook is the controls track's area (ADR-011, D1), and `.claude/settings*.json` is a protected path. So the spike tests the hook's contract without editing settings, and the wiring needs Andy's approval.
+
+The server would need the subject glossary (it holds eShop terms such as "eshop" and "ordering.domain") to come from the fork's contract, not the capability (ADR-001@v2 C1, C2).
 
 **Not recommended:** a skill, or Spec Kit's `before_analyze` hook, as the trigger. Both leave the decision to the model.
 
