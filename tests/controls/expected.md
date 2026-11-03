@@ -106,3 +106,14 @@ The docs say the block keeps "skills, plugins, rules, agents, commands, and the 
 | R8 | `docs/adr/ADR-011-deterministic-controls-on-agents.md` | none | Done |
 
 The `additionalDirectories` list shown to Andy is the smallest one that makes R1 to R6 "done", with R7 still refused.
+
+## U. The read block from Andy's user settings (VL-4)
+
+Written 2026-11-03, after Andy approved and the change was made: `"blockReadsOutsideWorkingDirectories": true` in `~/.claude/settings.json`, with no `additionalDirectories`. The cases repeat R1, R3, R4 and R7 with no `--settings` flag, so the block can come only from user settings. The expectations are what the R run observed.
+
+| Case | As | Expected |
+| --- | --- | --- |
+| U1 | R1, auto memory | Done |
+| U3 | R3, saved tool output | Done |
+| U4 | R4, own scratchpad | Done |
+| U7 | R7, outside folder | Refused, with the block's message |
