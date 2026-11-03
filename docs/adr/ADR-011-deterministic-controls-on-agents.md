@@ -1,9 +1,9 @@
 ---
 id: ADR-011
-version: 1
+version: 2
 title: Deterministic controls gate what coding agents can read, write and change
 status: accepted
-date: 2026-10-21
+date: 2026-11-03
 decision-makers: [Andy Douglas]
 scope: [project, concern:delivery, concern:security]
 precedence:
@@ -14,32 +14,32 @@ superseded-by: null
 exceptions: not-allowed
 enforcement:
   - constraint: C1
-    mechanism: Claude Code hook running build, format and tests after edits
-    ref: null
+    mechanism: PostToolUse hook syntax-checking edited JSON, Python, shell and PowerShell files; no build, formatter or tests exist in this repository yet
+    ref: .claude/hooks/check_edited.py
     state: planned
   - constraint: C2
-    mechanism: PreToolUse hook blocking writes to protected paths
-    ref: null
-    state: planned
+    mechanism: permissions.ask rules in the committed .claude/settings.json
+    ref: .claude/settings.json
+    state: enforced
   - constraint: C3
-    mechanism: PreToolUse hook blocking writes to acceptance test paths during implement
-    ref: null
-    state: planned
+    mechanism: PreToolUse hook reading acceptance-test globs and the stage marker .specify/stage
+    ref: .claude/hooks/acceptance_tests.py
+    state: enforced
   - constraint: C4
-    mechanism: permissions.blockReadsOutsideWorkingDirectories in user settings
-    ref: null
-    state: planned
+    mechanism: permissions.blockReadsOutsideWorkingDirectories in Andy's user settings (set 3 Nov), with no additionalDirectories
+    ref: tests/controls/results.md
+    state: enforced
   - constraint: C5
-    mechanism: PreToolUse hook denying Edit, Write and NotebookEdit outside the allowlist
-    ref: null
+    mechanism: permissions.blockWritesOutsideWorkingDirectories in the committed .claude/settings.json; needs Claude Code v2.1.314 or later
+    ref: .claude/settings.json
     state: planned
   - constraint: C6
     mechanism: Read and Edit deny rules in Andy's user settings, outside this repository; untested
     ref: null
     state: manual
   - constraint: C7
-    mechanism: review; .gitignore and the bootstrap scripts guard only names containing private-eval
-    ref: .gitignore
+    mechanism: review; the bootstrap guard and .gitignore match private-eval and Architect-in-the-loop-evaluator by name, subject/ included, and the guard checks git remote URLs
+    ref: scripts/check-private-material.ps1
     state: manual
 backlog: [D1]
 ---
@@ -50,26 +50,32 @@ backlog: [D1]
 
 Instructions in CLAUDE.md are advisory: an agent can misread them, or ignore them under pressure. The project's thesis is "deterministic where possible", so the rules that matter most must be enforced by checks the agent can't talk its way past. These rules include: never reading the private evaluation repository (hard rule 1), never editing acceptance tests to make them pass (hard rule 3), and never writing outside the project.
 
-Claude Code offers three relevant mechanisms inside the tool. Hooks run before or after tool calls and can block them. Permission rules allow, ask or deny. And the setting `permissions.blockReadsOutsideWorkingDirectories` (Claude Code v2.1.257 or later) refuses file-tool reads outside the working directories in every permission mode. None of these contains a script that opens files itself. Only a fourth mechanism, the OS-level sandbox, does, and it doesn't run on native Windows.
+Claude Code offers three relevant mechanisms inside the tool. Hooks run before or after tool calls and can block them. Permission rules allow, ask or deny. And two settings refuse file-tool access outside the working directories in every permission mode: `permissions.blockReadsOutsideWorkingDirectories` (v2.1.257 or later) for reads, and `permissions.blockWritesOutsideWorkingDirectories` (v2.1.314 or later) for Write, Edit and NotebookEdit. None of these contains a script that opens files itself. Only a fourth mechanism, the OS-level sandbox, does, and it doesn't run on native Windows.
 
 ## Decision
 
-**Deterministic checks gate every change** (D1, dogfooding). Hooks run the build, format and tests after edits, and block writes to protected paths. Which paths are protected isn't yet defined; it is open (D1). **A hook blocks writes to acceptance test paths during implement,** so hard rule 3 becomes a deterministic control. The existing *gates* extension (github.com/schwichtgit/spec-gates, MIT), which enforces one policy as Claude Code hooks, git pre-commit and CI, is reviewed before we write our own hooks.
+**Deterministic checks gate every change** (D1, dogfooding). A hook checks each file after an edit. Today that is a syntax check, because this repository has nothing to build, format or test yet; the build, format and tests join the same hook when there is code. **A hook blocks writes to acceptance test paths during implement,** so hard rule 3 becomes a deterministic control.
+
+**Protected paths ask Andy, in every mode** (decided 2 Nov; mechanism chosen 3 Nov). The paths are `.specify/memory/constitution.md`, `docs/adr/`, `REVIEW.md`, `CLAUDE.md`, `.claude/settings*.json`, `tests/constitution/expected.md`, `subject/` from this repository's side, and the stage marker `.specify/stage`. Each is an explicit `ask` rule in the committed `.claude/settings.json`. Claude Code never auto-approves an explicit ask rule, in any mode, including `bypassPermissions`.
+
+**Acceptance tests during implement** (decided 3 Nov). The hook reads gitignore-style globs from `.claude/hooks/acceptance-tests.json`. It denies a write to a matching path while the marker `.specify/stage` reads `implement`, and asks otherwise, so the skill that writes acceptance tests can still work outside implement with Andy's approval. The globs are placeholders until DEV-1 fixes the fork's test layout. The marker is a protected path. Anything the hook can't evaluate is blocked.
 
 **File access is an allowlist:**
 
-- **Reads:** `permissions.blockReadsOutsideWorkingDirectories` in user settings. It refuses Read, Grep, Glob and LSP outside the working directories, and keeps Claude Code's own files under `~/.claude/` readable. Anything else Claude needs, such as the session scratchpad or saved tool output, is added through `additionalDirectories` in user settings.
-- **Writes:** a `PreToolUse` hook denies Edit, Write and NotebookEdit on any path outside the same allowlist, with no prompt to click through.
+- **Reads:** `permissions.blockReadsOutsideWorkingDirectories` in user settings. It refuses Read, Grep, Glob and LSP outside the working directories, and keeps Claude Code's own files under `~/.claude/` readable. Tested 3 Nov: auto memory, saved tool output and the session scratchpad stay readable too, so `additionalDirectories` is empty. Anything else Claude needs is added there.
+- **Writes:** `permissions.blockWritesOutsideWorkingDirectories` in the committed `.claude/settings.json` (decided 3 Nov, replacing the planned write hook). It refuses Write, Edit and NotebookEdit outside the working directories in every mode, with no prompt, and keeps a few of Claude Code's own files writable, such as the scratchpad and auto memory. It also refuses every Claude edit to a settings file, inside the project too, so Andy edits `.claude/settings*.json` himself.
 - **Backstop:** deny rules in Andy's user settings name the private evaluation repository's path, one for Read and one for Edit (added 20 Oct at Andy's request: "add the deny rules for the eval repo"). It is a backstop, not a guarantee: in one documented setup, with no managed settings and no Team or Enterprise login, a mod can approve a call that a deny rule refuses.
 
-**Evaluation material stays out of reach.** Hidden tests and labels live in a separate private repository that is never cloned into a build worktree (hard rule 1; how it is run is E6).
+**Evaluation material stays out of reach.** Hidden tests and labels live in a separate private repository that is never cloned into a build worktree (hard rule 1; how it is run is E6). The bootstrap scripts refuse a tree holding it under either name.
 
-The allowlist and the write hook are switched on and tested with the other hooks in Step 7. Open (D1): the exact `additionalDirectories` list, settled while testing; whether the write hook also checks paths named in shell commands; which paths are protected; and whether to move to WSL2, so the sandbox can contain shell commands.
+**Prior art.** The *gates* extension (github.com/schwichtgit/spec-gates, MIT) was reviewed at v0.5.0 on 3 Nov. Its design is borrowed: fail closed, normalise the path, ignore case, resolve links, and test with planted violations. Its code isn't adopted: it needs bash, `jq` and POSIX paths, which on native Windows let backslash paths through, and its commit hook refuses the `Co-Authored-By` trailer this project keeps.
+
+Open (D1): whether to move to WSL2, so the sandbox can contain shell commands. Shell commands aren't checked by any hook here.
 
 ## Constraints
 
 - **C1:** The build, format and tests MUST run automatically after edits.
-- **C2:** Writes to protected paths MUST be blocked by a hook.
+- **C2:** Writes to protected paths MUST ask Andy for approval, in every permission mode. *(v2: was "MUST be blocked by a hook".)*
 - **C3:** Writes to acceptance test paths MUST be blocked by a hook during implement.
 - **C4:** File-tool reads outside the working directories and the allowlist MUST be refused.
 - **C5:** File-tool writes outside the allowlist MUST be refused, with no prompt to approve them.
@@ -82,12 +88,15 @@ Easier:
 
 - The rules that matter most hold even when an agent gets them wrong.
 - Each control is a counted, deterministic clause for Q1's metric.
+- Two of the five controls are built-in settings, not code to maintain.
 
 Harder:
 
-- Shell commands and scripts aren't contained on native Windows. Until the sandbox is available, a script that opens files itself gets past every control here.
+- Shell commands and scripts aren't contained on native Windows. Until the sandbox is available, a script that opens files itself gets past every control here. A shell redirect into a protected path isn't asked for in `bypassPermissions` mode (tested 3 Nov).
 - The allowlist's exceptions need maintaining, or the controls block Claude's own housekeeping.
 - Hooks are code to write, test and keep working across worktrees.
+- The write block needs Claude Code v2.1.314. The desktop app bundled v2.1.309 on 3 Nov, so desktop sessions aren't covered until the app updates.
+- While the write block is on, Claude Code removes the `EnterWorktree` tool. Its effect on the desktop app's own worktrees is untested.
 
 ## Alternatives
 
@@ -106,17 +115,38 @@ Harder:
 - For: one mechanism.
 - Against: duplicates the built-in read block. It was chosen on the author's wrong claim that no such setting existed.
 
-### The built-in read block, a write hook and a deny-rule backstop (chosen)
+### The built-in read block, a write hook and a deny-rule backstop (chosen 21 Oct, revised 3 Nov)
 
 - For: uses the built-in control where one exists, and code only where it doesn't.
-- Against: shell commands remain uncontained without WSL2.
+- Against: shell commands remain uncontained without WSL2. Since v2.1.314 a built-in write block exists, so the write hook duplicates it.
+
+### The built-in read and write blocks and a deny-rule backstop (chosen 3 Nov)
+
+- For: the same principle as 21 Oct, applied to writes now the setting exists. No write hook to maintain.
+- Against: needs v2.1.314, so desktop sessions wait for the app to update; settings files become editable only by Andy; shell commands remain uncontained.
+
+### Protected paths blocked outright by a hook (v1, revised 2 Nov)
+
+- For: no prompt to click through.
+- Against: legitimate edits to the ADRs and the constitution would have to go round the control. Andy chose approval instead.
+
+### Protected paths as a hook returning "ask" (weighed 3 Nov)
+
+- For: one policy file with the acceptance-test hook, and clearer messages.
+- Against: how a hook's "ask" behaves in `bypassPermissions` mode isn't documented; explicit ask rules are documented to prompt in every mode.
+
+### Adopt spec-gates (weighed 3 Nov)
+
+- For: an existing, tested policy enforced at three boundaries.
+- Against: see Prior art above.
 
 The naive option (an LLM with everything in its prompt) is the "do nothing" option here.
 
 ## Enforcement
 
-Nothing here is enforced yet. C6's deny rules are in place in user settings, but they are untested and outside this repository, so C6 is recorded as manual. C1 to C5 are planned for Step 7; C2 also needs the list of protected paths. C7 is held by review. `.gitignore` and the bootstrap scripts only guard names containing `private-eval`, and the bootstrap check skips `subject/`, so a copy under the repository's real name wouldn't be caught.
+C2, C3 and C4 are enforced and tested (`tests/controls/`, 3 Nov, Claude Code v2.1.317 with `claude -p`): each refuses a bad action and allows a good one. Under `-p` an ask is indistinguishable from a refusal, so C2's prompt in an interactive session is not yet observed. C4 was tested from user settings, not yet in a desktop app session. C1 is planned: the hook runs after every edit, but it is a syntax check, not a build, format or test run. C5 is set in the committed settings and tested on v2.1.317, but it stays planned until the desktop app runs v2.1.314 or later. C6's deny rules are in place in user settings, but they are untested and outside this repository, so C6 is recorded as manual. C7 is held by review, with the bootstrap guard as a check that runs when bootstrap runs. The guard matches names and git remote URLs, so a renamed copy stripped of its git metadata wouldn't be caught.
 
 ## History
 
 - **v1** · 2026-10-21 · accepted · Andy Douglas: first version, recording D1's decisions of 5 Oct (gates, protected paths, evaluation material), 20 Oct (test-path hook) and 20 Oct revised 21 Oct (file-access allowlist). C6's Read and Edit rules trace to Andy's request of 20 Oct, "add the deny rules for the eval repo".
+- **v2** · 2026-11-03 · revision · PENDING Andy Douglas's approval: C2 asks rather than blocks, with the protected-path list (decided 2 Nov) as explicit ask rules (chosen 3 Nov); C3's globs and stage marker (chosen 3 Nov); C5 by the built-in write block in project settings, replacing the write hook (chosen 3 Nov: "install the latest version of the sdk and continue from there", then "project settings"); spec-gates reviewed, design borrowed and code not adopted (chosen 3 Nov); the read block set in user settings with no additionalDirectories (approved 3 Nov: "Yes, make the change"); C1 to C5 and C7 enforcement updated.

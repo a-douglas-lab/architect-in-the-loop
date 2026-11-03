@@ -2,7 +2,7 @@
 
 > **Public version.** Evaluation outcomes, their labels, hidden examples and anything deliberately left in eShop for evaluation are held in the private evaluation repository. Where they were discussed, this file points there instead.
 
-Status: v0.2 · updated 1 Nov 2026
+Status: v0.2 · updated 3 Nov 2026
 
 Every open question and every decision so far, with its status. This file is the source of truth for what is decided. **Gate rule (8 Oct):** an item marked **Gate** must close before the [roadmap](roadmap.md) phase that depends on it starts. Each item closes with a short ADR recording the decision, the options considered and the evidence. Items carried over from the original capabilities document keep their old ID in brackets.
 
@@ -742,6 +742,8 @@ Where a final layer that can't be bypassed exists, it is CI plus branch protecti
 | VL-9 | The ADR format is checked | A validator enforces ADR-000's mechanical constraints, the constitution's index, and the quoted hard rules, with a test showing each failure caught |
 | VL-10 | Coverage is visible | Each ADR's enforcement entries name the layers that check it, and a report gives the share of constraints enforced deterministically, and the share with a check that can't be bypassed |
 
+**Progress (3 Nov):** VL-3 is met for C2, C3 and C5 with `claude -p` on v2.1.317. Each refused a bad write and allowed a good one. C1 runs only a syntax check, because there is nothing yet to build, format or test. VL-4 is met from user settings: a read outside was refused, and memory, the scratchpad and saved tool output were still read. Neither has yet been observed in a desktop app session. Results: [tests/controls/results.md](tests/controls/results.md).
+
 **Proposed principles** are under Q1. **Depends on:** the WSL2 question (D1, open). Without the sandbox, a script can get past every local layer, which is why VL-6 and VL-7 matter.
 
 **Open:** the order of the outcomes in Step 7; whether VL-5 is needed once VL-3 and VL-6 exist; what CI runs on, given Windows and the eShop stack.
@@ -769,7 +771,7 @@ The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (
 - The token budget, and how it is enforced.
 - Which components are fine as thin stubs (for example the capability's web interface, P5a) versus which must be deep.
 
-**Prior art for the hooks (found 8 Oct):** *gates* (github.com/schwichtgit/spec-gates, MIT), a Spec Kit extension enforcing one policy at three boundaries: Claude Code hooks, git pre-commit and CI. Review before writing our own hooks.
+**Prior art for the hooks (found 8 Oct):** *gates* (github.com/schwichtgit/spec-gates, MIT), a Spec Kit extension enforcing one policy at three boundaries: Claude Code hooks, git pre-commit and CI. Review before writing our own hooks. *Reviewed 3 Nov at v0.5.0:* design borrowed, code not adopted (see the 3 Nov decisions below).
 
 **Decided (20 Oct), from a review of Anthropic's [AI-native SDLC playbook](https://claude.com/resources/articles/the-ai-native-sdlc-playbook):** Spec Kit stays the engine; the playbook supplies the loop around it (who acts at each stage, what each stage measures, how autonomy is granted).
 
@@ -792,13 +794,24 @@ The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (
 - **Backstop:** a deny rule naming the private evaluation repo's path (hard rule 1) was added to Andy's user settings on 20 Oct. It lives outside this public repo and hasn't been tested, because testing it means trying to read the repo. In one documented setup (no managed settings, and no Team or Enterprise login), a mod can approve a call that a deny rule refuses, so the rule is a backstop, not a guarantee.
 - **Limit:** shell commands aren't refused the same way, and none of these controls contain a script that opens files itself (Python, Node). Only the OS-level sandbox does. It runs on macOS, Linux and WSL2, not native Windows (Claude Code's sandboxing documentation). Whether to move to WSL2 is open.
 
-**Open:** the exact `additionalDirectories` list, settled while testing; whether the write hook also checks paths named in shell commands.
+**Open:** the exact `additionalDirectories` list, settled while testing; whether the write hook also checks paths named in shell commands. *Update 3 Nov:* the list is settled as empty (tested, see below). The write hook was replaced by a built-in setting, so the shell question is now whether anything checks shell writes at all. Not ruled; the default in Step 7 is that nothing does. A test (L5) showed a shell redirect writing into `docs/adr/` in `bypassPermissions` mode with no prompt.
 
 **Decided (2 Nov, Andy), for Step 7** ([brief](docs/sessions/2026-11-02-step7-brief.md)):
 
 - **Protected paths:** `.specify/memory/constitution.md`, `docs/adr/`, `REVIEW.md`, `CLAUDE.md`, `.claude/settings*.json`, `tests/constitution/expected.md`, and `subject/` from this repository's side. Edits there need Andy's approval: they are asked for, not blocked outright.
 - **Order:** the rule-unit spike (T6) first. The Claude Code controls and the bootstrap guard run in parallel as a second track, in their own worktree (ADR-010@v1 C2, exercised for the first time).
 - **The rule-unit spike is written in Python,** in a spike folder. This doesn't decide T5.
+
+**Decided (3 Nov, Andy), the Claude Code controls** (Step 7, item 4; recorded in ADR-011 v2, pending Andy's approval):
+
+- **Protected paths are `permissions.ask` rules** in the committed `.claude/settings.json`, not a hook. Explicit ask rules are never auto-approved, in any mode.
+- **Acceptance tests: policy globs and a stage marker.** A hook denies writes to the globs in `.claude/hooks/acceptance-tests.json` while `.specify/stage` reads `implement`, and asks otherwise. The marker is protected. The globs are placeholders until DEV-1 fixes the fork's layout.
+- **Writes outside: the built-in `blockWritesOutsideWorkingDirectories`,** in project settings, replacing the planned write hook. Andy: "install the latest version of the sdk and continue from there", then "project settings". It needs Claude Code v2.1.314. The CLI v2.1.317 was installed with npm for testing. The desktop app bundles v2.1.309, so desktop sessions are covered once it updates.
+- **spec-gates: borrow the design, not the code.** It needs bash, `jq` and POSIX paths, and its commit hook refuses the `Co-Authored-By` trailer.
+- **Read block on in user settings, with no `additionalDirectories`** (Andy: "Yes, make the change"). Tests showed auto memory, saved tool output and the scratchpad stay readable without them.
+- **Results:** [tests/controls/results.md](tests/controls/results.md).
+
+**Open, from the same work:** wiring the stage marker into `/speckit-implement` (set by hand today); whether `.claude/hooks/` joins the protected paths, since an agent could edit the hook it is checked by; what the write block's removal of `EnterWorktree` does to the desktop app's worktrees; and observing C2's prompt in an interactive session, which `claude -p` can't show.
 
 **Decided (1 Nov, Andy): behaviour is tested before a PR.** No capability, skill, hook or constitution change opens a PR until its behaviour has been tested, with expected results written first. Recorded in [ADR-012](docs/adr/ADR-012-independent-checks-and-staged-autonomy.md) (v2, C10). The first example is [tests/constitution/](tests/constitution/README.md).
 
