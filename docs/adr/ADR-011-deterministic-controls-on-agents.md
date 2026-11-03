@@ -2,7 +2,7 @@
 id: ADR-011
 version: 2
 title: Deterministic controls gate what coding agents can read, write and change
-status: proposed
+status: accepted
 date: 2026-11-03
 decision-makers: [Andy Douglas]
 scope: [project, concern:delivery, concern:security]
@@ -58,7 +58,7 @@ Claude Code offers three relevant mechanisms inside the tool. Hooks run before o
 
 **Protected paths ask Andy, in every mode** (decided 2 Nov; mechanism chosen 3 Nov). The paths are `.specify/memory/constitution.md`, `docs/adr/`, `REVIEW.md`, `CLAUDE.md`, `.claude/settings*.json`, `tests/constitution/expected.md`, `subject/` from this repository's side, and the stage marker `.specify/stage`. Each is an explicit `ask` rule in the committed `.claude/settings.json`. Claude Code never auto-approves an explicit ask rule, in any mode, including `bypassPermissions`. The rules cover the file tools. A shell redirect into a protected path wasn't asked for in `bypassPermissions` mode (tested 3 Nov). While the write block (C5) is on, Claude Code refuses edits to `.claude/settings*.json` outright, which is stricter than asking. The ask rule for them applies only where the block isn't in force, such as a desktop session on v2.1.309.
 
-**Acceptance tests during implement** (decided 3 Nov). The hook reads gitignore-style globs from `.claude/hooks/acceptance-tests.json`. It denies a write to a matching path while the marker `.specify/stage` reads `implement`, and asks otherwise, so the skill that writes acceptance tests can still work outside implement with Andy's approval. The globs are placeholders until DEV-1 fixes the fork's test layout. The marker is a protected path. It is set by hand today; until it reads `implement`, an implement run gets "ask", not "deny". The hook sees file tools only. Anything the hook can't evaluate is blocked. *(Blocking on failure is the author's choice, not ruled: Andy approved borrowing spec-gates' "fail to ask"; this hook fails to block.)*
+**Acceptance tests during implement** (decided 3 Nov). The hook reads gitignore-style globs from `.claude/hooks/acceptance-tests.json`. It denies a write to a matching path while the marker `.specify/stage` reads `implement`, and asks otherwise, so the skill that writes acceptance tests can still work outside implement with Andy's approval. The globs are placeholders until DEV-1 fixes the fork's test layout. The marker is a protected path. It is set by hand today; until it reads `implement`, an implement run gets "ask", not "deny". The hook sees file tools only. Anything the hook can't evaluate asks (Andy, 3 Nov: "fail to ask"). A crash or a missing interpreter can't answer at all, and Claude Code offers only "continue" or "block" for that case, so the hook is wired to block.
 
 **File access is an allowlist:**
 
@@ -68,7 +68,7 @@ Claude Code offers three relevant mechanisms inside the tool. Hooks run before o
 
 **Evaluation material stays out of reach.** Hidden tests and labels live in a separate private repository that is never cloned into a build worktree (hard rule 1; how it is run is E6). The bootstrap scripts refuse a tree holding it under either name.
 
-**Prior art.** The *gates* extension (github.com/schwichtgit/spec-gates, MIT) was reviewed at v0.5.0 on 3 Nov. Its design is borrowed: fail closed, normalise the path, ignore case, resolve links, and test with planted violations. Its code isn't adopted: it needs bash, `jq` and POSIX paths, and its commit hook refuses the `Co-Authored-By` trailer this project keeps. Its path rules match `/`, and Claude Code sends backslash paths on Windows, so they would likely let those paths through (found by reading, not by running).
+**Prior art.** The *gates* extension (github.com/schwichtgit/spec-gates, MIT) was reviewed at v0.5.0 on 3 Nov. Its design is borrowed: fail to ask, normalise the path, ignore case, resolve links, and test with planted violations. Its code isn't adopted: it needs bash, `jq` and POSIX paths, and its commit hook refuses the `Co-Authored-By` trailer this project keeps. Its path rules match `/`, and Claude Code sends backslash paths on Windows, so they would likely let those paths through (found by reading, not by running).
 
 Open (D1): whether anything checks shell writes (the default in Step 7, not ruled, is that nothing does); whether to move to WSL2, so the sandbox can contain shell commands; wiring the stage marker into `/speckit-implement`.
 
@@ -149,4 +149,4 @@ Tests are in `tests/controls/` (3 Nov, Claude Code v2.1.317 with `claude -p`). C
 ## History
 
 - **v1** · 2026-10-21 · accepted · Andy Douglas: first version, recording D1's decisions of 5 Oct (gates, protected paths, evaluation material), 20 Oct (test-path hook) and 20 Oct revised 21 Oct (file-access allowlist). C6's Read and Edit rules trace to Andy's request of 20 Oct, "add the deny rules for the eval repo".
-- **v2** · 2026-11-03 · revision · proposed, not yet approved by Andy Douglas: C1's Decision text states today's syntax check; C2 asks rather than blocks, with the protected-path list (decided 2 Nov) as explicit ask rules (chosen 3 Nov); C3's globs and stage marker, with the marker added to the protected paths (chosen 3 Nov: "The marker itself is protected"); C5 by the built-in write block in project settings, replacing the write hook (chosen 3 Nov: "install the latest version of the sdk and continue from there", then "project settings"); spec-gates reviewed, design borrowed and code not adopted (chosen 3 Nov); the read block set in user settings with no additionalDirectories (approved 3 Nov: "Yes, make the change"); C1 to C5 and C7 enforcement updated.
+- **v2** · 2026-11-03 · revision · approved by Andy Douglas in chat ("fail to ask, and approve ADR-011 v2"): C3's hook asks when it can't evaluate a call; C1's Decision text states today's syntax check; C2 asks rather than blocks, with the protected-path list (decided 2 Nov) as explicit ask rules (chosen 3 Nov); C3's globs and stage marker, with the marker added to the protected paths (chosen 3 Nov: "The marker itself is protected"); C5 by the built-in write block in project settings, replacing the write hook (chosen 3 Nov: "install the latest version of the sdk and continue from there", then "project settings"); spec-gates reviewed, design borrowed and code not adopted (chosen 3 Nov); the read block set in user settings with no additionalDirectories (approved 3 Nov: "Yes, make the change"); C1 to C5 and C7 enforcement updated.

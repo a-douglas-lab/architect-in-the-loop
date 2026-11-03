@@ -109,3 +109,7 @@ Run 2026-11-03 after Andy approved the change and it was made, and after the exp
 | U7 | Refused, with the block's message | Refused: "the permissions.blockReadsOutsideWorkingDirectories setting blocks reads outside the working directories" | Yes |
 
 4 of 4 matched. Not tested: the block in a desktop app session (v2.1.309), which needs a new session, because a running one keeps its settings.
+
+## H. Re-run after "fail to ask" (Andy, 3 Nov)
+
+Run 2026-11-03 after the dated expectation was committed (`1cc93b7`). The hook now asks when it can't evaluate a call, instead of exiting 2. 25 of 25 matched; H11 and H12 gave "ask", as the dated expectation says. A crash or missing interpreter still blocks through `onFailure: "block"`; that path is untested.

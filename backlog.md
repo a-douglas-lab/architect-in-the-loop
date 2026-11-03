@@ -802,7 +802,7 @@ The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (
 - **Order:** the rule-unit spike (T6) first. The Claude Code controls and the bootstrap guard run in parallel as a second track, in their own worktree (ADR-010@v1 C2, exercised for the first time).
 - **The rule-unit spike is written in Python,** in a spike folder. This doesn't decide T5.
 
-**Decided (3 Nov, Andy), the Claude Code controls** (Step 7, item 4; recorded in ADR-011 v2, pending Andy's approval):
+**Decided (3 Nov, Andy), the Claude Code controls** (Step 7, item 4; recorded in [ADR-011](docs/adr/ADR-011-deterministic-controls-on-agents.md) v2, approved 3 Nov):
 
 - **Protected paths are `permissions.ask` rules** in the committed `.claude/settings.json`, not a hook. Explicit ask rules are never auto-approved, in any mode.
 - **Acceptance tests: policy globs and a stage marker.** A hook denies writes to the globs in `.claude/hooks/acceptance-tests.json` while `.specify/stage` reads `implement`, and asks otherwise. The marker is protected. The globs are placeholders until DEV-1 fixes the fork's layout.
@@ -811,7 +811,7 @@ The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (
 - **Read block on in user settings, with no `additionalDirectories`** (Andy: "Yes, make the change"). Tests showed auto memory, saved tool output and the scratchpad stay readable without them.
 - **Results:** [tests/controls/results.md](tests/controls/results.md).
 
-**Open, from the same work:** wiring the stage marker into `/speckit-implement` (set by hand today); whether `.claude/hooks/` joins the protected paths, since an agent could edit the hook it is checked by; what the write block's removal of `EnterWorktree` does to the desktop app's worktrees; observing C2's prompt in an interactive session, which `claude -p` can't show; the desktop app starting sessions with `~/.claude` as an extra working directory, so the read block treats all of it as inside, `.credentials.json` included; and two of the author's choices that Andy hasn't ruled on: the C3 hook blocks when it can't evaluate (spec-gates asks), and C1 is a syntax check until there is code.
+**Open, from the same work:** wiring the stage marker into `/speckit-implement` (set by hand today); whether `.claude/hooks/` joins the protected paths, since an agent could edit the hook it is checked by; what the write block's removal of `EnterWorktree` does to the desktop app's worktrees; observing C2's prompt in an interactive session, which `claude -p` can't show; the desktop app starting sessions with `~/.claude` as an extra working directory, so the read block treats all of it as inside, `.credentials.json` included; and C1 as a syntax check until there is code, the author's default, not ruled. *Ruled 3 Nov (Andy): "fail to ask"*: the C3 hook asks when it can't evaluate a call.
 
 **Decided (1 Nov, Andy): behaviour is tested before a PR.** No capability, skill, hook or constitution change opens a PR until its behaviour has been tested, with expected results written first. Recorded in [ADR-012](docs/adr/ADR-012-independent-checks-and-staged-autonomy.md) (v2, C10). The first example is [tests/constitution/](tests/constitution/README.md).
 

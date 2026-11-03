@@ -2,9 +2,9 @@
 
 Reads one hook input on stdin. For a file-tool write whose target matches a glob in
 acceptance-tests.json, it denies while .specify/stage reads "implement", and asks otherwise.
-Anything it can't evaluate exits 2, which blocks the call; the hook is also wired with
-onFailure "block", so a crash or a missing interpreter blocks too. Design borrowed from
-spec-gates v0.5.0 protect-files.sh: normalise the path, ignore case, resolve links, fail closed.
+Anything it can't evaluate asks (Andy, 3 Nov: "fail to ask"). A crash or a missing interpreter
+can't answer at all, so the hook is wired with onFailure "block". Design borrowed from
+spec-gates v0.5.0 protect-files.sh: normalise the path, ignore case, resolve links, fail to ask.
 """
 import json
 import os
@@ -82,6 +82,6 @@ if __name__ == "__main__":
         main()
     except SystemExit:
         raise
-    except Exception as e:  # fail closed: what can't be evaluated is blocked
-        print(f"acceptance_tests hook could not evaluate this call, so it is blocked: {e!r}", file=sys.stderr)
-        sys.exit(2)
+    except Exception as e:  # fail to ask (Andy, 3 Nov): what can't be evaluated goes to a human
+        decide("ask", f"The acceptance-test hook could not evaluate this call ({e!r}). "
+                      "Confirm it does not edit an acceptance test.")

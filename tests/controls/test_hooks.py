@@ -58,8 +58,9 @@ def h_cases():
          "deny" if os.name == "nt" else "none"),
         ("H9", "Write", "src/../tests/acceptance/x.cs", "file_path", "implement", None, None, "deny"),
         ("H10", "Write", "acceptance/x.cs", "file_path", "implement", "tests", None, "deny"),
-        ("H11", None, None, None, "implement", None, None, "blocked"),
-        ("H12", "Write", acc, "file_path", "implement", None, "no-policy", "blocked"),
+        # H11, H12: "blocked" until Andy's ruling of 3 Nov, "fail to ask" (dated expectation)
+        ("H11", None, None, None, "implement", None, None, "ask"),
+        ("H12", "Write", acc, "file_path", "implement", None, "no-policy", "ask"),
         ("H13", "Write", "{outside}/tests/acceptance/x.cs", "file_path", "implement", None, None, "none"),
         ("H14", "Write", acc, "file_path", "Implement\n", None, None, "deny"),
         ("H15", "MultiEdit", acc, "file_path", "implement", None, None, "deny"),

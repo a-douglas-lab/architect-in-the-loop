@@ -19,6 +19,7 @@ Phase 1, Foundations. Step 7, items 4 (Claude Code controls) and 6 (bootstrap gu
 - spec-gates: borrow the design, not the code.
 - The write block is the built-in setting, on the latest CLI ("install the latest version of the sdk and continue from there"), installed as the npm CLI pinned at 2.1.317, and set in project settings.
 - The read block goes in user settings as shown ("Yes, make the change").
+- After review run 1: "fail to ask, and approve ADR-011 v2". The C3 hook now asks when it can't evaluate a call, and ADR-011 v2 is accepted.
 
 ## Found
 
@@ -32,6 +33,6 @@ Phase 1, Foundations. Step 7, items 4 (Claude Code controls) and 6 (bootstrap gu
 
 ## Open for next step
 
-- Andy's local review of this branch, and his approval of ADR-011 v2.
+- Andy's local review of this branch, before any push.
 - Observe the controls in a desktop session: a new session for the read block now, and the write block once the app runs v2.1.314 or later.
 - Questions raised (backlog D1): wiring the stage marker into `/speckit-implement`; protecting `.claude/hooks/`; `EnterWorktree` under the write block; shell writes.

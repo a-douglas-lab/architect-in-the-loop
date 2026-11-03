@@ -90,7 +90,7 @@ The wrong predictions are recorded, not corrected: they came from docs that say 
 
 - **Approver:** Andy, as architecture coordinator.
 - **Evidence shown:** the research findings with options; the exact user-settings change; this branch, for local review.
-- **Decision:** pending his review.
+- **Decision:** ADR-011 v2 approved, with review finding 5 ruled: "fail to ask, and approve ADR-011 v2" (3 Nov). The hook was changed to match, and H was re-run (25 of 25). The branch awaits his local review before any push.
 - **Did the approver redo any of the work to decide?** Not yet known.
 
 ## 9. Measurements
