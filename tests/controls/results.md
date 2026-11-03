@@ -48,3 +48,51 @@ Run 2026-11-03 with Python 3.13.5 on Windows 11, after the expected results were
 | K6 | Reported | exit 1 | reported |
 
 Not run: H8 on a case-sensitive file system, where the expectation is "None"; and symlinks (see expected.md).
+
+## L. Live cases, Claude Code v2.1.317
+
+Run 2026-11-03 with `claude -p` (v2.1.317, model `claude-sonnet-5-5`), after the expected results were committed (`e678923`). The fixture's `.claude/settings.json` already held the write block. Every case called the tool on its first attempt. Logs were kept locally in `%TEMP%\aitl-live-<case>.jsonl`, not committed.
+
+| Case | Expected | Result | Refusal text in the tool result | Match |
+| --- | --- | --- | --- | --- |
+| L1 | Refused | Refused | "the permissions.blockWritesOutsideWorkingDirectories setting blocks writes outside the working directories" | Yes |
+| L2 | Done | Done | | Yes |
+| L3 | Refused | Refused | "Claude requested permissions to write to …\docs\adr\ADR-999.md, but you haven't granted it yet" | Yes |
+| L4 | Refused | Refused | Same as L3 | Yes |
+| L5 | Done: a gap | Done | | Yes: the gap is real |
+| L6 | Refused | Refused | The hook's deny reason, shown as "PreToolUse:Write hook error: tests/acceptance/x.cs is an acceptance test, and the stage is implement …" | Yes |
+| L7 | Done | **Refused** | The hook's ask reason, "… Confirm this change outside implement (stage: not set)" | **No** |
+| L8 | Refused | Refused | "the permissions.blockReadsOutsideWorkingDirectories setting blocks reads outside the working directories" | Yes |
+| L9 | Done | Done | | Yes |
+| L10 | Done, reason seen | Done, **reason not seen by the harness** | | **No: harness fault** |
+| L11 | Refused | Refused | "Writes to Claude Code settings files are blocked while permissions.blockWritesOutsideWorkingDirectories is on" | Yes |
+
+9 of 11 matched.
+
+- **L7, a wrong prediction.** In `bypassPermissions` mode under `-p`, a hook's "ask" became a refusal, not a silent pass. The outcome is safer than predicted. It doesn't show what an interactive bypass session does, because `-p` can't tell a prompt from a refusal.
+- **L10, a harness fault.** The hook ran and returned its reason, but `-p` stream output doesn't carry a `PostToolUse` reason, and the harness looked only there. A re-run with `--debug hooks` showed the hook returning "check_edited: …\config\bad.json fails its syntax check", and the model reported that reason in its reply. The harness now also reads the debug log.
+- **L5 confirms a gap.** In `bypassPermissions` mode a shell redirect wrote into `docs/adr/` with no prompt. The ask rules cover the file tools, not every shell write.
+- **L3 and L4 can't tell "ask" from "deny".** Under `-p` both are refusals. That the ask rules prompt in an interactive session is not yet tested.
+
+## R. Read block and housekeeping reads
+
+Run 2026-11-03 with `claude -p` (v2.1.317), working directory this worktree, mode `default`, the read block from `--settings`, after the expected results were committed (`60beb57`).
+
+| Case | Expected | Result | Match |
+| --- | --- | --- | --- |
+| R1 auto memory | Done | Done | Yes |
+| R2 user skill | Done | Refused, by a permission prompt, not by the block | **No** |
+| R3 saved tool output | Refused | **Done** | **No** |
+| R4 own scratchpad | Refused | **Done** | **No** |
+| R5 R3 with `--add-dir` | Done | Done | Yes |
+| R6 R4 with `--add-dir` | Done | Done | Yes |
+| R7 outside folder | Refused | Refused, by the block | Yes |
+| R8 file in the project | Done | Refused by the harness, then Done on a re-run | **No: harness fault** |
+
+4 of 8 matched on the first run.
+
+- **R3 and R4, wrong predictions.** The block keeps saved tool output under `~/.claude/projects/` and the session's own scratchpad readable with no extra directory, more than the docs name.
+- **R2 isn't the block.** The refusal reads "Claude requested permissions to read from …\SKILL.md, but you haven't granted it yet", which is `default` mode asking before a read outside the working directories. Re-run with no read block, it was refused the same way, so the block itself let the skill through. Skills normally load through the Skill tool, not Read; that path is untested here.
+- **R8, a harness fault.** The model passed `limit: 1`, so the marker on line 2 wasn't in the result. Re-run asking for the whole file: the file was read.
+
+**What this settles:** the read block needs no `additionalDirectories` for memory, saved tool output or the scratchpad. R7 shows it refusing a read outside.
