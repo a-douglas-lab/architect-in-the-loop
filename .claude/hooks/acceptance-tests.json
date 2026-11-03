@@ -1,0 +1,7 @@
+{
+  "_comment": "Acceptance-test paths for the C3 hook (ADR-011@v1 C3). Placeholder globs until DEV-1 fixes the fork's layout. Gitignore-style, relative to the repository root.",
+  "globs": [
+    "**/tests/acceptance/**",
+    "**/*.AcceptanceTests/**"
+  ]
+}

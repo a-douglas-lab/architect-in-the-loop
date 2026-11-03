@@ -37,3 +37,6 @@ Thumbs.db
 !.env.example
 *.pfx
 .claude/settings.local.json
+
+# Spec Kit stage marker read by the acceptance-test hook (ADR-011@v1 C3); local to each worktree
+.specify/stage
