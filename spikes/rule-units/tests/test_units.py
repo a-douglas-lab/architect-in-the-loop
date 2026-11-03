@@ -25,7 +25,8 @@ def test_case(unit, case):
     findings, info = runner.run_case(unit, case)
     if case["expect"] == "finding":
         assert findings, f"expected a finding, got none ({info})"
-        assert all(f.rule_id == runner.citation(unit) for f in findings)
+        rule = case.get("rule", runner.citation(unit))
+        assert all(f.rule_id == rule for f in findings)
     else:
         assert not findings, f"expected no finding, got {[f.message for f in findings]}"
     if "version" in case:
