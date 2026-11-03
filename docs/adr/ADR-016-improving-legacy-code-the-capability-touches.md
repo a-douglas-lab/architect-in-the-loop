@@ -1,6 +1,6 @@
 ---
 id: ADR-016
-version: 1
+version: 2
 title: When the capability changes a legacy domain, it improves the code it touches, within a budget
 status: accepted
 date: 2026-10-29
@@ -51,7 +51,7 @@ enforcement:
     state: manual
   - constraint: C10
     mechanism: tool configuration
-    ref: null
+    ref: spikes/rule-units/units/adr-016-c10/check.py
     state: planned
   - constraint: C11
     mechanism: review of violation reports
@@ -77,6 +77,10 @@ enforcement:
     mechanism: review
     ref: null
     state: manual
+  - constraint: C17
+    mechanism: tool configuration; a check on the version field of each violations file (prototype in the rule-unit spike)
+    ref: spikes/rule-units/units/adr-016-c10/check.py
+    state: planned
 backlog: [Q4, G7, G10, G12]
 ---
 
@@ -106,7 +110,7 @@ This ADR governs the capability, when it changes a legacy domain during an outco
 - SonarAnalyzer.CSharp, which runs in a normal build, so it works headlessly for agents and CI. Its licence must be checked before it is adopted. SonarQube for IDE (formerly SonarLint) is IDE-only, so it suits Andy's own editing, not the pipeline.
 - Coverage via coverlet; mutation score via Stryker.NET.
 
-**One output format for rule violations: SARIF.** The ratchet, the repair loop and GitHub code scanning consume one format, so any analyzer can be swapped without changing the capability. Measurement tools keep their native formats, because Stryker.NET and coverlet have no SARIF output (*ruled by Andy, 30 Oct*). **Rule IDs feed the repair loop,** as ADR IDs do: a violation names its rule, and the agent repairs against it.
+**One output format for rule violations: SARIF.** The ratchet, the repair loop and GitHub code scanning consume one format, so any analyzer can be swapped without changing the capability. **One version: SARIF 2.1.0 (v2).** It is the only OASIS Standard version of SARIF found (a Standard since March 2020; a 2.2 draft exists, status not confirmed), and the only version GitHub code scanning accepts. The ratchet compares results across runs, so every producer uses the same version. Roslyn's error log writes SARIF 1.0.0 unless its version switch is set (`version=2.1`), so analyzer set-up must set it. Measurement tools keep their native formats, because Stryker.NET and coverlet have no SARIF output (*ruled by Andy, 30 Oct*). **Rule IDs feed the repair loop,** as ADR IDs do: a violation names its rule, and the agent repairs against it.
 
 How outputs reach the capability is open (Q2). The proposed direction is a deterministic step that reads each tool's native output into one small typed evidence record per change. Gates run on that record, and agents receive only the slice they must act on. Its shape is to be tested with a spike on DEV-1's real outputs.
 
@@ -134,6 +138,7 @@ How outputs reach the capability is open (Q2). The proposed direction is a deter
 - **C14:** SonarAnalyzer.CSharp MUST NOT be adopted until its licence has been checked.
 - **C15:** This ADR MUST NOT be applied to hand-built development outcomes (hard rule 5 governs them).
 - **C16:** The repository MUST state that fewer defects or faster future changes can't be claimed, because that would need real history.
+- **C17:** SARIF reports of rule violations MUST use SARIF version 2.1.0.
 
 ## Consequences
 
@@ -149,6 +154,7 @@ Harder:
 - Budgets and thresholds must be set and pre-registered.
 - The baseline may not fit the exception model as it stands. An exception names an ADR and a constraint, but analyzer rule IDs aren't ADR constraints, and ADRs with exceptions `not-allowed` can't take exceptions. Q1's exception format has to resolve this.
 - Changes get bigger to review; the burden is reported, not reduced.
+- Every SARIF producer must be set to 2.1.0; Roslyn's default isn't. A later move to another version would be a revision of C17, and would mean changing every producer, and probably the baseline (v2).
 
 ## Alternatives
 
@@ -184,8 +190,9 @@ Harder:
 
 ## Enforcement
 
-Nothing here is enforced yet: the capability, the tool set-up and the baselines don't exist. C2 to C5, C7, C8, C10 and C12 are intended as checks in the capability and its pipeline. The rest rely on review.
+Nothing here is enforced yet: the capability, the tool set-up and the baselines don't exist. C2 to C5, C7, C8, C10, C12 and C17 are intended as checks in the capability and its pipeline. The rest rely on review. C10 and C17 have a prototype check in the rule-unit spike. C17's is tested on three files: a 2.1.0 file, a hand-written 1.0.0 file in Roslyn's shape, and an invented "2.2" file. Both stay planned, not enforced, until they run in the pipeline.
 
 ## History
 
 - **v1** · 2026-10-29 · accepted · Andy Douglas: first version, recording Q4 (decided 5 Oct). Rulings by Andy on 29 Oct: the ADR governs the capability only, and hand-built work stays under hard rule 5 (C15); tier `cross-cutting` and exceptions `not-allowed`. Rulings on 30 Oct, from review: SARIF covers rule violations only, measurement tools keep native formats, and the evidence record is an open design question (Q2); the boundary with ADR-015's S9 is open (A1).
+- **v2** · 2026-11-03 · revision · approved by Andy Douglas in chat ("yes, do both."): C17 added, pinning SARIF 2.1.0; version chosen by Claude at Andy's request (backlog T6); C10 unchanged.

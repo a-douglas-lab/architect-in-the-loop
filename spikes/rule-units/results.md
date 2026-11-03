@@ -155,6 +155,14 @@ The key was read from Andy's `.env` file into that process's environment only. `
 
 **Confounds:** not blind. The session ran in this worktree, whose folder name is "spike-rule-units-0fd90a", so every path it saw carried the spike's name: the working folder, the skill's folder, the constitution and the feature (in this session's scratch folder, whose name also contains it). The report said the feature "may be a fixture for the rule-unit spike". The hook's context names "the rule-unit MCP server", and the server's tool names are visible. A blind run needs a checkout whose path doesn't name the spike. One run only. CLAUDE.md was loaded, as in every earlier run. The check description is still in the context.
 
+## SARIF version check (added 3 Nov)
+
+Andy asked the author to choose the SARIF version ("you decide the sarif version"); the author chose 2.1.0 for every producer (backlog T6). Andy then approved applying it: "yes, do both." ADR-016 v2 adds C17, "SARIF reports of rule violations MUST use SARIF version 2.1.0"; C10 is unchanged.
+
+Two cases were added to the C10 unit's `tests/expected.yaml` and committed first (`6774fb8`), failing against the old check: a SARIF 1.0.0 file shaped like Roslyn's default error log, and a file claiming a 2.2 draft version. Each expects a finding citing ADR-016@v2 C17. The test harness gained an optional `rule` field, because these findings cite a different constraint from the unit's own. The check now reports any SARIF version other than 2.1.0 under C17; the 2.1.0 file still passes. pytest: 54 passed, 3 expected failures (was 52 and 3).
+
+Limits: the 1.0.0 file is hand-written to Roslyn's shape, not produced by Roslyn; the 2.2 file is invented, since no 2.2 schema was checked. The check reads only the `version` field, not the `$schema` URL. The analyze-stage check is unchanged: a plan naming "SARIF" without a version passes. The unit now checks two constraints but carries only C10's citation and text, so a C17 finding names a rule whose text the rules file and `get_rules` never give the agent; a separate C17 unit would close that. The expected-results file's header allows a new dated entry for a wrong expectation; the two cases are new expectations, appended with a dated note, and no existing case changed.
+
 ## Against "what would count against rule units"
 
 - f8 caught in fewer than 2 of 3: **no**, 3 of 3.
