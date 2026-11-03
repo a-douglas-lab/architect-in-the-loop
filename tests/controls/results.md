@@ -96,3 +96,16 @@ Run 2026-11-03 with `claude -p` (v2.1.317), working directory this worktree, mod
 - **R8, a harness fault.** The model passed `limit: 1`, so the marker on line 2 wasn't in the result. Re-run asking for the whole file: the file was read.
 
 **What this settles:** the read block needs no `additionalDirectories` for memory, saved tool output or the scratchpad. R7 shows it refusing a read outside.
+
+## U. Read block from user settings
+
+Run 2026-11-03 after Andy approved the change and it was made, and after the expected results were committed (`68c3009`). No `--settings` flag was passed.
+
+| Case | Expected | Result | Match |
+| --- | --- | --- | --- |
+| U1 | Done | Done | Yes |
+| U3 | Done | Done | Yes |
+| U4 | Done | Done | Yes |
+| U7 | Refused, with the block's message | Refused: "the permissions.blockReadsOutsideWorkingDirectories setting blocks reads outside the working directories" | Yes |
+
+4 of 4 matched. Not tested: the block in a desktop app session (v2.1.309), which needs a new session, because a running one keeps its settings.

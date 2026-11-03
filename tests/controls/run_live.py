@@ -155,12 +155,14 @@ R_CASES = {  # id: (prompt(outside), extra dir or None, marker in the tool resul
 }
 
 
-def run_read_case(cid):
+def run_read_case(cid, user=False):
     prompt, extra, marker = R_CASES[cid]
     base, _, outside = fixture()
     blocks = json.dumps({"permissions": {"blockReadsOutsideWorkingDirectories": True}})
-    cmd = [claude_bin(), "-p", prompt(outside), "--permission-mode", "default", "--settings", blocks,
+    cmd = [claude_bin(), "-p", prompt(outside), "--permission-mode", "default",
            "--output-format", "stream-json", "--verbose", "--max-turns", "4", "--model", "sonnet"]
+    if not user:  # U cases: the block must come from user settings alone
+        cmd += ["--settings", blocks]
     if extra:
         cmd += ["--add-dir", extra]
     r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, encoding="utf-8")
@@ -173,13 +175,13 @@ def run_read_case(cid):
 
 
 def main(ids):
-    for cid in [i for i in ids if i.startswith("R")]:
+    for cid in [i for i in ids if i[0] in "RU"]:
         for attempt in (1, 2):
-            called, verdict, log = run_read_case(cid)
+            called, verdict, log = run_read_case("R" + cid[1:], user=cid[0] == "U")
             if called:
                 break
         print(f"{cid} {'tool called' if called else 'NOT RUN: no tool call'}, attempt {attempt}: {verdict}; log {log}")
-    ids = [i for i in ids if not i.startswith("R")] if ids else list(CASES)
+    ids = [i for i in ids if i[0] not in "RU"] if ids else list(CASES)
     for cid in ids:
         for attempt in (1, 2):
             called, verdict, denials, log = run_case(cid)
