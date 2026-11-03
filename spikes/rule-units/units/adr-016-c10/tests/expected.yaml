@@ -18,3 +18,11 @@ cases:
 # when it differs from the unit's.
   - {name: SARIF 1.0.0 file (Roslyn's default), stage: implement, file: units/adr-016-c10/tests/files/findings-v1.sarif, expect: finding, rule: ADR-016@v2 C17}
   - {name: SARIF 2.2 draft file, stage: implement, file: units/adr-016-c10/tests/files/findings-v2.2.sarif, expect: finding, rule: ADR-016@v2 C17}
+# Added 2026-11-03, later the same day: Andy asked for a separate C17 unit ("add a separate
+# C17 unit"). The two cases above move to units/adr-016-c17 and are marked superseded here
+# (skipped, not deleted). C10 itself names no version, so for this unit any SARIF version passes:
+  - {name: SARIF 1.0.0 file passes C10, stage: implement, file: units/adr-016-c10/tests/files/findings-v1.sarif, expect: none, version: "1.0.0"}
+  - {name: SARIF 2.2 draft file passes C10, stage: implement, file: units/adr-016-c10/tests/files/findings-v2.2.sarif, expect: none, version: "2.2"}
+superseded:
+  - SARIF 1.0.0 file (Roslyn's default)
+  - SARIF 2.2 draft file

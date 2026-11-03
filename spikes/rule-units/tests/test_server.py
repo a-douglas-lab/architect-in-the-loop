@@ -61,4 +61,5 @@ def test_m3_get_rules_record():
 def test_m4_index():
     async def fn(client):
         return await client.call_tool("index", {})
-    assert len(json.loads(text_of(call("auto", fn)))) == 7
+    # M4 said seven units on 2 Nov; the C17 unit made it eight (dated note in server-expected.md).
+    assert len(json.loads(text_of(call("auto", fn)))) == 8

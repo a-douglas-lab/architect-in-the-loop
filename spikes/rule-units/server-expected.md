@@ -69,3 +69,7 @@ Run as written in `hook/README.md`: a Claude Code session started with the gener
 - L1 fails for a reason other than the field name: `mcp_tool` hooks don't reach a stdio server started from `--mcp-config`, or the hook output is ignored.
 - L2 holds and L3 fails: the context arrives but `analyze` doesn't act on it.
 - The joined step takes longer than the hook's timeout (600 s for `PreToolUse`), or adds more than about 30 s with the model translator.
+
+## Dated note, 3 Nov 2026
+
+M4's "Seven units" was the unit count on 2 Nov. Andy then asked for a separate ADR-016@v2 C17 unit ("add a separate C17 unit"), so `index` now lists eight. M4 is unchanged as a record; its test now expects eight, with a comment pointing here.

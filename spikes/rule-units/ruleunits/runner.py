@@ -14,10 +14,13 @@ class EmptyRun(Exception):
 
 
 def load_cases(path: Path) -> list[dict]:
-    cases = yaml.safe_load(path.read_text(encoding="utf-8")).get("cases") or []
+    """Cases named under `superseded` are kept but marked, so they are skipped, not deleted."""
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    cases = data.get("cases") or []
     if not cases:
         raise EmptyRun(f"{path}: no cases")
-    return cases
+    superseded = set(data.get("superseded") or [])
+    return [dict(c, superseded=True) if c["name"] in superseded else c for c in cases]
 
 
 def collect_cases() -> list[tuple[str, dict]]:

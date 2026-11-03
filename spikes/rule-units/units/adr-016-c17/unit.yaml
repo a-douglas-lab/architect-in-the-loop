@@ -1,0 +1,16 @@
+citation: ADR-016@v2 C17
+source: docs/adr/ADR-016-improving-legacy-code-the-capability-touches.md
+text: SARIF reports of rule violations MUST use SARIF version 2.1.0.
+kind: mechanical
+role: unit
+applies:
+  stages: [plan, analyze, implement]
+  terms_any: [sarif]
+check:
+  type: python
+  file: check.py
+  describes: >-
+    Plan and analyze stages: a finding if the artefacts name a SARIF version other than 2.1.0
+    ("2.1" counts as 2.1.0); naming SARIF without a version passes. Implement stage: a finding
+    if a SARIF file's "version" field isn't 2.1.0. A file that isn't SARIF passes here; that is
+    ADR-016@v1 C10's check.
