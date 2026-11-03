@@ -20,6 +20,7 @@ Phase 1, Foundations. A session started from the Step 7 planning session, workin
 - **3 Nov: SARIF 2.1.0 decision recorded** (the author's, at Andy's request). Review run 18: 0 High, 3 Medium, 3 Low, 1 nit, all fixed ([card](../loops/cards/2026-11-03-rule-units-review-run18.md)).
 - **3 Nov: SARIF 2.1.0 applied,** on Andy's "yes, do both.": ADR-016 v2 adds C17; the C10 unit reports other versions, cases written first ([card](../loops/cards/2026-11-03-rule-units-sarif-check-run5.md)). Review run 19: 0 High, 2 Medium, 4 Low, 2 nits, all fixed ([card](../loops/cards/2026-11-03-rule-units-review-run19.md)).
 - **3 Nov: a separate C17 unit,** on Andy's "add a separate C17 unit": its own citation, text and nine cases, written first ([card](../loops/cards/2026-11-03-rule-units-c17-unit-run6.md)); the C10 unit back to C10 only. Review run 20: 0 High, 1 Medium, 6 Low, 2 nits; all fixed or disclosed except the Medium, ADR-016's out-of-date Enforcement prose, which needs a new version and Andy ([card](../loops/cards/2026-11-03-rule-units-review-run20.md)).
+- **3 Nov: ADR-016 v3,** a correction, on Andy's "yes, write v3": C17's mechanism and the Enforcement note now describe the separate unit, including its check on spec, plan and tasks text. Review run 21: 0 High, 1 Medium, 3 Low, 2 nits; all fixed ([card](../loops/cards/2026-11-03-rule-units-review-run21.md)).
 
 ## Decided
 

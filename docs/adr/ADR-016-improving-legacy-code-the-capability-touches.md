@@ -1,6 +1,6 @@
 ---
 id: ADR-016
-version: 2
+version: 3
 title: When the capability changes a legacy domain, it improves the code it touches, within a budget
 status: accepted
 date: 2026-10-29
@@ -78,7 +78,7 @@ enforcement:
     ref: null
     state: manual
   - constraint: C17
-    mechanism: tool configuration; a check on the version field of each violations file (prototype in the rule-unit spike)
+    mechanism: tool configuration; a check on the version field of each violations file and on SARIF versions named in spec, plan and tasks (prototype in the rule-unit spike)
     ref: spikes/rule-units/units/adr-016-c17/check.py
     state: planned
 backlog: [Q4, G7, G10, G12]
@@ -190,9 +190,10 @@ Harder:
 
 ## Enforcement
 
-Nothing here is enforced yet: the capability, the tool set-up and the baselines don't exist. C2 to C5, C7, C8, C10, C12 and C17 are intended as checks in the capability and its pipeline. The rest rely on review. C10 and C17 have a prototype check in the rule-unit spike. C17's is tested on three files: a 2.1.0 file, a hand-written 1.0.0 file in Roslyn's shape, and an invented "2.2" file. Both stay planned, not enforced, until they run in the pipeline.
+Nothing here is enforced yet: the capability, the tool set-up and the baselines don't exist. C2 to C5, C7, C8, C10, C12 and C17 are intended as checks in the capability and its pipeline. The rest rely on review. C10 and C17 each have a prototype check in the rule-unit spike. C17's reads the version field of SARIF files, and the SARIF versions named in spec, plan and tasks at the plan and analyze stages. Its four file cases are a 2.1.0 file, a hand-written 1.0.0 file in Roslyn's shape, an invented "2.2" file and a JSON file that isn't SARIF. Its five text cases use spike and constitution fixtures. The spike's results list the ways of writing a version that the text check misses. Both stay planned, not enforced, until they run in the pipeline.
 
 ## History
 
 - **v1** · 2026-10-29 · accepted · Andy Douglas: first version, recording Q4 (decided 5 Oct). Rulings by Andy on 29 Oct: the ADR governs the capability only, and hand-built work stays under hard rule 5 (C15); tier `cross-cutting` and exceptions `not-allowed`. Rulings on 30 Oct, from review: SARIF covers rule violations only, measurement tools keep native formats, and the evidence record is an open design question (Q2); the boundary with ADR-015's S9 is open (A1).
 - **v2** · 2026-11-03 · revision · approved by Andy Douglas in chat ("yes, do both."): C17 added, pinning SARIF 2.1.0; version chosen by Claude at Andy's request (backlog T6); C10 unchanged.
+- **v3** · 2026-11-03 · correction · approved by Andy Douglas in chat ("yes, write v3"): C17's mechanism and the Enforcement note brought into line with the spike's separate C17 unit, which also checks versions named in spec, plan and tasks; no constraint changed.
