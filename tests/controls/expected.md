@@ -49,6 +49,8 @@ Placeholder globs until DEV-1 fixes the fork's layout: `**/tests/acceptance/**` 
 | H14 | Write as H1, marker reads `Implement` plus a newline | `Implement\n` | Deny |
 | H15 | MultiEdit, same path as H1 | `implement` | Deny |
 
+**Dated expectation, 2026-11-03, after Andy's ruling "fail to ask":** what the hook can't evaluate now asks instead of blocking. H11 and H12 are expected to give **Ask**, replacing "Blocked" from this date. The earlier expectation stays above as written. A crash or a missing interpreter still blocks, through `onFailure: "block"`, because Claude Code offers only "continue" or "block" for a hook that can't answer.
+
 Not run: a symlink into an acceptance path. Creating symlinks on Windows needs Developer Mode or admin rights. The hook resolves symlinks with `os.path.realpath`, but that is untested here.
 
 ## K. Check-after-edit hook, unit cases (ADR-011@v1 C1)
