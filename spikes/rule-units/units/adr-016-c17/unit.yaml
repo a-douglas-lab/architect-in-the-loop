@@ -10,7 +10,8 @@ check:
   type: python
   file: check.py
   describes: >-
-    Plan and analyze stages: a finding if the artefacts name a SARIF version other than 2.1.0
-    ("2.1" counts as 2.1.0); naming SARIF without a version passes. Implement stage: a finding
+    Plan and analyze stages: a finding if the artefacts write "SARIF", optionally "v" or
+    "version", then a dotted version number other than 2.1.0 ("2.1" counts as 2.1.0); naming
+    SARIF without a version passes, and other ways of writing a version are not read. Implement stage: a finding
     if a SARIF file's "version" field isn't 2.1.0. A file that isn't SARIF passes here; that is
     ADR-016@v1 C10's check.

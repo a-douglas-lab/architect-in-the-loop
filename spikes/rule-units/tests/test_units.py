@@ -53,3 +53,13 @@ def test_superseded_cases_are_marked_not_dropped(tmp_path):
     cases = runner.load_cases(tmp_path / "expected.yaml")
     assert [c["name"] for c in cases] == ["a", "b"]
     assert cases[0].get("superseded") and not cases[1].get("superseded")
+
+
+@pytest.mark.parametrize("body", [
+    "cases:\n  - {name: a, expect: none}\nsuperseded: [typo]\n",
+    "cases:\n  - {name: a, expect: none}\n  - {name: a, expect: finding}\n",
+])
+def test_superseded_names_must_match_one_case(tmp_path, body):
+    (tmp_path / "expected.yaml").write_text(body, encoding="utf-8")
+    with pytest.raises(ValueError):
+        runner.load_cases(tmp_path / "expected.yaml")

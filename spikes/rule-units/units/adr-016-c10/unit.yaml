@@ -12,5 +12,6 @@ check:
   describes: >-
     Plan and analyze stages: a finding if the artefacts describe a violation report and name an
     output format other than SARIF, without naming SARIF. Implement stage: a finding if a
-    violations file is not SARIF, judged by its "$schema" and "version" fields. Since ADR-016 v2,
-    a SARIF file at a version other than 2.1.0 is also a finding, citing ADR-016@v2 C17.
+    violations file is not SARIF, judged by its "$schema" and "version" fields; any SARIF version
+    is accepted and reported, because C10 names none. The version is checked by the
+    ADR-016@v2 C17 unit.

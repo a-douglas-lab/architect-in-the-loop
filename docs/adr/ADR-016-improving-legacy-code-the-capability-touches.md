@@ -79,7 +79,7 @@ enforcement:
     state: manual
   - constraint: C17
     mechanism: tool configuration; a check on the version field of each violations file (prototype in the rule-unit spike)
-    ref: spikes/rule-units/units/adr-016-c10/check.py
+    ref: spikes/rule-units/units/adr-016-c17/check.py
     state: planned
 backlog: [Q4, G7, G10, G12]
 ---

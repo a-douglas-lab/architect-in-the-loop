@@ -19,7 +19,12 @@ def load_cases(path: Path) -> list[dict]:
     cases = data.get("cases") or []
     if not cases:
         raise EmptyRun(f"{path}: no cases")
+    names = [c["name"] for c in cases]
+    if len(names) != len(set(names)):
+        raise ValueError(f"{path}: duplicate case names")
     superseded = set(data.get("superseded") or [])
+    if superseded - set(names):
+        raise ValueError(f"{path}: superseded names match no case: {sorted(superseded - set(names))}")
     return [dict(c, superseded=True) if c["name"] in superseded else c for c in cases]
 
 

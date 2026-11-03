@@ -53,6 +53,17 @@
   terms_any:
   - violation-report
   always: false
+- unit: adr-016-c17
+  citation: ADR-016@v2 C17
+  kind: mechanical
+  role: unit
+  stages:
+  - plan
+  - analyze
+  - implement
+  terms_any:
+  - sarif
+  always: false
 - unit: adr-016-c2
   citation: ADR-016@v1 C2
   kind: mechanical

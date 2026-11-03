@@ -1,8 +1,4 @@
-"""ADR-016@v1 C10: tools that report rule violations MUST report in SARIF.
-
-Also ADR-016@v2 C17: that SARIF MUST be version 2.1.0. A SARIF file at another version
-gets a finding citing C17.
-"""
+"""ADR-016@v1 C10: tools that report rule violations MUST report in SARIF."""
 import json
 import re
 
@@ -16,8 +12,6 @@ OTHER_FORMATS = re.compile(
     re.IGNORECASE,
 )
 SARIF = re.compile(r"\bsarif\b", re.IGNORECASE)
-SARIF_VERSION = "2.1.0"
-VERSION_CITATION = "ADR-016@v2 C17"
 
 
 def check_artefacts(arts, glossary, citation):
@@ -41,8 +35,5 @@ def check_file(path, citation):
     version = data.get("version") if isinstance(data, dict) else None
     runs = data.get("runs") if isinstance(data, dict) else None
     if "sarif" in str(schema).lower() and isinstance(version, str) and isinstance(runs, list):
-        if version != SARIF_VERSION:
-            msg = f"{path.name} is SARIF {version}, not {SARIF_VERSION}. {VERSION_CITATION} requires {SARIF_VERSION}."
-            return [Finding(VERSION_CITATION, msg, locations=[location(path.name)])], {"sarif_version": version}
         return [], {"sarif_version": version}
     return [Finding(citation, f"{path.name} has no SARIF $schema, version and runs.", locations=[location(path.name)])], {}
