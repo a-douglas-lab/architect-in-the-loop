@@ -1,0 +1,10 @@
+citation: ADR-004@v2 C3
+source: docs/adr/ADR-004-non-goals.md
+text: The capability MUST orchestrate existing coding agents, and MUST NOT implement its own.
+kind: bright-line
+role: decoy
+applies:
+  stages: [plan, analyze, implement]
+  terms_any: [coding-agent]
+check:
+  type: none

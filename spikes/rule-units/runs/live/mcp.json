@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "rule-units": {
+      "type": "stdio",
+      "command": "C:\\Users\\adoug\\Architect-in-the-loop\\.claude\\worktrees\\spike-rule-units-0fd90a\\spikes\\rule-units\\.venv\\Scripts\\python.exe",
+      "args": [
+        "-m",
+        "ruleunits.server"
+      ],
+      "env": {
+        "PYTHONPATH": "C:\\Users\\adoug\\Architect-in-the-loop\\.claude\\worktrees\\spike-rule-units-0fd90a\\spikes\\rule-units",
+        "SPECIFY_FEATURE_DIRECTORY": "C:\\Users\\adoug\\AppData\\Local\\Temp\\claude\\C--Users-adoug-Architect-in-the-loop--claude-worktrees-spike-rule-units-0fd90a\\8e9b8dfe-d2c0-4c7f-b8af-9fc1549bdf40\\scratchpad\\live\\x02",
+        "SPECIFY_FEATURE_NO_PERSIST": "1",
+        "RULEUNITS_LOG": "C:\\Users\\adoug\\AppData\\Local\\Temp\\claude\\C--Users-adoug-Architect-in-the-loop--claude-worktrees-spike-rule-units-0fd90a\\8e9b8dfe-d2c0-4c7f-b8af-9fc1549bdf40\\scratchpad\\live\\hook-log.jsonl"
+      }
+    }
+  }
+}

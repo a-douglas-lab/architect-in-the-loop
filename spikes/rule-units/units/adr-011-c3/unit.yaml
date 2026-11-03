@@ -1,0 +1,10 @@
+citation: ADR-011@v1 C3
+source: docs/adr/ADR-011-deterministic-controls-on-agents.md
+text: Writes to acceptance test paths MUST be blocked by a hook during implement.
+kind: mechanical
+role: decoy
+applies:
+  stages: [plan, analyze, implement]
+  terms_any: [acceptance-test]
+check:
+  type: none

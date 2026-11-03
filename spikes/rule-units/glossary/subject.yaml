@@ -1,0 +1,8 @@
+# Subject glossary: stands in for the subject's declared contract (ADR-001@v2 C2).
+# In the real system these terms would come from the fork, not from this repository (ADR-003).
+context: subject
+terms:
+  - id: subject-system
+    label: Subject system
+    definition: The system the capability changes, and its source code.
+    aliases: [eshop, subject/eshop, subject system, submodule, ordering.domain]

@@ -1,0 +1,2 @@
+rule,file,line,message
+CA1062,src/Example.cs,12,Validate arguments of public methods
