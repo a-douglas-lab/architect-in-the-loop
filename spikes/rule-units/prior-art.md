@@ -176,9 +176,13 @@ Ruled by Andy later on 2 Nov, asked whether to record the author's recommendatio
 
 - **Build, borrowing shapes; don't install adrkit** (v1 question 1): decided, recorded in backlog T6.
 
+Decided by the author at Andy's request, 3 Nov: "you decide the sarif version".
+
+- **SARIF version:** 2.1.0, one version for every producer; recorded in backlog T6.
+
 Still not ruled. Applied in the spike as the author's choices, under "go ahead", and stated in [expected.md](expected.md). Overruling one would need a dated re-run:
 
-- **SARIF version, catch definition, false-alarm control and where results live** (v1's recommendations).
+- **Catch definition, false-alarm control and where results live** (v1's recommendations).
 
 **Not ruled, so left out:** plans declaring their own glossary terms (it would change the plan template), and embeddings (a new dependency).
 

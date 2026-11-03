@@ -17,6 +17,7 @@ Phase 1, Foundations. A session started from the Step 7 planning session, workin
 - **Andy's T6 decision recorded** in backlog T6 (now Partly decided). Review run 15: 2 High, 3 Medium, 4 Low, 5 nits; all but two nits fixed ([card](../loops/cards/2026-11-02-rule-units-review-run15.md)).
 - **Harness hook confirmed by Andy** and recorded. Review run 16: 0 High, 1 Medium, 1 Low, 2 nits, all fixed ([card](../loops/cards/2026-11-02-rule-units-review-run16.md)).
 - **adrkit decision recorded** (build, borrow shapes, don't install). Review run 17: 0 High, 0 Medium, 3 Low, 1 nit, all fixed ([card](../loops/cards/2026-11-02-rule-units-review-run17.md)).
+- **3 Nov: SARIF 2.1.0 decision recorded** (the author's, at Andy's request). Review run 18: 0 High, 3 Medium, 3 Low, 1 nit, all fixed ([card](../loops/cards/2026-11-03-rule-units-review-run18.md)).
 
 ## Decided
 
@@ -26,7 +27,8 @@ Phase 1, Foundations. A session started from the Step 7 planning session, workin
 - **Andy, 2 Nov, confirming the reading:** "yes, harness hook is right". Relabelled as decided in T6. The question put to him named the alternatives: not a skill or Spec Kit's `before_analyze` hook, since both leave the trigger to the model.
 - **Andy, build choices:** the Anthropic API translator with an alias fallback; the MCP Python SDK in a spike venv; a live hook run from a spike settings file, which he runs.
 - **Andy, 2 Nov, on adrkit:** "didn't you state adrkit didn't cover our requirements?" The author confirmed the prior art's three gaps and asked whether to record "build our own, borrowing adrkit's shapes; don't install it" as decided. Andy: "yes, record it as decided". Recorded in T6.
-- **Still not ruled,** applied as the author's choices: SARIF version, what counts as a catch, the f1 control, results kept in the spike folder.
+- **Andy, 3 Nov, on SARIF:** "you decide the sarif version". The author chose 2.1.0 for every producer of rule violations, recorded in T6 with its reasons. Not yet applied, waiting on Andy: tightening the spike's C10 check, and pinning the version in ADR-016 (a revision, which needs his approval). eShop's analysers would need a setting, which needs an approved spec.
+- **Still not ruled,** applied as the author's choices: what counts as a catch, the f1 control, results kept in the spike folder.
 
 ## Found
 
