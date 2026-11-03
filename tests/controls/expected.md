@@ -87,3 +87,22 @@ Written 2026-11-03. Each case runs `claude -p` (v2.1.317, installed with npm on 
 | L9 | Read `docs/notes.md` | `default` | Done | Inside |
 | L10 | Write invalid `config/bad.json` | `acceptEdits` | Done, and the check-after-edit reason reaches the model | `PostToolUse` runs after the write |
 | L11 | Write `.claude/settings.local.json`, with the write block | `bypassPermissions` | Refused | The write block refuses settings files everywhere |
+
+## R. Read block and housekeeping reads (ADR-011@v1 C4; backlog Q6, VL-4)
+
+Written 2026-11-03, before any run. Each case runs `claude -p` (v2.1.317) with this worktree as its working directory, mode `default`, and `blockReadsOutsideWorkingDirectories` passed with `--settings`, so Andy's user settings are untouched. A candidate `additionalDirectories` entry is passed as `--add-dir`, which the settings reference says counts the same as an entry in user settings. A read counts as "done" only when a tool result carries a known string from the file.
+
+The docs say the block keeps "skills, plugins, rules, agents, commands, and the `CLAUDE.md` memory file under `~/.claude/`" readable. They name neither auto memory, saved tool output nor the scratchpad for reads, so R1, R3 and R4 are predictions with low confidence.
+
+| Case | Read | Extra directory | Expected |
+| --- | --- | --- | --- |
+| R1 | This project's auto memory, `~/.claude/projects/C--Users-adoug-Architect-in-the-loop/memory/MEMORY.md` | none | Done: Claude Code loads it itself |
+| R2 | A user skill, `~/.claude/skills/synced/.../built-in-browser/SKILL.md` | none | Done: skills are named |
+| R3 | A saved tool output under `~/.claude/projects/<this worktree>/<session>/tool-results/` | none | Refused: not named |
+| R4 | A file the session writes into its own scratchpad, then reads | none | Refused for the read: the scratchpad is under `%TEMP%`, not `~/.claude` |
+| R5 | As R3 | `~/.claude/projects` | Done |
+| R6 | As R4 | `%TEMP%\claude` | Done |
+| R7 | A file in a fresh temporary folder outside the worktree | none | Refused |
+| R8 | `docs/adr/ADR-011-deterministic-controls-on-agents.md` | none | Done |
+
+The `additionalDirectories` list shown to Andy is the smallest one that makes R1 to R6 "done", with R7 still refused.

@@ -1,5 +1,6 @@
 {
   "permissions": {
+    "blockWritesOutsideWorkingDirectories": true,
     "ask": [
       "Edit(/.specify/memory/constitution.md)",
       "Edit(/docs/adr/**)",
