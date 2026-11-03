@@ -58,7 +58,31 @@ This run turns ADR-011's planned controls into working, tested ones, so the rule
 | Live L1–L11 | Deterministic control, model as driver | Match expected | 9 of 11: one wrong prediction (L7), one harness fault (L10) |
 | Read R1–R8 | Same | Match expected | 4 of 8: three wrong predictions (R2 to R4), one harness fault (R8) |
 | User settings U1, U3, U4, U7 | Same | Match expected | 4 of 4 |
-| Adversarial review of the documentation | Rubric (REVIEW.md) | No unresolved High | See section 10 |
+| Adversarial review of the documentation | Rubric (REVIEW.md), fresh-context subagent | No unresolved High | Run 1: 6 High, 4 Medium, 8 Low, 5 nits. All answered below; two need Andy's ruling |
+
+**Review run 1 (3 Nov).** The reviewer saw the diff, the sources and Andy's approvals word for word, with the outside docs and logs quoted raw.
+
+| # | Severity | Finding, in short | Response |
+| --- | --- | --- | --- |
+| 1 | High | ADR-011 v2 said `accepted` without approval | Fixed: `status: proposed`; History says not yet approved |
+| 2 | High | VL-4 claimed met, but the skill read prompted | Fixed: "partly met", with the skill result stated |
+| 3 | High | C3 `enforced`, but the marker is set by hand and shell writes aren't seen | Fixed: `planned`, both limits stated |
+| 4 | High | C2 `enforced`, but shell writes get past it and the prompt isn't observed | Fixed: `planned`, both limits stated |
+| 5 | High | The hook blocks on failure; Andy approved "fail to ask" | **For Andy:** marked as the author's choice, not ruled |
+| 6 | High | Unruled defaults written as decisions (C1 hook, shell) | Fixed: marked as not ruled; the C1 future detail removed. **For Andy** to rule |
+| 7 | Medium | v1's shell question dropped from the ADR | Fixed: carried in Open |
+| 8 | Medium | The desktop session's `~/.claude` working directory missing from the ADR and backlog | Fixed: in both |
+| 9 | Medium | C4 `ref` pointed at results; inconsistent with C6 | Fixed: `ref: null`, and outside the repository stated. Kept `enforced`, because unlike C6 it is tested |
+| 10 | Medium | L10 overstated what reached the model | Fixed: wording matches the evidence |
+| 11 | Low | C2's ask for settings files can't fire under C5 | Fixed: stated in the Decision |
+| 12 | Low | "Readable" needed the R2 qualifier | Fixed |
+| 13 | Low | Built-in count wrong | Fixed: C2, C4, C5, C6 |
+| 14 | Low | spec-gates Windows claim stated as fact | Fixed: "likely", found by reading |
+| 15 | Low | Auto memory widened from `.md` files | Fixed |
+| 16 | Low | README missing R and U; "throwaway trees" untrue for them | Fixed |
+| 17 | Low | History omitted the C1 text and the marker | Fixed |
+| 18 | Low | Stale backlog lines | Fixed: annotated, history kept |
+| Nits | | Five | Docstrings and the cost wording fixed. Headings keep `@v1`, which was the version under test. `.gitignore` relies on Windows' `core.ignorecase`; the guard scripts are the real check |
 
 The wrong predictions are recorded, not corrected: they came from docs that say less than the tool does.
 
@@ -75,7 +99,7 @@ The wrong predictions are recorded, not corrected: they came from docs that say 
 | --- | --- | --- |
 | Wall time | Not measured: the session spanned two days with waits for Andy | |
 | Human minutes (work plus review) | Not measured | |
-| Tokens / cost | Live cases: about $0.06 each on the one where cost was read (L10); 23 live cases (L 11, R 8, U 4) and 3 diagnostic re-runs, plus 2 smoke-test attempts that failed before sign-in. This session's own tokens not measured | `modelUsage` in the stream output |
+| Tokens / cost | Live cases: $0.06 for the one case whose cost was read (L10), other cases not read; 23 live cases (L 11, R 8, U 4) and 3 diagnostic re-runs, plus 2 smoke-test attempts that failed before sign-in. This session's own tokens not measured | `modelUsage` in the stream output |
 | Iterations to pass checks | 2 for the hook units; 1 elsewhere | Test runs |
 | Leading indicator | Share of cases matching expectation on the first run: 52 of 56 for G, H, K and L (G 20 of 20 across both shells, H and K 23 of 25, L 9 of 11); R 4 of 8; U 4 of 4 | results.md |
 | Lagging indicator | Controls failing in real use. Fill in when known | |

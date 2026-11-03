@@ -1,8 +1,8 @@
 """PostToolUse hook: syntax-check a file after Claude edits it (ADR-011@v1 C1, as far as it goes today).
 
 The repository has no build or formatter yet, so this checks what it can by file type and
-reports a failure next to the tool result, for Claude to fix. It never blocks: the edit has
-already happened. When the capability has code, its build and format join here.
+reports a failure next to the tool result, for Claude to fix. Its "decision": "block" can't undo
+anything: the edit has already happened. When the capability has code, its build and format join here.
 """
 import json
 import os

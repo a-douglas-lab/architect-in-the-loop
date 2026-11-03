@@ -1,4 +1,4 @@
-"""Cases L1 to L11 in expected.md: the controls in a real Claude Code session.
+"""Cases L1 to L11, R1 to R8 and U1, U3, U4, U7 in expected.md: the controls in a real Claude Code session.
 
 Usage: python -I tests/controls/run_live.py [case ...]
 Needs the `claude` CLI on PATH (v2.1.317 was used). Each case runs `claude -p` in a throwaway

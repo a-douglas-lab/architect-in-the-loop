@@ -70,7 +70,7 @@ Run 2026-11-03 with `claude -p` (v2.1.317, model `claude-sonnet-5-5`), after the
 9 of 11 matched.
 
 - **L7, a wrong prediction.** In `bypassPermissions` mode under `-p`, a hook's "ask" became a refusal, not a silent pass. The outcome is safer than predicted. It doesn't show what an interactive bypass session does, because `-p` can't tell a prompt from a refusal.
-- **L10, a harness fault.** The hook ran and returned its reason, but `-p` stream output doesn't carry a `PostToolUse` reason, and the harness looked only there. A re-run with `--debug hooks` showed the hook returning "check_edited: …\config\bad.json fails its syntax check", and the model reported that reason in its reply. The harness now also reads the debug log.
+- **L10, a harness fault.** The hook ran and returned its reason, but `-p` stream output doesn't carry a `PostToolUse` reason, and the harness looked only there. A re-run with `--debug hooks` showed the hook returning "check_edited: …\config\bad.json fails its syntax check". The model's reply said "A PostToolUse hook then reported a blocking error" and quoted the JSON error message the hook carried. That message isn't otherwise in the session, so the reason most likely reached the model, but the stream doesn't show it arriving. The harness now also reads the debug log.
 - **L5 confirms a gap.** In `bypassPermissions` mode a shell redirect wrote into `docs/adr/` with no prompt. The ask rules cover the file tools, not every shell write.
 - **L3 and L4 can't tell "ask" from "deny".** Under `-p` both are refusals. That the ask rules prompt in an interactive session is not yet tested.
 
