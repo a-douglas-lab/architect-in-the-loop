@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "blockWritesOutsideWorkingDirectories": true,
+    "ask": [
+      "Edit(/.specify/memory/constitution.md)",
+      "Edit(/docs/adr/**)",
+      "Edit(/REVIEW.md)",
+      "Edit(/CLAUDE.md)",
+      "Edit(/.claude/settings*.json)",
+      "Edit(/tests/constitution/expected.md)",
+      "Edit(/subject/**)",
+      "Edit(/.specify/stage)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/acceptance_tests.py\"",
+            "timeout": 10,
+            "onFailure": "block"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/check_edited.py\"",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}
