@@ -2,6 +2,7 @@
 # This is a backstop; the Claude Code hooks (Step 7) also block it.
 private-eval/
 *private-eval*/
+*[Aa]rchitect-in-the-loop-[Ee]valuator*
 mnt/
 
 # .NET

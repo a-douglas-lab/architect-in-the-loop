@@ -11,11 +11,7 @@ git submodule update --init --recursive
 echo "subject/eshop at $(git -C subject/eshop rev-parse --short HEAD)"
 
 echo "== Private evaluation material must not be present"
-if find . -path ./subject -prune -o -iname '*private-eval*' -print | grep -q .; then
-  echo "ERROR: found private evaluation material in this working tree. Remove it." >&2
-  exit 1
-fi
-echo "none found"
+bash scripts/check-private-material.sh "$root"
 
 echo "== Prerequisites"
 missing=0

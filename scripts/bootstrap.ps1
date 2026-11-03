@@ -11,13 +11,8 @@ if ($LASTEXITCODE -ne 0) { throw 'git submodule update failed' }
 Write-Host "subject/eshop at $(git -C subject/eshop rev-parse --short HEAD)"
 
 Write-Host '== Private evaluation material must not be present'
-$found = Get-ChildItem -Path $root -Recurse -Force -ErrorAction SilentlyContinue -Filter '*private-eval*' |
-    Where-Object { $_.FullName -notlike (Join-Path $root 'subject*') }
-if ($found) {
-    Write-Error "Found private evaluation material in this working tree. Remove it: $($found.FullName -join ', ')"
-    exit 1
-}
-Write-Host 'none found'
+& (Join-Path $PSScriptRoot 'check-private-material.ps1') -Root $root
+if ($LASTEXITCODE -ne 0) { exit 1 }
 
 Write-Host '== Prerequisites'
 $missing = $false
