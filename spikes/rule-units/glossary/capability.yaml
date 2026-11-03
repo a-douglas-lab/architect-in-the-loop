@@ -1,0 +1,38 @@
+# Capability glossary: the ubiquitous language of the capability's own bounded context.
+# Shape after SKOS: one id, one preferred label, a definition, aliases (altLabel).
+# Aliases are matched case-insensitively on word boundaries; list plurals explicitly.
+# Holds no subject-domain terms (ADR-001@v2 C1). Subject terms live in subject.yaml.
+context: capability
+terms:
+  - id: violation-report
+    label: Violation report
+    definition: A record of rule violations reported by an analyzer, linter or other checking tool, for people or the repair loop to act on.
+    aliases: [rule violation, rule violations, analyzer finding, analyzer findings, findings, lint result, lint results, linter output, analyzer output, diagnostics, code scanning alert, code scanning alerts]
+  - id: sarif
+    label: SARIF
+    definition: The Static Analysis Results Interchange Format, the output format ADR-016@v1 C10 requires for rule violations.
+    aliases: [sarif, static analysis results interchange format]
+  - id: outcome-split
+    label: Outcome split
+    definition: Dividing an outcome so that one part is delivered while another part is blocked or deferred.
+    aliases: [split, splits, splitting, split the outcome, partial delivery, unblocked part]
+  - id: file-copy
+    label: File copy
+    definition: Placing copies of files from one repository or tree into another.
+    aliases: [copy, copies, copied, copying, vendor, vendored, vendoring]
+  - id: feature-flag
+    label: Feature flag
+    definition: A runtime switch that keeps a delivered feature off until someone turns it on.
+    aliases: [feature flag, feature flags, flag, flags, switched on, switched off, toggle, toggles]
+  - id: acceptance-test
+    label: Acceptance test
+    definition: A test that states, from outside, what an outcome must do; written before the work and not edited to pass.
+    aliases: [acceptance test, acceptance tests, acceptance example, acceptance examples]
+  - id: legacy-improvement
+    label: Legacy improvement
+    definition: Structural improvement of existing code that a change touches, separate from behavioural change.
+    aliases: [refactor, refactoring, tidy, tidying, legacy domain, legacy code]
+  - id: coding-agent
+    label: Coding agent
+    definition: An agent that edits code to carry out implementation tasks.
+    aliases: [coding agent, coding agents, agent loop, claude code]

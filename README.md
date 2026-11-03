@@ -56,6 +56,7 @@ uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@v1
 | `.claude/`, `CLAUDE.md` | Claude Code configuration: skills, subagents, hooks |
 | `src/`, `tests/`, `rubrics/` | The capability, its tests and its runtime rubrics (as they are built) |
 | `scripts/` | Bootstrap and repository tooling |
+| `spikes/` | Spikes that gather evidence for a decision; each has its own README and results |
 | `subject/eshop/` | The subject system (submodule). Its contract, ADRs, specs and development acceptance tests live there, with its code |
 
 ## Licence

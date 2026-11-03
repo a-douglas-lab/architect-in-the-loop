@@ -1,0 +1,422 @@
+{
+  "identical_on_second_run": true,
+  "records": [
+    {
+      "findings": [],
+      "fixture": "c10-sarif",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "adr-016-c10",
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [
+        "sarif",
+        "violation-report"
+      ],
+      "translator": "alias"
+    },
+    {
+      "findings": [],
+      "fixture": "c10-unnamed",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "adr-016-c10",
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [
+        "violation-report"
+      ],
+      "translator": "alias"
+    },
+    {
+      "findings": [],
+      "fixture": "f1",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [],
+      "translator": "alias"
+    },
+    {
+      "findings": [],
+      "fixture": "f2",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [],
+      "translator": "alias"
+    },
+    {
+      "findings": [],
+      "fixture": "f3",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "adr-004-c3",
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [
+        "coding-agent"
+      ],
+      "translator": "alias"
+    },
+    {
+      "findings": [],
+      "fixture": "f4",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [
+        "file-copy",
+        "subject-system"
+      ],
+      "translator": "alias"
+    },
+    {
+      "findings": [],
+      "fixture": "f5",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "adr-015-c2",
+        "adr-015-c9",
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [
+        "feature-flag",
+        "outcome-split"
+      ],
+      "translator": "alias"
+    },
+    {
+      "findings": [],
+      "fixture": "f6",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "adr-015-c2",
+        "adr-015-c9",
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [
+        "feature-flag",
+        "outcome-split"
+      ],
+      "translator": "alias"
+    },
+    {
+      "findings": [],
+      "fixture": "f7",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "adr-011-c3",
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [
+        "acceptance-test",
+        "subject-system"
+      ],
+      "translator": "alias"
+    },
+    {
+      "findings": [],
+      "fixture": "f8",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "adr-016-c10",
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [
+        "violation-report"
+      ],
+      "translator": "alias"
+    },
+    {
+      "findings": [],
+      "fixture": "f9",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "adr-004-c3",
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [
+        "coding-agent"
+      ],
+      "translator": "alias"
+    },
+    {
+      "findings": [],
+      "fixture": "h4-port",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [
+        "subject-system"
+      ],
+      "translator": "alias"
+    },
+    {
+      "findings": [],
+      "fixture": "h4-read",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [
+        "file-copy",
+        "subject-system"
+      ],
+      "translator": "alias"
+    },
+    {
+      "findings": [],
+      "fixture": "n1",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [],
+      "translator": "alias"
+    },
+    {
+      "findings": [],
+      "fixture": "n2",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "adr-015-c9",
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [
+        "feature-flag"
+      ],
+      "translator": "alias"
+    },
+    {
+      "findings": [],
+      "fixture": "s-compliant",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "adr-011-c3",
+        "adr-015-c2",
+        "adr-015-c9",
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [
+        "acceptance-test",
+        "feature-flag",
+        "outcome-split"
+      ],
+      "translator": "alias"
+    },
+    {
+      "findings": [],
+      "fixture": "s-four",
+      "measurements": {},
+      "record_version": "0.1",
+      "selected_units": [
+        "adr-011-c3",
+        "adr-015-c2",
+        "adr-015-c9",
+        "hard-rule-4-copy"
+      ],
+      "stage": "analyze",
+      "terms": [
+        "acceptance-test",
+        "feature-flag",
+        "outcome-split"
+      ],
+      "translator": "alias"
+    }
+  ],
+  "term_score": {
+    "errors": [
+      "f1: missed subject-system",
+      "f2: missed subject-system",
+      "f5: missed acceptance-test",
+      "f6: missed acceptance-test",
+      "n1: missed violation-report",
+      "n2: missed outcome-split",
+      "h4-port: missed file-copy"
+    ],
+    "fn": 7,
+    "fp": 0,
+    "precision": "24 of 24",
+    "recall": "24 of 31",
+    "tp": 24
+  },
+  "terms": {
+    "c10-sarif": [
+      "sarif",
+      "violation-report"
+    ],
+    "c10-unnamed": [
+      "violation-report"
+    ],
+    "f1": [],
+    "f2": [],
+    "f3": [
+      "coding-agent"
+    ],
+    "f4": [
+      "file-copy",
+      "subject-system"
+    ],
+    "f5": [
+      "feature-flag",
+      "outcome-split"
+    ],
+    "f6": [
+      "feature-flag",
+      "outcome-split"
+    ],
+    "f7": [
+      "acceptance-test",
+      "subject-system"
+    ],
+    "f8": [
+      "violation-report"
+    ],
+    "f9": [
+      "coding-agent"
+    ],
+    "h4-port": [
+      "subject-system"
+    ],
+    "h4-read": [
+      "file-copy",
+      "subject-system"
+    ],
+    "n1": [],
+    "n2": [
+      "feature-flag"
+    ],
+    "s-compliant": [
+      "acceptance-test",
+      "feature-flag",
+      "outcome-split"
+    ],
+    "s-four": [
+      "acceptance-test",
+      "feature-flag",
+      "outcome-split"
+    ]
+  },
+  "translator": "alias",
+  "unit_score": {
+    "errors": [
+      "f7: extra adr-011-c3",
+      "n1: missed adr-016-c10",
+      "n2: missed adr-015-c2",
+      "s-compliant: extra adr-011-c3",
+      "s-four: extra adr-011-c3"
+    ],
+    "fn": 2,
+    "fp": 3,
+    "precision": "14 of 17",
+    "recall": "14 of 16",
+    "tp": 14
+  },
+  "units": {
+    "c10-sarif": [
+      "adr-016-c10",
+      "hard-rule-4-copy"
+    ],
+    "c10-unnamed": [
+      "adr-016-c10",
+      "hard-rule-4-copy"
+    ],
+    "f1": [
+      "hard-rule-4-copy"
+    ],
+    "f2": [
+      "hard-rule-4-copy"
+    ],
+    "f3": [
+      "adr-004-c3",
+      "hard-rule-4-copy"
+    ],
+    "f4": [
+      "hard-rule-4-copy"
+    ],
+    "f5": [
+      "adr-015-c2",
+      "adr-015-c9",
+      "hard-rule-4-copy"
+    ],
+    "f6": [
+      "adr-015-c2",
+      "adr-015-c9",
+      "hard-rule-4-copy"
+    ],
+    "f7": [
+      "adr-011-c3",
+      "hard-rule-4-copy"
+    ],
+    "f8": [
+      "adr-016-c10",
+      "hard-rule-4-copy"
+    ],
+    "f9": [
+      "adr-004-c3",
+      "hard-rule-4-copy"
+    ],
+    "h4-port": [
+      "hard-rule-4-copy"
+    ],
+    "h4-read": [
+      "hard-rule-4-copy"
+    ],
+    "n1": [
+      "hard-rule-4-copy"
+    ],
+    "n2": [
+      "adr-015-c9",
+      "hard-rule-4-copy"
+    ],
+    "s-compliant": [
+      "adr-011-c3",
+      "adr-015-c2",
+      "adr-015-c9",
+      "hard-rule-4-copy"
+    ],
+    "s-four": [
+      "adr-011-c3",
+      "adr-015-c2",
+      "adr-015-c9",
+      "hard-rule-4-copy"
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "mcp_tool",
+            "server": "rule-units",
+            "tool": "rule_units_hook",
+            "input": {
+              "skill": "${tool_input.skill}",
+              "project_dir": "${cwd}",
+              "hook_event_name": "${hook_event_name}"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -417,9 +417,23 @@ Q1 treats enforcement as a map of rule types to mechanisms rather than a single 
 
 **Open:** whether agent orchestration also runs in .NET (driving Claude Code through its command-line interface) or in a small TypeScript or Python worker using the Claude Agent SDK, called from the C# API. The tension: the subject is .NET, but the agent orchestration ecosystem is strongest in TypeScript and Python. Criteria: delivery speed, how it reads to target employers, and fit with the CV story.
 
-### T6. ADR strategy across the system [B1] · Open
+### T6. ADR strategy across the system [B1] · Partly decided
 
-How ADRs are stored, selected, referenced by agents and kept current, including the personas, nine use cases and evaluation criteria in the original document. Depends on T1, T2 and Q1. ADR-009@v2 C9 adopts constraints-first loading; how ADRs are selected is still open, and the wider progressive-disclosure approach remains a hypothesis.
+How ADRs are stored, selected, referenced by agents and kept current, including the personas, nine use cases and evaluation criteria in the original document. Depends on T1, T2 and Q1. ADR-009@v2 C9 adopts constraints-first loading; selection of judgement rules is decided (below), selection in general (by domain, path or impact set) is still open, and the wider progressive-disclosure approach remains a hypothesis.
+
+**Decided (2 Nov), by Andy after the rule-unit spike** ([spikes/rule-units/](spikes/rule-units/README.md)). The ADR is written when T6 closes.
+
+- **Judgement units are selected deterministically from glossary terms:** "deterministic judgement-unit selection approved". The step that turns artefacts into terms may use a model, as the spike's translator does, with its output validated against the glossary; the selection after it is deterministic.
+- **Hard rule 4 stays always loaded:** "keep hard rule 4 always loaded".
+- **Delivery: an MCP server that joins the parts, built now, called by a hook or by the capability's orchestrator.** Andy: "make sure you add the step that joins the parts (MCP server called by a hook/orchestrator), this feels like a roadmap you decided", then, asked to confirm that this meant one recommendation rather than "now a step, later a server": "yes, one recommendation with the server built now."
+- **The hook is a harness hook,** such as Claude Code's `PreToolUse`, not a skill or Spec Kit's `before_analyze` hook, which leave the trigger to the model ([delivery.md](spikes/rule-units/delivery.md)). The author's reading, confirmed by Andy, 2 Nov: "yes, harness hook is right".
+- **Build our own; borrow adrkit's shapes, don't install it.** adrkit's unit is a whole decision, not a constraint; it selects by files, which don't exist at plan time; and its README describes no per-decision tests. Installing its extension would also mean revising ADR-009@v2 C4, with a source review and a pinned version (C5). Shapes to borrow, listed in [prior-art.md](spikes/rule-units/prior-art.md): typed `affects`, `@adr` markers, `--as-of` and a read-only MCP server; only the last is built so far. The assessment is from its README, not a source review. The author's recommendation; Andy, 2 Nov: "yes, record it as decided".
+
+**Decided (3 Nov), by the author at Andy's request:** "you decide the sarif version".
+
+- **SARIF 2.1.0, one version for every producer of rule violations.** 2.1.0 is the only approved SARIF specification found (an OASIS Standard since March 2020; a 2.2 draft exists in the OASIS sarif-spec repository, status not confirmed). GitHub code scanning "only supports SARIF version 2.1.0" ([docs](https://docs.github.com/en/enterprise-server@3.15/code-security/reference/code-scanning/sarif-files/sarif-support-for-code-scanning)). One version, on the author's reasoning: ADR-016@v1 C10's consumers (the ratchet, the repair loop and code scanning) each read one format, and the ratchet compares results across runs, so a version change must move every producer and the baseline together. Roslyn's error log writes SARIF 1.0.0 by default and 2.1.0 only when asked (`SarifVersion.cs` in Roslyn's source), so eShop's analysers would need that setting, which is an eShop change and needs an approved spec (CLAUDE.md hard rules 2 and 5). **Applied, 3 Nov, approved by Andy:** "yes, do both." [ADR-016](docs/adr/ADR-016-improving-legacy-code-the-capability-touches.md) v2 adds C17 (SARIF 2.1.0), and the spike has a separate C17 unit (Andy, 3 Nov: "add a separate C17 unit") that reports a SARIF version other than 2.1.0, named in a plan or set in a file, with the cases written first.
+
+**Open:** the rest of T6's scope (how ADRs are stored, referenced and kept current; selection by domain, path or impact set; conflict detection; enforcement and human attention, as listed under the limits below); the spike's other choices (what counts as a catch, the f1 control, where results live); hiding the server's `get_rules` and `index` from the model, and which trigger runs it in this repository (both part of the hook wiring, with the controls track, D1); wiring needs Andy's approval; conjunctions in applicability; selection recall on real plans (the spike below), with a second labeller; the subject glossary coming from the fork's contract (ADR-001@v2 C1, C2); a generator and validator for authoring units at scale; CUE for applicability; and whether the glossary becomes a first-class artefact.
 
 **Scaling model (1 Nov).** Measured on the 19 ADRs before ADR-009 v2: 162 constraints; about 1,750 tokens per full ADR and about 240 per Constraints section, estimated at 4 characters a token. ADR counts and relevant sets below are assumptions, not measurements.
 
@@ -440,14 +454,14 @@ The model has no pass or fail test. Against an assumed 200,000-token window, loa
 
 **Parallel problems (1 Nov).** Where constraints live is a retrieval problem, and tool discovery and progressive disclosure solve the same one. Checked in their docs: skills keep descriptions in context and load bodies on invocation, or by a `paths` pattern; MCP tool search keeps tool names in context and loads definitions on search; path-scoped rules in `.claude/rules/` load when matching files are touched; adrkit selects decisions deterministically, by an `affects` glob or a `@adr` marker, with no embeddings. Its design is worth borrowing; installing it would need a source review and an ADR (ADR-009@v2 C4, C5).
 
-**Four routes, by kind of rule (proposed):**
+**Four routes, by kind of rule (proposed; the judgement row decided by Andy, 2 Nov):**
 
 | Kind of rule | Route | Selected by |
 | --- | --- | --- |
 | Bright line | Always loaded | Nothing needed |
 | Mechanically checkable | Not loaded; a check fires, and the violation feeds the repair loop | The check |
 | Applies to a known area | Loaded by domain or path | A deterministic match |
-| Judgement | Selected at plan time, then graded | The model |
+| Judgement | Selected at plan time, then graded | A deterministic match on glossary terms (was "The model"; Andy, 2 Nov, after the rule-unit spike) |
 
 **First evidence ([tests/constitution/results.md](tests/constitution/results.md)).** One `plan` run on a small export feature listed 14 of this repository's 19 ADRs, for about 101,000 tokens. With no labelled correct set, that shows only that selection can be broad; it says nothing reliable about recall or precision. The table above models whole-system scenarios, so it isn't directly comparable. `analyze` caught a blatant breach of an uncited ADR in 3 of 3 runs, working from its index title and a principle's heading. One feature and one plan run is a very small sample.
 
@@ -465,6 +479,19 @@ The model has no pass or fail test. Against an assumed 200,000-token window, loa
 Units load deterministically, selected by impact set or touched paths, not by a model reading titles: an index is always present, and units are fetched on demand. Delivery options: an MCP server (`get_rules`, `check`; deterministic, and it is the capability's own interface), skills (progressive loading, but model-triggered), or a step before `analyze` (smallest, but changing Spec Kit's flow needs an ADR, ADR-009@v2 C4). Prior art: ESLint and Semgrep rules ship with their own tests; OPA policies use `opa test`; adrkit pairs `affects` with `evaluate`.
 
 **Spike, first item of Step 7:** build three units of different kinds, each with tests: ADR-016@v1 C10 (mechanical), ADR-015@v1 C2 (judgement), and one hard rule. Re-run f8 with its unit loaded, and measure whether the miss becomes a catch. Run it through the discernment step (D1) before choosing to build or borrow. This is also an early prototype of the capability's own selection and checking (A1, T7).
+
+**Spike run (2 Nov); Andy's decisions are listed under Decided above; the branch awaits his local review** ([spikes/rule-units/](spikes/rule-units/README.md)). After the prior art, Andy reshaped it: "Feels like we need the concept of ubiquitous language/glossary as domain driven design establishes, to align everything", and selection, validation and reporting as distinct steps. Approved: "go ahead, glossary in the spike folder for now." Built: a glossary (capability and subject terms kept apart, ADR-001@v2 C1), three units (ADR-016@v1 C10, ADR-015@v1 C2, hard rule 4's copy clause) and four decoys, 17 labelled fixtures, expectations committed first. Results ([results.md](spikes/rule-units/results.md)):
+
+- **f8 caught in 3 of 3** runs with its unit loaded (was 0 of 3), all CRITICAL, with no ADR opened (self-reported). No CRITICAL on the f1 control; one LOW advisory row naming the loaded hard rule.
+- **Translators:** a constrained model mapping artefacts to glossary IDs scored 31 of 31 terms in each of three runs, the same sets each run; its unit precision, 76%, missed the 85% prediction. Alias matching missed every paraphrase (24 of 31); BM25 matched almost everything (precision 30 of 92).
+- **Selection:** the best translator and a model reading ADR titles both reached 16 of 16 unit recall, so on this small set selection by title wasn't what failed f8: the unit never reached `analyze`. The unit carried the constraint and its check's description, and the spike can't separate the two. Units added constraint-level delivery and stable selection (17 of 17 fixtures against the baseline's 15 of 17).
+- **Applicability:** all five false selections by the best translator were ADR-011@v1 C3 matched on one term; applicability needs conjunctions.
+- **Checks:** the mechanical and bright-line checks blocked and passed as expected (13 cases), with three predicted misses; the ADR-015@v1 C2 rubric gave 15 of 15 expected verdicts.
+- **Delivery, decided by Andy on 2 Nov** (see Decided above; [delivery.md](spikes/rule-units/delivery.md)): an MCP server joining the parts, called by a harness hook or the orchestrator. Not a skill or Spec Kit's `before_analyze` hook, which leave the trigger to the model.
+- **Andy, 2 Nov, after the run:** "deterministic judgement-unit selection approved, keep hard rule 4 always loaded, make sure you add the step that joins the parts (MCP server called by a hook/orchestrator), this feels like a roadmap you decided." v1's other recommendations are still not ruled; build rather than install adrkit was decided later the same day (see Decided above).
+- **Joined step and MCP server built** (expectations first, [server-expected.md](spikes/rule-units/server-expected.md)): one call translates (Anthropic API, alias fallback), validates, selects, checks and returns hook output or a record. Passes over stdio and from the generated hook config. Live, in one headless Claude Code run by the author with Andy's key: the hook fired before `speckit-analyze`, the API translator ran, and `analyze` raised C10 as CRITICAL; not blind, and the model could see the server's other tools.
+
+Limits: 17 small fixtures and labels written by the author, and one model family throughout. Selection recall on real plans (the DEV-1 to DEV-3 spike above) is still unmeasured.
 
 **Prior art to review (found 8 Oct, Spec Kit community catalogue):**
 
@@ -792,7 +819,13 @@ The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (
 - **Backstop:** a deny rule naming the private evaluation repo's path (hard rule 1) was added to Andy's user settings on 20 Oct. It lives outside this public repo and hasn't been tested, because testing it means trying to read the repo. In one documented setup (no managed settings, and no Team or Enterprise login), a mod can approve a call that a deny rule refuses, so the rule is a backstop, not a guarantee.
 - **Limit:** shell commands aren't refused the same way, and none of these controls contain a script that opens files itself (Python, Node). Only the OS-level sandbox does. It runs on macOS, Linux and WSL2, not native Windows (Claude Code's sandboxing documentation). Whether to move to WSL2 is open.
 
-**Open:** the exact `additionalDirectories` list, settled while testing; whether the write hook also checks paths named in shell commands; which paths count as protected (the 5 Oct hook "blocking writes to protected paths" has no list).
+**Open:** the exact `additionalDirectories` list, settled while testing; whether the write hook also checks paths named in shell commands.
+
+**Decided (2 Nov, Andy), for Step 7** ([brief](docs/sessions/2026-11-02-step7-brief.md)):
+
+- **Protected paths:** `.specify/memory/constitution.md`, `docs/adr/`, `REVIEW.md`, `CLAUDE.md`, `.claude/settings*.json`, `tests/constitution/expected.md`, and `subject/` from this repository's side. Edits there need Andy's approval: they are asked for, not blocked outright.
+- **Order:** the rule-unit spike (T6) first. The Claude Code controls and the bootstrap guard run in parallel as a second track, in their own worktree (ADR-010@v1 C2, exercised for the first time).
+- **The rule-unit spike is written in Python,** in a spike folder. This doesn't decide T5.
 
 **Decided (1 Nov, Andy): behaviour is tested before a PR.** No capability, skill, hook or constitution change opens a PR until its behaviour has been tested, with expected results written first. Recorded in [ADR-012](docs/adr/ADR-012-independent-checks-and-staged-autonomy.md) (v2, C10). The first example is [tests/constitution/](tests/constitution/README.md).
 

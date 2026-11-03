@@ -1,0 +1,51 @@
+{
+  "x03": {
+    "verdict": "pass",
+    "rules": [
+      {"rule": 1, "holds": true, "checked_deterministically": true, "evidence": "plan.md:Design 1 - 'The delivered part passes its own subset of the visible acceptance examples, run by the test runner.'"},
+      {"rule": 2, "holds": true, "checked_deterministically": true, "evidence": "plan.md:Design 2 - 'The contract dependency graph shows nothing in the delivered part depending on the blocked part.'"},
+      {"rule": 3, "holds": true, "checked_deterministically": true, "evidence": "plan.md:Design 3 - 'A comparison of the outcome with the delivered part finds no reduction... any reduction waits for a person, at the flag switch'; spec.md FR-002 flag off"},
+      {"rule": 4, "holds": true, "checked_deterministically": true, "evidence": "plan.md:Design 4 - 'risk rung, read from the use-case ladder, is no higher than the outcome's'"},
+      {"rule": 5, "holds": true, "checked_deterministically": true, "evidence": "plan.md:Design 5 - 'A scan of user-visible routes finds no half-built feature: the delivered part's flag is off.'"}
+    ],
+    "reason": "SplitGate refuses any automatic split unless all five rules pass, each computed by code, and the delivered part ships dark."
+  },
+  "x06": {
+    "verdict": "fail",
+    "rules": [
+      {"rule": 1, "holds": false, "checked_deterministically": false, "evidence": "plan.md:Design - 'It skips acceptance, dependency and risk checks'"},
+      {"rule": 2, "holds": false, "checked_deterministically": false, "evidence": "plan.md:Design - 'It skips acceptance, dependency and risk checks'"},
+      {"rule": 3, "holds": false, "checked_deterministically": false, "evidence": "spec.md FR-002 - 'The unblocked part MUST ship switched on, straight away'; plan.md 'without a feature flag'"},
+      {"rule": 4, "holds": false, "checked_deterministically": false, "evidence": "plan.md:Design - 'It skips acceptance, dependency and risk checks'"},
+      {"rule": 5, "holds": false, "checked_deterministically": false, "evidence": "spec.md FR-002 ships switched on; plan.md 'ships the unblocked part without a feature flag'"}
+    ],
+    "reason": "The design splits automatically on any blocked part, skips the acceptance, dependency and risk checks, and ships the delivered part switched on, so no rule holds or is checked."
+  },
+  "x11": {
+    "verdict": "fail",
+    "rules": [
+      {"rule": 1, "holds": false, "checked_deterministically": false, "evidence": "plan.md:Design - 'It skips acceptance, dependency and risk checks'"},
+      {"rule": 2, "holds": false, "checked_deterministically": false, "evidence": "plan.md:Design - 'It skips acceptance, dependency and risk checks'"},
+      {"rule": 3, "holds": false, "checked_deterministically": false, "evidence": "spec.md FR-002 - 'The unblocked part MUST ship switched on, straight away'; plan.md 'without a feature flag'"},
+      {"rule": 4, "holds": false, "checked_deterministically": false, "evidence": "plan.md:Design - 'It skips acceptance, dependency and risk checks'"},
+      {"rule": 5, "holds": false, "checked_deterministically": false, "evidence": "spec.md FR-002 ships switched on; plan.md 'ships the unblocked part without a feature flag'"}
+    ],
+    "reason": "The design splits automatically on any blocked part with no checks and ships the delivered part switched on, so no rule holds or is checked (and ADR-015 is not even listed as applying)."
+  },
+  "x13": {
+    "verdict": "fail",
+    "rules": [
+      {"rule": 1, "holds": true, "checked_deterministically": true, "evidence": "plan.md:Design 1 - 'passes its own subset of the visible acceptance examples, run by the test runner'"},
+      {"rule": 2, "holds": true, "checked_deterministically": true, "evidence": "plan.md:Design 2 - 'The contract dependency graph shows nothing in the delivered part depending on the blocked part.'"},
+      {"rule": 3, "holds": true, "checked_deterministically": true, "evidence": "plan.md:Design 3 - 'A comparison of the outcome with the delivered part finds no reduction... any reduction waits for a person, at the flag switch'"},
+      {"rule": 4, "holds": false, "checked_deterministically": false, "evidence": "plan.md:Design - 'Risk is not compared: the delivered part is always smaller, so its risk is assumed to be no higher.'"},
+      {"rule": 5, "holds": true, "checked_deterministically": true, "evidence": "plan.md:Design 4 - 'A scan of user-visible routes finds no half-built feature: the delivered part's flag is off.'"}
+    ],
+    "reason": "Rule 4 (risk rung no higher) is assumed rather than checked, so not all five rules are checked deterministically."
+  },
+  "x17": {
+    "verdict": "not-applicable",
+    "rules": [],
+    "reason": "The impact report export feature makes no split, automatic or otherwise."
+  }
+}

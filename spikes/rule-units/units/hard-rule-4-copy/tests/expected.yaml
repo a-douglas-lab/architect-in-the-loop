@@ -1,0 +1,13 @@
+# Expected results, written 2026-11-02 before the check existed. Never edited after a run.
+# Paths are relative to spikes/rule-units/. The subject tree under tests/trees/subject is
+# invented for the test; nothing in it comes from eShop.
+unit: CLAUDE.md hard rule 4 (copy clause)
+cases:
+  - {name: f4 copies Ordering.Domain, stage: analyze, artefacts: ../../tests/constitution/fixtures/f4-copy-eshop, expect: finding}
+  - {name: reads through the submodule, nothing copied, stage: analyze, artefacts: fixtures/h4-submodule-read, expect: none}
+  - {name: f1 compliant, stage: analyze, artefacts: ../../tests/constitution/fixtures/f1-compliant, expect: none}
+  - {name: f8 unrelated, stage: analyze, artefacts: ../../tests/constitution/fixtures/f8-subtle-breach, expect: none}
+  - {name: classes retyped by hand, stage: analyze, artefacts: fixtures/h4-hand-port, expect: finding, todo: true}
+  - {name: byte-identical copy, stage: implement, repo: units/hard-rule-4-copy/tests/trees/repo-copied, subject: units/hard-rule-4-copy/tests/trees/subject, expect: finding}
+  - {name: no copy, stage: implement, repo: units/hard-rule-4-copy/tests/trees/repo-clean, subject: units/hard-rule-4-copy/tests/trees/subject, expect: none}
+  - {name: copy with namespace renamed, stage: implement, repo: units/hard-rule-4-copy/tests/trees/repo-renamed, subject: units/hard-rule-4-copy/tests/trees/subject, expect: finding, todo: true}

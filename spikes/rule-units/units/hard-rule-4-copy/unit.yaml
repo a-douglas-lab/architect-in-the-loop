@@ -1,0 +1,16 @@
+citation: CLAUDE.md hard rule 4 (copy clause)
+source: CLAUDE.md
+text: never copy eShop files into this repo.
+kind: bright-line
+role: unit
+applies:
+  stages: [plan, analyze, implement]
+  always: true
+check:
+  type: python
+  file: check.py
+  describes: >-
+    Plan and analyze stages: a finding if a sentence describes copying subject-system files and
+    isn't negated. Implement stage: a finding if a file outside subject/ is byte-identical to a
+    file in the subject tree. Covers the copy clause only; the rule's other clauses (pinned, fork
+    only, AI features off) are out of the spike.
