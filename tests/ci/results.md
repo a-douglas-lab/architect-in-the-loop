@@ -32,4 +32,19 @@ This branch checked itself: `check-changed.py origin/main HEAD` checked 7 change
 
 ## C. CI and bypass cases
 
-Not run yet: each needs a push, which needs Andy's approval first (ADR-013@v1 C5).
+### C1, first run on GitHub (PR #16, run 41865805616, 4 Nov)
+
+Pushed with Andy's approval ("saved, push and open the PR"). The run started at 16:17 UTC, during a GitHub Actions partial outage ("Incident with Actions and Pages", githubstatus.com).
+
+All four jobs passed. C1 matches its expectation: green on both systems.
+
+- `suites (windows-latest)`: passed, 1m24s.
+- `suites (ubuntu-latest)`: passed, 29s. This is the first Ubuntu run of every suite (S), and all matched: guard 10 of 10 (bash), hooks 0 failures (H8 "None", K7 and K8 through `pwsh`), trailer and changed-files tests 0 failures, spike "65 passed, 2 skipped, 4 xfailed".
+- `pull request`: passed, 6s: "every commit carries the trailer"; "15 changed files checked, 0 failed".
+- `checks`: passed at 16:19, in 3s, with `results: success success`.
+
+**A misdiagnosis, corrected.** For several minutes GitHub's jobs API and `gh pr checks` reported `suites (ubuntu-latest)` and `pull request` as queued, with no runner, after `checks` had passed. The author read this as `checks` passing without its inputs, and told Andy so. The job logs show both jobs ran at 16:18, before `checks` started: the status display was lagging during the outage, and `checks` received real results. On that wrong reading, Andy ruled "require the leaf checks too". The ruleset now requires all four checks (set by the author through the API at Andy's instruction, then read back). While the lagging status still showed `pull request` as queued, PR #16 showed `BLOCKED`, then `CLEAN` once all four reported.
+
+C2 and C5 have not run: each needs a push with Andy's approval.
+
+C2 and C5 have not run: each needs a push with Andy's approval, and they wait until Actions is healthy.
