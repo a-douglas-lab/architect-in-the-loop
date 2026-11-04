@@ -1,7 +1,6 @@
 # The checks every pull request must pass (backlog Q6, VL-6). The main ruleset requires the
-# aggregate job `checks` and each leaf job by name: suites (ubuntu-latest), suites
-# (windows-latest) and pull request (Andy, 4 Nov: "require the leaf checks too"). A new job
-# here needs adding to the ruleset. Runs only deterministic checks that call
+# job named `checks`; it fails if any job it needs fails, so jobs can be added here without
+# editing the ruleset (Andy, 4 Nov). A new job must be added to `checks`' needs. Runs only deterministic checks that call
 # no model: the live claude -p cases and tests/constitution/ stay out.
 name: checks
 
