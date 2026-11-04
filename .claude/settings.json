@@ -9,7 +9,8 @@
       "Edit(/.claude/settings*.json)",
       "Edit(/tests/constitution/expected.md)",
       "Edit(/subject/**)",
-      "Edit(/.specify/stage)"
+      "Edit(/.specify/stage)",
+      "Edit(/.github/**)"
     ]
   },
   "hooks": {

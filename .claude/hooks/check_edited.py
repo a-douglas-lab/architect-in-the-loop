@@ -1,4 +1,6 @@
-"""PostToolUse hook: syntax-check a file after Claude edits it (ADR-011@v1 C1, as far as it goes today).
+"""PostToolUse hook: syntax-check a file after Claude edits it (ADR-011@v2 C1, as far as it goes today).
+
+CI runs the same check() on a pull request's changed files (scripts/check-changed.py).
 
 The repository has no build or formatter yet, so this checks what it can by file type and
 reports a failure next to the tool result, for Claude to fix. Its "decision": "block" can't undo
@@ -47,7 +49,10 @@ def check(path):
     elif ext == ".ps1":
         script = ("$e = $null; [void][System.Management.Automation.Language.Parser]::ParseFile("
                   "$env:CHECK_PATH, [ref]$null, [ref]$e); $e | ForEach-Object { $_.ToString() }")
-        r = subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", script],
+        shell = shutil.which("powershell") or shutil.which("pwsh")  # Windows PowerShell, else PowerShell 7
+        if not shell:
+            return "no PowerShell found to check it with"
+        r = subprocess.run([shell, "-NoProfile", "-NonInteractive", "-Command", script],
                            capture_output=True, text=True, env={**os.environ, "CHECK_PATH": path})
         if r.stdout.strip():
             return r.stdout.strip()

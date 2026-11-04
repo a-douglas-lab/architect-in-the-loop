@@ -1,0 +1,91 @@
+# The checks every pull request must pass (backlog Q6, VL-6). The main ruleset requires the
+# job named `checks`; it fails if any job it needs fails, so jobs can be added here without
+# editing the ruleset (Andy, 4 Nov). A new job must be added to `checks`' needs. Runs only deterministic checks that call
+# no model: the live claude -p cases and tests/constitution/ stay out.
+name: checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  suites:
+    name: suites (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]   # Andy, 4 Nov: both must pass
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: "3.13"
+
+      - name: Private-material guard on this tree (ADR-011@v2 C7)
+        shell: bash
+        run: bash scripts/check-private-material.sh "$GITHUB_WORKSPACE"
+      - name: Guard tests, bash
+        shell: bash
+        run: bash tests/controls/test-private-material.sh
+      - name: Guard tests, Windows PowerShell
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          powershell -NoProfile -ExecutionPolicy Bypass -File tests/controls/test-private-material.ps1
+          exit $LASTEXITCODE
+      - name: Hook tests (ADR-011@v2 C1, C3)
+        run: python -I tests/controls/test_hooks.py
+      - name: Trailer-check tests (ADR-010@v1 C5)
+        run: python -I tests/ci/test_trailers.py
+      - name: Changed-files check tests
+        run: python -I tests/ci/test_changed.py
+      - name: Rule-unit spike tests
+        working-directory: spikes/rule-units
+        run: |
+          python -m pip install --quiet -r requirements.txt
+          python -m pytest -q
+
+  pull-request:
+    name: pull request
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    env:   # through env, not inline, so a branch name can't inject shell
+      # origin/<base>, not the recorded base SHA, which can be stale (review run 1, finding 3)
+      BASE: origin/${{ github.base_ref }}
+      HEAD: ${{ github.event.pull_request.head.sha }}
+      BRANCH: ${{ github.head_ref }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: "3.13"
+      - name: AI-authored commits carry the trailer (ADR-010@v1 C5)
+        run: python -I scripts/check-trailers.py "$BASE" "$HEAD" "$BRANCH"
+      - name: Changed files pass the C1 check; acceptance-test changes reported (Andy, 4 Nov)
+        shell: bash   # explicit bash sets -o pipefail, so tee can't hide a failure
+        run: python -I scripts/check-changed.py "$BASE" "$HEAD" | tee -a "$GITHUB_STEP_SUMMARY"
+
+  checks:
+    name: checks
+    if: always()
+    needs: [suites, pull-request]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every needed job passed or was skipped
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "results: $RESULTS"
+          for r in $RESULTS; do
+            case "$r" in success|skipped) ;; *) echo "a needed job ended: $r"; exit 1 ;; esac
+          done

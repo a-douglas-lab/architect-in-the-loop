@@ -1,9 +1,9 @@
 ---
 id: ADR-011
-version: 2
+version: 3
 title: Deterministic controls gate what coding agents can read, write and change
 status: accepted
-date: 2026-11-03
+date: 2026-11-04
 decision-makers: [Andy Douglas]
 scope: [project, concern:delivery, concern:security]
 precedence:
@@ -14,7 +14,7 @@ superseded-by: null
 exceptions: not-allowed
 enforcement:
   - constraint: C1
-    mechanism: PostToolUse hook syntax-checking edited JSON, Python, shell and PowerShell files; no build, formatter or tests exist in this repository yet
+    mechanism: PostToolUse hook syntax-checking edited JSON, Python, shell and PowerShell files, and the same check run by CI on each pull request's changed files (scripts/check-changed.py); no build, formatter or tests exist in this repository yet
     ref: .claude/hooks/check_edited.py
     state: planned
   - constraint: C2
@@ -56,7 +56,7 @@ Claude Code offers three relevant mechanisms inside the tool. Hooks run before o
 
 **Deterministic checks gate every change** (D1, dogfooding). A hook checks each file after an edit. Today that is a syntax check, because this repository has nothing to build, format or test yet. *(The syntax check is the author's default, stated to Andy on 3 Nov and not ruled. How the build, format and tests run after edits once there is code is open.)* **A hook blocks writes to acceptance test paths during implement,** so hard rule 3 becomes a deterministic control.
 
-**Protected paths ask Andy, in every mode** (decided 2 Nov; mechanism chosen 3 Nov). The paths are `.specify/memory/constitution.md`, `docs/adr/`, `REVIEW.md`, `CLAUDE.md`, `.claude/settings*.json`, `tests/constitution/expected.md`, `subject/` from this repository's side, and the stage marker `.specify/stage`. Each is an explicit `ask` rule in the committed `.claude/settings.json`. Claude Code never auto-approves an explicit ask rule, in any mode, including `bypassPermissions`. The rules cover the file tools. A shell redirect into a protected path wasn't asked for in `bypassPermissions` mode (tested 3 Nov). While the write block (C5) is on, Claude Code refuses edits to `.claude/settings*.json` outright, which is stricter than asking. The ask rule for them applies only where the block isn't in force, such as a desktop session on v2.1.309.
+**Protected paths ask Andy, in every mode** (decided 2 Nov; mechanism chosen 3 Nov). The paths are `.specify/memory/constitution.md`, `docs/adr/`, `REVIEW.md`, `CLAUDE.md`, `.claude/settings*.json`, `tests/constitution/expected.md`, `subject/` from this repository's side, the stage marker `.specify/stage`, and `.github/` (added 4 Nov), so an agent's change to the CI that checks it is asked for. Each is an explicit `ask` rule in the committed `.claude/settings.json`. Claude Code never auto-approves an explicit ask rule, in any mode, including `bypassPermissions`. The rules cover the file tools. A shell redirect into a protected path wasn't asked for in `bypassPermissions` mode (tested 3 Nov). While the write block (C5) is on, Claude Code refuses edits to `.claude/settings*.json` outright, which is stricter than asking. The ask rule for them applies only where the block isn't in force, such as a desktop session on v2.1.309.
 
 **Acceptance tests during implement** (decided 3 Nov). The hook reads gitignore-style globs from `.claude/hooks/acceptance-tests.json`. It denies a write to a matching path while the marker `.specify/stage` reads `implement`, and asks otherwise, so the skill that writes acceptance tests can still work outside implement with Andy's approval. The globs are placeholders until DEV-1 fixes the fork's test layout. The marker is a protected path. It is set by hand today; until it reads `implement`, an implement run gets "ask", not "deny". The hook sees file tools only. Anything the hook can't evaluate asks (Andy, 3 Nov: "fail to ask"). A crash or a missing interpreter can't answer at all, and Claude Code offers only "continue" or "block" for that case, so the hook is wired to block.
 
@@ -149,4 +149,5 @@ Tests are in `tests/controls/` (3 Nov, Claude Code v2.1.317 with `claude -p`). C
 ## History
 
 - **v1** · 2026-10-21 · accepted · Andy Douglas: first version, recording D1's decisions of 5 Oct (gates, protected paths, evaluation material), 20 Oct (test-path hook) and 20 Oct revised 21 Oct (file-access allowlist). C6's Read and Edit rules trace to Andy's request of 20 Oct, "add the deny rules for the eval repo".
+- **v3** · 2026-11-04 · revision · approved by Andy Douglas in chat ("Protect .github/ (Recommended)"): `.github/` joins the protected paths; C1's enforcement entry names CI's check of changed files.
 - **v2** · 2026-11-03 · revision · approved by Andy Douglas in chat ("fail to ask, and approve ADR-011 v2"): C3's hook asks when it can't evaluate a call; C1's Decision text states today's syntax check; C2 asks rather than blocks, with the protected-path list (decided 2 Nov) as explicit ask rules (chosen 3 Nov); C3's globs and stage marker, with the marker added to the protected paths (chosen 3 Nov: "The marker itself is protected"); C5 by the built-in write block in project settings, replacing the write hook (chosen 3 Nov: "install the latest version of the sdk and continue from there", then "project settings"); spec-gates reviewed, design borrowed and code not adopted (chosen 3 Nov); the read block set in user settings with no additionalDirectories (approved 3 Nov: "Yes, make the change"); C1 to C5 and C7 enforcement updated.

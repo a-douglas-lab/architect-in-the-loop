@@ -771,6 +771,17 @@ Where a final layer that can't be bypassed exists, it is CI plus branch protecti
 
 **Progress (3 Nov):** VL-3 is partly met. With `claude -p` on v2.1.317, the C2 ask rules, the C3 hook and the C5 write block each refused a bad write and allowed a good one. But C2's prompt isn't yet observed interactively, shell writes get past C2 and C3, and C1 runs only a syntax check, because there is nothing yet to build, format or test. (Since 2 and 3 Nov, C2 asks rather than blocks, and C5 is a setting, not a hook.) VL-4 is partly met from user settings. A read outside was refused, and memory, the scratchpad and saved tool output were still read. A user skill read with the Read tool prompted in `default` mode, with or without the block; reading skills through the Skill tool is untested. Neither has yet been observed in a desktop app session. Results: [tests/controls/results.md](tests/controls/results.md).
 
+**Decided (4 Nov, Andy), CI for this repository** (Step 7, item 3):
+
+- **GitHub Actions on Ubuntu and Windows,** both required to pass ("Ubuntu and Windows").
+- **One aggregate required job, `checks`,** so suites can be added without editing the ruleset ("One job: checks"). *Revised the same day (Andy): "require the leaf checks too".* The author had reported that, during a GitHub Actions outage, `checks` passed while two of its needed jobs were still queued. The job logs later showed both had run first: GitHub's status display was lagging, so the reason given was wrong ([results](tests/ci/results.md)). Told of the correction, Andy ruled "Back to `checks` only", and the leaf checks were removed again.
+- **Andy added the rulesets** (4 Nov): in this repository, a pull request is required (0 approvals) and `checks` must pass; in the fork, a pull request is required (0 approvals). Neither has bypass actors.
+- **The trailer check covers commits on `claude/*` branches,** and skips merge commits ("Commits on claude/* branches", then "Skip merge commits"). Hand-written commits on other branches stay unmarked.
+- **CI runs the C1 check and the private-material guard on each pull request's changed files.** Changes to acceptance-test paths are reported, not failed, because CI can't tell implement from the stage that writes tests ("C1 check + guard; C3 reported").
+- **No deliberately non-compliant commit is published to test the trailer check** ("Drop the C3 test PR").
+- Not run in CI, the author's default: the live `claude -p` cases and `tests/constitution/`, which call a model.
+- Results: [tests/ci/results.md](tests/ci/results.md). VL-6 to VL-8 also need the ruleset, which Andy adds.
+
 **Proposed principles** are under Q1. **Depends on:** the WSL2 question (D1, open). Without the sandbox, a script can get past every local layer, which is why VL-6 and VL-7 matter.
 
 **Open:** the order of the outcomes in Step 7; whether VL-5 is needed once VL-3 and VL-6 exist; what CI runs on, given Windows and the eShop stack.
@@ -835,7 +846,8 @@ The decided parts are recorded in [ADR-010](docs/adr/ADR-010-working-model.md) (
 - **Acceptance tests: policy globs and a stage marker.** A hook denies writes to the globs in `.claude/hooks/acceptance-tests.json` while `.specify/stage` reads `implement`, and asks otherwise. The marker is protected. The globs are placeholders until DEV-1 fixes the fork's layout.
 - **Writes outside: the built-in `blockWritesOutsideWorkingDirectories`,** in project settings, replacing the planned write hook. Andy: "install the latest version of the sdk and continue from there", then "project settings". It needs Claude Code v2.1.314. The CLI v2.1.317 was installed with npm for testing. The desktop app bundles v2.1.309, so desktop sessions are covered once it updates.
 - **spec-gates: borrow the design, not the code.** It needs bash, `jq` and POSIX paths, and its commit hook refuses the `Co-Authored-By` trailer.
-- **Read block on in user settings, with no `additionalDirectories`** (Andy: "Yes, make the change"). Tests showed auto memory, saved tool output and the scratchpad stay readable without them.
+- **Read block on in user settings, with no `additionalDirectories`** (Andy: "Yes, make the change").
+- **`.github/` joins the protected paths** (4 Nov, Andy: "Protect .github/"), so an agent's change to the CI that checks it is asked for. Recorded in ADR-011 v3. Tests showed auto memory, saved tool output and the scratchpad stay readable without them.
 - **Results:** [tests/controls/results.md](tests/controls/results.md).
 
 **Open, from the same work:** wiring the stage marker into `/speckit-implement` (set by hand today); whether `.claude/hooks/` joins the protected paths, since an agent could edit the hook it is checked by; what the write block's removal of `EnterWorktree` does to the desktop app's worktrees; observing C2's prompt in an interactive session, which `claude -p` can't show; the desktop app starting sessions with `~/.claude` as an extra working directory, so the read block treats all of it as inside, `.credentials.json` included; and C1 as a syntax check until there is code, the author's default, not ruled. *Ruled 3 Nov (Andy): "fail to ask"*: the C3 hook asks when it can't evaluate a call.
