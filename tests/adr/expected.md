@@ -69,6 +69,25 @@ Each case changes ADR-005's front matter in a throwaway repository and runs `che
 | F9 | Front matter that isn't valid YAML (an unclosed `[`) | Fail, C1, with no crash |
 | F10 | An extra field, `owner: Andy Douglas` | Pass |
 
+## Dated expectations, 2026-11-04, after review run 1 of item 2
+
+The checks above miss things the constraints require (review run 1). These cases close what code can close. The rest is stated as review's job.
+
+- **ADR-000@v3 C9, withdrawn consistency (new):** a constraint whose text starts `*Withdrawn` must have its entry's state `withdrawn`, and the reverse. Reusing an ID for a different rule can't be told from rewording it in a revision, so that part stays with review.
+- **ADR-000@v3 C8, tightened:** the History lines added since the base must number exactly the version increase, one per version, consecutive up to the new version. Each must name an approver or author and a summary: `- **vN** · YYYY-MM-DD · revision|correction · <who>: <summary>`.
+- **ADR-009@v2 C17, tightened:** if CLAUDE.md has no numbered hard rules under "## Hard rules", the check fails, rather than passing with nothing checked.
+- **ADR-009@v2 C14, tightened:** when the schema libraries are present, the title and scope read by line pattern must equal those read by YAML, so an index can't silently drop a block-list scope.
+- **The harness, tightened:** F1 to F9 must fail with a schema message, not with "C1: not checked". A16 must show no C8 problem for the new ADR.
+
+| Case | Change | Expected |
+| --- | --- | --- |
+| A20 | ADR-005's C7 text marked `*Withdrawn in v4.*`, its entry left `manual`, with a valid bump | Fail, C9 |
+| A21 | ADR-005's C7 entry set to `withdrawn`, its text unchanged, with a valid bump | Fail, C9 |
+| A22 | ADR-005 version 3 to 5 with one new History line | Fail, C8 |
+| A23 | A valid bump whose History line is `- **v4** · 2026-11-04 · revision · x` | Fail, C8 |
+| A24 | CLAUDE.md's "## Hard rules" heading renamed | Fail, C17 |
+| A25 | ADR-005's scope written as a YAML block list (same tags) | Fail, C14 (needs the schema libraries) |
+
 ## K. The C1 hook on ADR edits (addition to tests/controls/expected.md section K)
 
 | Case | Edited file | Expected |
