@@ -693,6 +693,12 @@ Proposed principles:
 
 **Gap this exposes:** ADR-011 treats hooks as the control, yet no CI exists, so no planned hook check has an unbypassable backstop. Step 7 needs CI and required checks as well as hooks. The outcomes that close this are Q6.
 
+**CUE, checked 4 Nov (for the ADR front-matter schema, Step 7 item 2).**
+- **CUE itself:** v0.17.1 (16 Jul 2026), Apache-2.0, before 1.0, with Windows ARM64 and Linux binaries. `cue vet` checks YAML against a schema, but Markdown front matter would need extracting first. The only Python binding found (pycue) is alpha and shells out to the binary.
+- **Its distinctive case is unification:** contradictory constraints fail to unify. That needs constraints written as data. Of the ADRs' 171 active constraints, 1 is a value constraint (ADR-016 C17, SARIF 2.1.0); the rest are process or behaviour rules.
+- **So CUE's value rests on the proposal, contract and policy rows above, not ADR front matter.** It should be evaluated where those exist: impact records, event schemas, and the subject's ADRs in Phase 2.
+- **Decided (Andy, 4 Nov):** "JSON Schema; record CUE finding in Q1". The front-matter schema uses JSON Schema.
+
 **Open:** does CUE earn its learning curve over JSON Schema plus OPA for the proposal and policy rows? Is NetArchTest or ArchUnitNET better maintained and more expressive today? Can the Aspire app model be checked reliably in tests?
 
 Output: the enforcement section of each baseline ADR (the ADR template, T2, defines the field), plus the published "share of ADR clauses enforced deterministically" metric. Each mechanism is tested blocking a violation when it is built, in the phase that builds it (*Andy, 2 Nov*; Q6). Rule units (T6, proposed) would give each mechanism one testable shape.

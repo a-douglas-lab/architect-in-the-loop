@@ -49,6 +49,26 @@ Each case copies this repository's `docs/adr/`, constitution and CLAUDE.md into 
 | A18 | Change one word in hard rule 3 in the constitution | Fail, C17 |
 | A19 | As A10, but the History line's type is `update` | Fail, C8 |
 
+## F. Front-matter schema, dated expectation 2026-11-04
+
+Written after Andy's ruling of 4 Nov ("JSON Schema; record CUE finding in Q1"), before the schema exists. `scripts/adr.py check` validates each ADR's front matter, parsed with PyYAML, against `scripts/adr-front-matter.schema.json` (JSON Schema 2020-12, through the `jsonschema` library), for ADR-000@v3 C1. The fields and their allowed values come from `docs/adr/template.md`: `status` in proposed, accepted, rejected, deprecated, superseded; `precedence.tier` in cross-cutting, domain, component; `exceptions` in allowed, not-allowed; each enforcement `state` in enforced, planned, manual, withdrawn; `id`, `overrides`, `supersedes` and `superseded-by` as ADR IDs; `date` as YYYY-MM-DD. Fields beyond the template's are allowed (the author's default: C1 requires the template's fields, and doesn't forbid others). The two libraries are pinned in `requirements.txt` and installed in CI. The C1 hook keeps to the per-file checks, which need no libraries.
+
+Each case changes ADR-005's front matter in a throwaway repository and runs `check` (no `--base`).
+
+| Case | Change | Expected |
+| --- | --- | --- |
+| F0 | None | Pass |
+| F1 | Remove the `backlog` field | Fail, C1 |
+| F2 | `status: approved` | Fail, C1 |
+| F3 | `version: two` | Fail, C1 |
+| F4 | `date: 4 Nov 2026` | Fail, C1 |
+| F5 | One enforcement entry's `state: done` | Fail, C1 |
+| F6 | Remove `overrides` from `precedence` | Fail, C1 |
+| F7 | `superseded-by: ADR-5` | Fail, C1 |
+| F8 | `scope: project`, a string, not a list | Fail, C1 |
+| F9 | Front matter that isn't valid YAML (an unclosed `[`) | Fail, C1, with no crash |
+| F10 | An extra field, `owner: Andy Douglas` | Pass |
+
 ## K. The C1 hook on ADR edits (addition to tests/controls/expected.md section K)
 
 | Case | Edited file | Expected |
