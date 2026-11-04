@@ -47,6 +47,10 @@ jobs:
         run: python -I tests/ci/test_trailers.py
       - name: Changed-files check tests
         run: python -I tests/ci/test_changed.py
+      - name: ADR validator tests (VL-9)
+        run: python -I tests/adr/test_adr.py
+      - name: ADRs, index and hard rules (ADR-000@v3 C2, C3, C5; ADR-009@v2 C10, C14, C17)
+        run: python -I scripts/adr.py check
       - name: Rule-unit spike tests
         working-directory: spikes/rule-units
         run: |
@@ -75,6 +79,8 @@ jobs:
       - name: Changed files pass the C1 check; acceptance-test changes reported (Andy, 4 Nov)
         shell: bash   # explicit bash sets -o pipefail, so tee can't hide a failure
         run: python -I scripts/check-changed.py "$BASE" "$HEAD" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Changed ADRs are versioned, and no constraint is removed (ADR-000@v3 C8, C9)
+        run: python -I scripts/adr.py check --base "$BASE"
 
   checks:
     name: checks

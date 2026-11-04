@@ -786,6 +786,8 @@ Where a final layer that can't be bypassed exists, it is CI plus branch protecti
 
 **Progress (4 Nov):** VL-6 is met for this repository. CI runs on every pull request, the ruleset requires `checks`, and the API reported a deliberately failing pull request (#17) as blocked. CI in the fork remains a Phase 2 question. VL-7 is met for the guard's rule: a file that shell commands force-added past `.gitignore`, which no hook saw, was caught at CI. `--no-verify` skips nothing while there is no pre-commit hook. VL-8 is met for this repository: a direct push to `main` was refused. The fork's ruleset requires a pull request, but no push to it has been tried. Recorded in ADR-010 v2 (C5) and ADR-013 v2 (C6). **Open:** Claude sessions use Andy's admin-capable credentials, so a session could merge or loosen the ruleset; whether agents get a token without admin rights is not decided (review run 2).
 
+**VL-9, progress (4 Nov):** the ADR validator (`scripts/adr.py`) enforces ADR-000 C2, C3, C5, C8 and C9 and ADR-009 C10, C14 and C17, and its tests show each failure caught ([tests/adr/](tests/adr/results.md)). It runs in the C1 hook on edited ADRs and in CI. Recorded in ADR-000 v4 and ADR-009 v3. Not yet met: ADR-000 C1, the front-matter schema. Andy, 4 Nov: "Code checks now; CUE question researched first". So the schema waits for research on CUE versus JSON Schema (with OPA), which is Q1's open question.
+
 **Proposed principles** are under Q1. **Depends on:** the WSL2 question (D1, open). Without the sandbox, a script can get past every local layer, which is why VL-6 and VL-7 matter.
 
 **Open:** the order of the outcomes in Step 7; whether VL-5 is needed once VL-3 and VL-6 exist; what CI runs on, given Windows and the eShop stack.

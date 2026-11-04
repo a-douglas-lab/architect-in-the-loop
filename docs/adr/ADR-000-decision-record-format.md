@@ -1,6 +1,6 @@
 ---
 id: ADR-000
-version: 3
+version: 4
 title: Decision records use our own template, extending MADR 4.0.0
 status: accepted
 date: 2026-10-20
@@ -19,20 +19,20 @@ enforcement:
     state: planned
   - constraint: C2
     mechanism: ADR validator script, run as a hook and in CI
-    ref: null
-    state: planned
+    ref: scripts/adr.py
+    state: enforced
   - constraint: C3
     mechanism: ADR validator script (file name matches id)
-    ref: null
-    state: planned
+    ref: scripts/adr.py
+    state: enforced
   - constraint: C4
     mechanism: none
     ref: null
     state: withdrawn
   - constraint: C5
     mechanism: ADR validator script (every listed constraint ID exists in the Constraints section, and the reverse)
-    ref: null
-    state: planned
+    ref: scripts/adr.py
+    state: enforced
   - constraint: C6
     mechanism: review
     ref: null
@@ -43,12 +43,12 @@ enforcement:
     state: manual
   - constraint: C8
     mechanism: ADR validator script, comparing with the previous commit (version incremented, History line added)
-    ref: null
-    state: planned
+    ref: scripts/adr.py
+    state: enforced
   - constraint: C9
     mechanism: ADR validator script, comparing with the previous commit (no constraint ID removed or reused)
-    ref: null
-    state: planned
+    ref: scripts/adr.py
+    state: enforced
   - constraint: C10
     mechanism: review; later, checks on spec, plan and trace formats
     ref: null
@@ -182,10 +182,11 @@ To do:
 
 ## Enforcement
 
-Nothing in this ADR is enforced yet. C1 to C3, C5, C8 and C9 are mechanical, so they are planned for a validator script run as a hook and in CI (Step 7). C6, C7, C11, C12 and C13 need judgement and stay with review. C10 becomes checkable once spec, plan and trace formats exist. C6 is a candidate for a runtime rubric later (A5).
+C2, C3, C5, C8 and C9 are enforced by the ADR validator (`scripts/adr.py`). The C1 hook runs it on each edited ADR (C2, C3's file-name rule and C5), and CI runs it on every pull request (all five; C8 and C9 compare with the base branch). C1 is still planned: the front-matter schema waits for research on CUE versus JSON Schema (Andy, 4 Nov). C6, C7, C11, C12 and C13 need judgement and stay with review. C10 becomes checkable once spec, plan and trace formats exist. C6 is a candidate for a runtime rubric later (A5).
 
 ## History
 
 - **v1** · 2026-10-20 · accepted · Andy Douglas: first version.
 - **v2** · 2026-10-20 · revision · approved by Andy Douglas in chat: ADRs are versioned in place instead of superseded (C4 withdrawn; C8 to C11 added); `version` field and History section added; withdrawn state added; alternatives added at write-up must be marked (C7); subject and project ADRs defined (C12). Bootstrapping note: v1's C4 forbade this edit. Strictly, the change should have been a new ADR. It was made as v2, under the rule it introduces, with Andy's explicit approval.
 - **v3** · 2026-10-21 · revision · approved by Andy Douglas in chat: C13 added. Project-wide project ADRs default to tier `cross-cutting` and exceptions `not-allowed`, because an exception to a project-wide rule, such as an evaluation rule, is a way to move the goalposts. Raised by review of ADR-006 to ADR-008, where both values had no source.
+- **v4** · 2026-11-04 · revision · approved by Andy Douglas in chat ("Approve as shown"): the Enforcement section records C2, C3, C5, C8 and C9 as enforced by the ADR validator, in the C1 hook and in CI; C1 waits for the CUE versus JSON Schema research.

@@ -5,6 +5,7 @@ compares the outcome with the expected one. Nothing outside the temporary folder
 """
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -20,7 +21,15 @@ def make_root():
     os.makedirs(os.path.join(root, "tests"))
     for name in ("acceptance_tests.py", "acceptance-tests.json", "check_edited.py"):
         shutil.copy(os.path.join(HOOKS, name), os.path.join(root, ".claude", "hooks", name))
+    os.makedirs(os.path.join(root, "scripts"))  # the ADR validator, which check_edited.py calls (tests/adr K12-K14)
+    shutil.copy(os.path.join(HOOKS, "..", "..", "scripts", "adr.py"), os.path.join(root, "scripts"))
     return root
+
+
+ADR_DIR = os.path.join(HOOKS, "..", "..", "docs", "adr")
+ADR5_TEXT = open(os.path.join(ADR_DIR, next(n for n in os.listdir(ADR_DIR) if n.startswith("ADR-005-"))),
+                 encoding="utf-8").read()
+TEMPLATE_TEXT = open(os.path.join(ADR_DIR, "template.md"), encoding="utf-8").read()
 
 
 def run(root, hook, stdin, env=None):
@@ -35,7 +44,9 @@ def run(root, hook, stdin, env=None):
     out = json.loads(r.stdout)
     if "hookSpecificOutput" in out:
         return out["hookSpecificOutput"]["permissionDecision"]
-    return "reported" if out.get("decision") == "block" else "silent"
+    if out.get("decision") == "block":
+        return "reported: " + out.get("reason", "")
+    return "silent"
 
 
 def event(root, tool, path, key="file_path", cwd=None):
@@ -80,6 +91,11 @@ def k_cases():
         ("K9", "i.md", "# not checked {\n", "silent"),
         ("K10", None, None, "silent"),
         ("K11", "j.ps1", "Write-Host 'ok'\n", "reported"),  # no PowerShell on PATH (tests/ci, 4 Nov)
+        # K12-K14: ADR edits (tests/adr/expected.md, 4 Nov)
+        ("K12", "docs/adr/ADR-005-x.md", re.sub(r"^## Alternatives\n.*?(?=^## Enforcement)", "", ADR5_TEXT,
+                                                 flags=re.M | re.S), "reported"),
+        ("K13", "docs/adr/ADR-005-x.md", ADR5_TEXT, "silent"),
+        ("K14", "docs/adr/template.md", TEMPLATE_TEXT, "silent"),
     ]
 
 
@@ -107,6 +123,7 @@ def main():
         root = make_root()
         path = os.path.join(root, name or "gone.json")
         if name:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, "w", encoding="utf-8") as f:
                 f.write(content)
         stdin = json.dumps({"hook_event_name": "PostToolUse", "tool_name": "Write", "cwd": root,
@@ -115,6 +132,9 @@ def main():
         env = {**os.environ, "PATH": root} if cid == "K11" else None
         got = run(root, "check_edited.py", stdin, env)
         got = "silent" if got == "none" else got
+        # K12 must name the rule it breaks (tests/adr/expected.md); other cases compare the outcome only
+        if got.startswith("reported: ") and not (cid == "K12" and "C2" not in got):
+            got = "reported"
         ok = got == want
         fails += not ok
         print(f"{cid} {got}, expected {want}: {'pass' if ok else 'FAIL'}")
