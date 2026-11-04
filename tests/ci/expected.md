@@ -1,4 +1,4 @@
-﻿# Expected results: CI
+# Expected results: CI
 
 Written 2026-11-04, before any code, under ADR-012@v2 C10. Never edited after a run: a wrong expectation gets a new dated expectation beside it. Results go in [results.md](results.md).
 
@@ -46,3 +46,46 @@ Each case is a pull request from a `claude/ci-test-*` branch. Pushing them needs
 | C5 | After Andy adds the ruleset requiring a pull request and `checks`: C2's pull request is shown as blocked from merging | Blocked (`mergeStateStatus` is `BLOCKED`) |
 
 C2 and C4 are VL-7's "change written by a script that a hook can't see". VL-7's `--no-verify` case doesn't apply: this repository has no pre-commit hook, so `--no-verify` skips nothing. VL-8's "a direct push to `main` is refused" is Andy's to run or approve, after the ruleset.
+
+## Dated expectations, 2026-11-04, after review run 1 and Andy's rulings
+
+Andy's rulings: "C1 check + guard; C3 reported"; "Skip merge commits"; "Drop the C3 test PR" and "Protect .github/". The expectations above stay as written. Where one is replaced, the new one is stated here.
+
+### D. Checks on the pull request's changed files (new)
+
+`scripts/check-changed.py <base> <head>` runs the C1 hook's own check (`check()` in `.claude/hooks/check_edited.py`, one definition, VL-1) on every file added or changed in `base..head` that still exists. It fails if any check fails. It lists changed files matching the C3 globs in `.claude/hooks/acceptance-tests.json`, and doesn't fail on them: CI can't tell implement from the stage that writes tests. Each case builds a throwaway git repository holding a copy of the hooks.
+
+| Case | Change in range | Expected |
+| --- | --- | --- |
+| D1 | A valid `.json` and a valid `.py` | Pass |
+| D2 | An invalid `.json` | Fail, naming the file |
+| D3 | A new file under `tests/acceptance/` | Pass, and the path is listed as an acceptance-test change |
+| D4 | A deleted `.json` | Pass |
+| D5 | A `.md` file | Pass |
+
+### T. Trailer check, replaced and added
+
+- **Merge commits stay skipped,** now by Andy's ruling, not the author's default.
+- **T9 (new):** a commit whose only trailer is `Co-Authored-By: Claudette Smith <c@example.com>` gives **Fail**. The value must name Claude as a word.
+- **The range (replaces "every commit in `base..head`" in CI):** CI passes `origin/<base branch>` as the base, not the pull request's recorded base commit. That excludes everything already on `main` at the time of the run, even when the recorded base is stale.
+- **T2:** the failure output names the commit's short SHA as well as its subject. The harness now checks both.
+
+### K. Check-after-edit hook (addition to tests/controls/expected.md section K)
+
+- **K11 (new):** a `.ps1` file, with neither `powershell` nor `pwsh` on PATH: **Reported**, with "no PowerShell found".
+
+### P. `.github/` is a protected path (addition to tests/controls/expected.md section L)
+
+- **P1 (new):** with `Edit(/.github/**)` in the ask rules, `claude -p` in `bypassPermissions` mode writing `.github/workflows/x.yml` in a throwaway repository: **Refused**, by the ask rule, with the message "Claude requested permissions to write to …".
+
+### S. Clarified
+
+"Every test passes" means no test fails: skips and expected failures are allowed. "No network access" means no model or API calls; `pip install` needs the network.
+
+H8 gives "None" on Ubuntu because `os.path.normcase` doesn't fold case on POSIX, not because the hook asks the file system.
+
+### C. Replaced
+
+- **C3 is dropped** (Andy, 4 Nov). It would publish a commit that breaks ADR-010@v1 C5. T2 covers the script, and C1 covers the job in CI.
+- **C5 runs on C2's pull request before it is closed;** C2 is closed and its branch deleted after C5.
+- **Out of scope here:** the fork's ruleset (VL-8 covers both repositories; Andy adds both) and VL-7's `--no-verify` case, which skips nothing while no pre-commit hook exists. ADR-013@v1 C6 ("changes MUST reach `main` only through a pull request that Andy merges") becomes enforced by the ruleset Andy adds, not by this workflow.
