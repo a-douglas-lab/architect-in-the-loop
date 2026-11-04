@@ -47,7 +47,10 @@ def check(path):
     elif ext == ".ps1":
         script = ("$e = $null; [void][System.Management.Automation.Language.Parser]::ParseFile("
                   "$env:CHECK_PATH, [ref]$null, [ref]$e); $e | ForEach-Object { $_.ToString() }")
-        r = subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", script],
+        shell = shutil.which("powershell") or shutil.which("pwsh")  # Windows PowerShell, else PowerShell 7
+        if not shell:
+            return "no PowerShell found to check it with"
+        r = subprocess.run([shell, "-NoProfile", "-NonInteractive", "-Command", script],
                            capture_output=True, text=True, env={**os.environ, "CHECK_PATH": path})
         if r.stdout.strip():
             return r.stdout.strip()
