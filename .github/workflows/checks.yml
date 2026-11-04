@@ -1,7 +1,8 @@
 # The checks every pull request must pass (backlog Q6, VL-6). The main ruleset requires the
 # job named `checks`; it fails if any job it needs fails, so jobs can be added here without
-# editing the ruleset (Andy, 4 Nov). A new job must be added to `checks`' needs. Runs only deterministic checks that call
-# no model: the live claude -p cases and tests/constitution/ stay out.
+# editing the ruleset (Andy, 4 Nov). A new job must be added to `checks`' needs. Runs only
+# deterministic checks that call no model: the live claude -p cases and tests/constitution/
+# stay out.
 name: checks
 
 on:
@@ -42,7 +43,7 @@ jobs:
           exit $LASTEXITCODE
       - name: Hook tests (ADR-011@v2 C1, C3)
         run: python -I tests/controls/test_hooks.py
-      - name: Trailer-check tests (ADR-010@v1 C5)
+      - name: Trailer-check tests (ADR-010@v2 C5)
         run: python -I tests/ci/test_trailers.py
       - name: Changed-files check tests
         run: python -I tests/ci/test_changed.py
@@ -69,7 +70,7 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
         with:
           python-version: "3.13"
-      - name: AI-authored commits carry the trailer (ADR-010@v1 C5)
+      - name: AI-authored commits carry the trailer (ADR-010@v2 C5)
         run: python -I scripts/check-trailers.py "$BASE" "$HEAD" "$BRANCH"
       - name: Changed files pass the C1 check; acceptance-test changes reported (Andy, 4 Nov)
         shell: bash   # explicit bash sets -o pipefail, so tee can't hide a failure

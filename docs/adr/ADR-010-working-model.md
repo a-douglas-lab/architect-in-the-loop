@@ -30,7 +30,7 @@ enforcement:
     ref: null
     state: manual
   - constraint: C5
-    mechanism: CI's trailer check on every non-merge commit of a claude/* branch, in each pull request
+    mechanism: CI's trailer check on every non-merge commit of a claude/* branch, in each pull request; relies on agent branches being named claude/*, a convention no rule enforces
     ref: scripts/check-trailers.py
     state: enforced
   - constraint: C6
