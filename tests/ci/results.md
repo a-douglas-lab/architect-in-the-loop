@@ -56,6 +56,14 @@ Pushed with Andy's approval ("Push the C2 test branch"). The branch was `claude/
 
 The PR was closed without merging, and `gh pr close --delete-branch` deleted the branch locally and on GitHub. This is VL-7's "a change written by a script that a hook can't see … caught at CI", for the guard's rule, and VL-6's "a deliberately failing pull request can't merge".
 
-Not run: VL-8's direct push to `main`, which is Andy's to run or approve.
+### V. Direct push to `main` (VL-8, 4 Nov)
+
+Run after the expectation was committed (`9ba4297`), with Andy's approval ("Yes, test with a no-op push"). An empty commit carrying the trailer, pushed from a throwaway branch at `origin/main` with `git push origin HEAD:main`.
+
+| Expected | Result | Match |
+| --- | --- | --- |
+| Refused, citing the repository rule; `main` unchanged | Refused: "GH013: Repository rule violations found for refs/heads/main", listing "Changes must be made through a pull request" and "Required status check "checks" is expected". `main` was `a239768` before and after. The probe branch was deleted locally; it never reached GitHub | Yes |
+
+Not tested: a direct push to the fork's `main`. Its ruleset requires a pull request (read through the API), but no push was tried there.
 
 C2 and C5 have not run: each needs a push with Andy's approval, and they wait until Actions is healthy.

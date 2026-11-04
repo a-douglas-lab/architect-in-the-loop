@@ -780,7 +780,9 @@ Where a final layer that can't be bypassed exists, it is CI plus branch protecti
 - **CI runs the C1 check and the private-material guard on each pull request's changed files.** Changes to acceptance-test paths are reported, not failed, because CI can't tell implement from the stage that writes tests ("C1 check + guard; C3 reported").
 - **No deliberately non-compliant commit is published to test the trailer check** ("Drop the C3 test PR").
 - Not run in CI, the author's default: the live `claude -p` cases and `tests/constitution/`, which call a model.
-- Results: [tests/ci/results.md](tests/ci/results.md). VL-6 to VL-8 also need the ruleset, which Andy adds.
+- Results: [tests/ci/results.md](tests/ci/results.md).
+
+**Progress (4 Nov):** VL-6 is met for this repository. CI runs on every pull request, the ruleset requires `checks`, and a deliberately failing pull request (#17) showed as blocked. CI in the fork remains a Phase 2 question. VL-7 is met for the guard's rule: a file a script force-added past `.gitignore` was caught at CI. `--no-verify` skips nothing while there is no pre-commit hook. VL-8 is met for this repository: a direct push to `main` was refused. The fork's ruleset requires a pull request, but no push to it has been tried. Recorded in ADR-010 v2 (C5) and ADR-013 v2 (C6).
 
 **Proposed principles** are under Q1. **Depends on:** the WSL2 question (D1, open). Without the sandbox, a script can get past every local layer, which is why VL-6 and VL-7 matter.
 
