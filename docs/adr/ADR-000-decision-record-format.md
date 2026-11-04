@@ -14,7 +14,7 @@ superseded-by: null
 exceptions: not-allowed
 enforcement:
   - constraint: C1
-    mechanism: ADR validator script, run as a hook and in CI
+    mechanism: ADR validator's JSON Schema, in CI (not the hook)
     ref: scripts/adr-front-matter.schema.json
     state: enforced
   - constraint: C2
@@ -42,11 +42,11 @@ enforcement:
     ref: null
     state: manual
   - constraint: C8
-    mechanism: ADR validator script, comparing with the previous commit (version incremented, History line added)
+    mechanism: "ADR validator, comparing with the base branch: version raised, one History line per version giving who and a summary"
     ref: scripts/adr.py
     state: enforced
   - constraint: C9
-    mechanism: ADR validator script, comparing with the previous commit (no constraint ID removed or reused)
+    mechanism: "ADR validator, comparing with the base branch: no constraint removed, withdrawn marked in both places; reuse of an ID for a different rule is left to review"
     ref: scripts/adr.py
     state: enforced
   - constraint: C10
@@ -189,4 +189,4 @@ C1, C2, C3, C5, C8 and C9 are enforced by the ADR validator (`scripts/adr.py`). 
 - **v1** · 2026-10-20 · accepted · Andy Douglas: first version.
 - **v2** · 2026-10-20 · revision · approved by Andy Douglas in chat: ADRs are versioned in place instead of superseded (C4 withdrawn; C8 to C11 added); `version` field and History section added; withdrawn state added; alternatives added at write-up must be marked (C7); subject and project ADRs defined (C12). Bootstrapping note: v1's C4 forbade this edit. Strictly, the change should have been a new ADR. It was made as v2, under the rule it introduces, with Andy's explicit approval.
 - **v3** · 2026-10-21 · revision · approved by Andy Douglas in chat: C13 added. Project-wide project ADRs default to tier `cross-cutting` and exceptions `not-allowed`, because an exception to a project-wide rule, such as an evaluation rule, is a way to move the goalposts. Raised by review of ADR-006 to ADR-008, where both values had no source.
-- **v4** · 2026-11-04 · revision · approved by Andy Douglas in chat ("Approve as shown", then for C1 "Approve the amended v4"): the Enforcement section records C1, C2, C3, C5, C8 and C9 as enforced by the ADR validator, in the C1 hook and in CI, with C1 by a JSON Schema.
+- **v4** · 2026-11-04 · revision · approved by Andy Douglas in chat ("Approve as shown", then for C1 "Approve the amended v4", then for the C1, C8 and C9 mechanisms "Approve these texts"): the Enforcement section records C1, C2, C3, C5, C8 and C9 as enforced by the ADR validator, in the C1 hook and in CI, with C1 by a JSON Schema.
