@@ -163,6 +163,18 @@ CASES = [  # id, list of changes (callables on repo), expected ("pass" or "fail"
     ("A18", [lambda r: edit(r, ".specify/memory/constitution.md", sub(r"^(3\. \*\*Never edit acceptance tests)", r"\1 ever"))],
      "fail", ["C17"]),
     ("A19", [lambda r: edit(r, ADR5, lambda t: bump_with("update")(DECISION_WORD(t)))], "fail", ["C8"]),
+    # A20-A25: dated expectations after review run 1 (4 Nov)
+    ("A20", [lambda r: edit(r, ADR5, lambda t: re.sub(r"^(- \*\*C7:\*\*).*$", r"\1 *Withdrawn in v4.*",
+                                                      bump(DECISION_WORD(t)), flags=re.M))], "fail", ["C9"]),
+    ("A21", [lambda r: edit(r, ADR5, lambda t: re.sub(r"(constraint: C7\n(?:    .*\n){2}    state: )\w+", r"\1withdrawn",
+                                                      bump(DECISION_WORD(t))))], "fail", ["C9"]),
+    ("A22", [lambda r: edit(r, ADR5, lambda t: bump(DECISION_WORD(t)).replace("version: 4\n", "version: 5\n", 1)
+                                                .replace("- **v4** ·", "- **v5** ·"))], "fail", ["C8"]),
+    ("A23", [lambda r: edit(r, ADR5, lambda t: DECISION_WORD(t).replace("version: 3\n", "version: 4\n", 1).rstrip("\n")
+                            + "\n- **v4** · 2026-11-04 · revision · x\n")], "fail", ["C8"]),
+    ("A24", [lambda r: edit(r, "CLAUDE.md", sub(r"^## Hard rules$", "## Rules"))], "fail", ["C17"]),
+    ("A25", [lambda r: edit(r, ADR5, sub(r"^scope: \[project, subject, domain:ordering\]$",
+                                         "scope:\n  - project\n  - subject\n  - domain:ordering"))], "fail", ["C14"]),
     # F: front-matter schema (dated expectation, 4 Nov). Front-matter-only edits of an accepted ADR
     # also break C8 against the base, so F cases compare with HEAD itself (base = the change).
     ("F0", [], "pass", []),
@@ -192,6 +204,12 @@ def main():
                            cwd=repo, capture_output=True, text=True, encoding="utf-8")
         got = "pass" if r.returncode == 0 else "fail" if r.returncode == 1 else f"exit {r.returncode}"
         ok = got == want and all(rule in r.stderr for rule in rules)
+        # Tightened after review run 1: F must fail on the schema itself, not on missing libraries,
+        # and A16's new ADR must not be compared for C8
+        if cid.startswith("F") and "not checked" in r.stderr:
+            ok = False
+        if cid == "A16" and "ADR-099-test.md: C8" in r.stderr:
+            ok = False
         fails += not ok
         print(f"{cid} {got}, expected {want} {rules or ''}: {'pass' if ok else 'FAIL'}")
         if not ok:

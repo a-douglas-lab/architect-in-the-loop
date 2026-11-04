@@ -48,3 +48,21 @@ Without the libraries, `check` reports "C1: not checked: install requirements.tx
 ## Not run yet
 
 CI on GitHub, which needs a push with Andy's approval.
+
+## After review run 1 (4 Nov)
+
+Run after the dated expectations were committed (`6d83ffe`), in the venv with `requirements.txt`.
+
+**Run 1 hung.** The new pattern for enforcement states nested a repeated `\s+`, which also matches newlines, and it backtracked without end. Two processes used 940 and 600 CPU-seconds before they were stopped. Fix: the entries are read line by line (`entry_states()`).
+
+**Run 2:** 37 of 37. A0 to A25 and F0 to F10 matched in 116 seconds.
+- A20 and A21 fail on C9's withdrawn consistency.
+- A22 and A23 fail on C8's one-line-per-version and who-and-summary rules.
+- A24 fails on C17 with no rules found.
+- A25 fails on C14 when scope is a block list.
+- F1 to F9 failed on the schema itself, not on missing libraries.
+- A16 shows no C8 problem for the new ADR.
+
+Every existing History line already matched the stricter C8 format, so nothing in the repository was rejected. `check --base origin/main` and `check --base 624a523`: 0 problems. Hook tests: 29 of 29.
+
+**Corrections to the record above.** Harness run 1 had one harness fault, the guessed file name, not two; the A18 crash was a validator fault (encoding). Review run 1 also found that the earlier "0 problems on the real history" was checked by the reviewer without the schema libraries; with them installed it is still 0.

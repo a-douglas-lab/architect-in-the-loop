@@ -20,9 +20,25 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ADR_DIR = "docs/adr"
 CONSTITUTION = ".specify/memory/constitution.md"
 SECTIONS = ["Context", "Decision", "Constraints", "Consequences", "Alternatives", "Enforcement", "History"]
-ADR_FILE = re.compile(r"ADR-\d{3}-.*\.md\Z")
-HISTORY = re.compile(r"^- \*\*v(\d+)\*\* · (\d{4}-\d{2}-\d{2}) · (\S+) · ", re.M)
+HISTORY = re.compile(r"^- \*\*v(\d+)\*\* · (\d{4}-\d{2}-\d{2}) · (\S+) · (.*)$", re.M)
+WHO_AND_SUMMARY = re.compile(r"[^:]+: \S")  # an approver or author, then a summary
 INDEX_ROW = re.compile(r"^\| \[ADR-\d{3}\]\(.*$", re.M)
+
+
+def entry_states(front):
+    """(constraint, state) for each enforcement entry, line by line (a nested regex here backtracked
+    without end on 4 Nov)."""
+    out, current = [], None
+    for line in front.splitlines():
+        m = re.match(r"^\s*- constraint:\s*(C\d+)\s*$", line)
+        if m:
+            current = m.group(1)
+            continue
+        m = re.match(r"^\s+state:\s*(\S+)", line)
+        if m and current:
+            out.append((current, m.group(1)))
+            current = None
+    return out
 
 
 def parse(text):
@@ -52,7 +68,11 @@ def parse(text):
         "enforced": re.findall(r"^\s*- constraint:\s*(C\d+)\s*$", front, re.M),
         "sections": sections,
         "constraints": re.findall(r"^- \*\*(C\d+):\*\*", constraints_text.group(1) if constraints_text else "", re.M),
-        "history": [(int(v), d, t) for v, d, t in HISTORY.findall(history_text.group(1) if history_text else "")],
+        "withdrawn_text": re.findall(r"^- \*\*(C\d+):\*\* \*Withdrawn", constraints_text.group(1) if constraints_text else "",
+                                     re.M),
+        "withdrawn_state": [c for c, state in entry_states(front) if state == "withdrawn"],
+        "history": [(int(v), d, t, rest) for v, d, t, rest in
+                    HISTORY.findall(history_text.group(1) if history_text else "")],
         "comparable": comparable,
     }
 
@@ -73,6 +93,11 @@ def check_file(path, text):
         problems.append(f"C5: enforcement entry {c} names no constraint")
     for c in sorted({c for c in entries if entries.count(c) > 1}):
         problems.append(f"C5: constraint {c} has more than one enforcement entry")
+    # ADR-000@v3 C9: a withdrawn constraint is marked withdrawn in both places
+    for c in sorted(set(a["withdrawn_text"]) - set(a["withdrawn_state"])):
+        problems.append(f"C9: constraint {c} is marked withdrawn, but its enforcement state isn't withdrawn")
+    for c in sorted(set(a["withdrawn_state"]) - set(a["withdrawn_text"])):
+        problems.append(f"C9: constraint {c}'s enforcement state is withdrawn, but its text isn't marked withdrawn")
     return [f"{path}: {p}" for p in problems]
 
 
@@ -107,11 +132,14 @@ def compare(rel, old, new):
     added = [h for h in n["history"] if h[0] > old_v]
     if not added:
         problems.append("C8: changed, but no new History line")
-    for v, _, kind in added:
+    elif new_v > old_v and sorted(h[0] for h in added) != list(range(old_v + 1, new_v + 1)):
+        problems.append(f"C8: version went from {old_v} to {new_v}, but the new History lines are for "
+                        f"{sorted(h[0] for h in added)}: expected one line per version")
+    for v, _, kind, rest in added:
         if kind not in ("revision", "correction"):
             problems.append(f"C8: History line v{v} has type {kind!r}, expected revision or correction")
-    if added and max(h[0] for h in added) != new_v:
-        problems.append(f"C8: the newest History line isn't for v{new_v}")
+        if not WHO_AND_SUMMARY.match(rest):
+            problems.append(f"C8: History line v{v} doesn't give an approver or author and a summary ('who: summary')")
     return [f"{rel}: {p}" for p in problems]
 
 
@@ -147,7 +175,13 @@ def front_matter_problems(rel, text):
     if isinstance(data, dict) and isinstance(data.get("date"), (datetime.date, datetime.datetime)):
         data["date"] = data["date"].isoformat()  # YAML reads an unquoted YYYY-MM-DD as a date
     errors = sorted(jsonschema.Draft202012Validator(schema).iter_errors(data), key=lambda e: list(e.path))
-    return [f"{rel}: C1: {'/'.join(map(str, e.path)) or 'front matter'}: {e.message}" for e in errors]
+    problems = [f"{rel}: C1: {'/'.join(map(str, e.path)) or 'front matter'}: {e.message}" for e in errors]
+    # ADR-009@v2 C14: the index is generated from the line-pattern reading, so it must match YAML's
+    lines = parse(text)
+    if isinstance(data, dict) and (data.get("title"), data.get("scope")) != (lines["title"], lines["scope"]):
+        problems.append(f"{rel}: ADR-009@v2 C14: title or scope reads differently as YAML than the index "
+                        "generator reads it; write scope as a one-line [list] and title on one line")
+    return problems
 
 
 def check(base=None):
@@ -168,7 +202,10 @@ def check(base=None):
     if INDEX_ROW.findall(constitution) != index_rows():
         problems.append(f"{CONSTITUTION}: ADR-009@v2 C10, C14: the index doesn't match the ADRs' front matter; "
                         "run scripts/adr.py index --write")
-    for rule in hard_rules():
+    rules = hard_rules()
+    if not rules:
+        problems.append("CLAUDE.md: ADR-009@v2 C17: no numbered hard rules found under '## Hard rules'")
+    for rule in rules:
         if rule not in constitution.splitlines():
             problems.append(f"{CONSTITUTION}: ADR-009@v2 C17: hard rule not quoted word for word: {rule[:60]}…")
     for p in problems:

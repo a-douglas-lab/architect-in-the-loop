@@ -6,7 +6,7 @@
 | Outcome | None: project work, Step 7 item 2 |
 | Run | 1 |
 | Date | 2026-11-04 |
-| Autonomy level | 1, drafted: the agent built; Andy chose at four points and approved three ADR texts |
+| Autonomy level | 1, drafted: the agent built; Andy ruled three times and approved three ADR texts |
 | Session | Same session as the [CI card](2026-11-04-step7-ci-run1.md) |
 | Previous card for this stage | [Step 7 CI, run 1](2026-11-04-step7-ci-run1.md) |
 
@@ -28,7 +28,7 @@ This run turns ADR-000's and ADR-009's mechanical rules into a check that CI and
 
 1. Measured the index (about 45 tokens per ADR) and recorded the bloat point for the T6 ADR.
 2. Wrote the expected results (`0c5b00b`), built the validator, and ran A0 by hand: it failed on a validator fault (a quoted YAML title).
-3. Harness runs: two harness faults and a Windows encoding fault in the validator, then 20 of 20.
+3. Harness runs: one harness fault (a guessed file name) and a Windows encoding fault in the validator, then 20 of 20.
 4. Checked every ADR revision made in Step 7 against the commit Step 7 started from: 0 problems.
 5. Wired the per-file checks into the C1 hook (K12 to K14) and the full check into CI.
 6. Andy approved ADR-000 v4 and ADR-009 v3's Enforcement text. The validator accepted both, and its own state and ref update.
