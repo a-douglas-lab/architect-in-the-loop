@@ -1,8 +1,9 @@
-"""Cases T1 to T8 in expected.md, for scripts/check-trailers.py. Usage: python -I tests/ci/test_trailers.py
+"""Cases T1 to T9 in expected.md, for scripts/check-trailers.py. Usage: python -I tests/ci/test_trailers.py
 
 Each case builds a throwaway git repository in a temporary folder.
 """
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -59,6 +60,8 @@ CASES = [
     ("T7", "claude/x", lambda r: commit(r, "a.txt", "a\n\nWritten with Claude, but no trailer.\n\nMore text."),
      "fail", None),
     ("T8", "claude/x", lambda r: None, "pass", None),
+    ("T9", "claude/x", lambda r: commit(r, "a.txt", "a\n\nCo-Authored-By: Claudette Smith <c@example.com>"),
+     "fail", None),
 ]
 
 
@@ -66,7 +69,8 @@ def main():
     fails = 0
     for cid, branch, build, want, named in CASES:
         got, err = case(branch, build)
-        ok = got == want and (named is None or named in err)
+        # A failure names the short SHA and the subject (dated expectation, 4 Nov)
+        ok = got == want and (named is None or re.search(r"\b[0-9a-f]{7,} " + re.escape(named), err))
         fails += not ok
         print(f"{cid} {got}, expected {want}{' naming ' + repr(named) if named else ''}: {'pass' if ok else 'FAIL'}")
     print(f"failures: {fails}")

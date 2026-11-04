@@ -1,7 +1,7 @@
-# The checks every pull request must pass (backlog Q6, VL-6). Andy requires the job named
-# `checks` in the main ruleset; it fails if any job it needs fails, so suites can be added
-# here without editing the ruleset (Andy, 4 Nov). Runs only deterministic, offline checks:
-# the live claude -p cases and tests/constitution/ need a model and stay out.
+# The checks every pull request must pass (backlog Q6, VL-6). The job named `checks` is the
+# one Andy is to require in the main ruleset; it fails if any job it needs fails, so suites
+# can be added here without editing the ruleset (Andy, 4 Nov). Runs only deterministic checks
+# that call no model: the live claude -p cases and tests/constitution/ stay out.
 name: checks
 
 on:
@@ -44,32 +44,41 @@ jobs:
         run: python -I tests/controls/test_hooks.py
       - name: Trailer-check tests (ADR-010@v1 C5)
         run: python -I tests/ci/test_trailers.py
+      - name: Changed-files check tests
+        run: python -I tests/ci/test_changed.py
       - name: Rule-unit spike tests
         working-directory: spikes/rule-units
         run: |
           python -m pip install --quiet -r requirements.txt
           python -m pytest -q
 
-  trailers:
-    name: trailers
+  pull-request:
+    name: pull request
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    env:   # through env, not inline, so a branch name can't inject shell
+      # origin/<base>, not the recorded base SHA, which can be stale (review run 1, finding 3)
+      BASE: origin/${{ github.base_ref }}
+      HEAD: ${{ github.event.pull_request.head.sha }}
+      BRANCH: ${{ github.head_ref }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: "3.13"
       - name: AI-authored commits carry the trailer (ADR-010@v1 C5)
-        env:   # through env, not inline, so a branch name can't inject shell
-          BASE: ${{ github.event.pull_request.base.sha }}
-          HEAD: ${{ github.event.pull_request.head.sha }}
-          BRANCH: ${{ github.head_ref }}
-        run: python3 -I scripts/check-trailers.py "$BASE" "$HEAD" "$BRANCH"
+        run: python -I scripts/check-trailers.py "$BASE" "$HEAD" "$BRANCH"
+      - name: Changed files pass the C1 check; acceptance-test changes reported (Andy, 4 Nov)
+        shell: bash   # explicit bash sets -o pipefail, so tee can't hide a failure
+        run: python -I scripts/check-changed.py "$BASE" "$HEAD" | tee -a "$GITHUB_STEP_SUMMARY"
 
   checks:
     name: checks
     if: always()
-    needs: [suites, trailers]
+    needs: [suites, pull-request]
     runs-on: ubuntu-latest
     steps:
       - name: Every needed job passed or was skipped

@@ -2,9 +2,11 @@
 
 Usage: python -I scripts/check-trailers.py <base> <head> <branch>
 On a branch named claude/*, every commit in base..head that isn't a merge must carry a
-Co-Authored-By trailer (any case, as git reads trailers) whose value names Claude. Other
-branches aren't checked: CI can't tell an AI-authored commit by itself (Andy, 4 Nov).
+Co-Authored-By trailer (any case, as git reads trailers) whose value names Claude as a word.
+Other branches aren't checked: CI can't tell an AI-authored commit by itself. Merge commits
+are skipped (both Andy, 4 Nov).
 """
+import re
 import subprocess
 import sys
 
@@ -20,7 +22,7 @@ def main(base, head, branch):
     missing = []
     for sha in git("rev-list", "--no-merges", f"{base}..{head}").split():
         values = git("log", "-1", "--format=%(trailers:key=Co-Authored-By,valueonly)", sha)
-        if not any("claude" in v.lower() for v in values.splitlines()):
+        if not any(re.search(r"\bclaude\b", v, re.IGNORECASE) for v in values.splitlines()):
             missing.append(git("log", "-1", "--format=%h %s", sha).strip())
     for line in missing:
         print(f"missing Co-Authored-By: Claude trailer: {line}", file=sys.stderr)

@@ -23,9 +23,9 @@ def make_root():
     return root
 
 
-def run(root, hook, stdin):
+def run(root, hook, stdin, env=None):
     r = subprocess.run([sys.executable, "-I", os.path.join(root, ".claude", "hooks", hook)],
-                       input=stdin, capture_output=True, text=True)
+                       input=stdin, capture_output=True, text=True, env=env)
     if r.returncode == 2:
         return "blocked"
     if r.returncode != 0:
@@ -79,6 +79,7 @@ def k_cases():
         ("K8", "h.ps1", "function f( {\n", "reported"),
         ("K9", "i.md", "# not checked {\n", "silent"),
         ("K10", None, None, "silent"),
+        ("K11", "j.ps1", "Write-Host 'ok'\n", "reported"),  # no PowerShell on PATH (tests/ci, 4 Nov)
     ]
 
 
@@ -110,7 +111,9 @@ def main():
                 f.write(content)
         stdin = json.dumps({"hook_event_name": "PostToolUse", "tool_name": "Write", "cwd": root,
                             "tool_input": {"file_path": path}, "tool_response": {}})
-        got = run(root, "check_edited.py", stdin)
+        # K11: PATH holds only an empty folder, so neither powershell nor pwsh is found
+        env = {**os.environ, "PATH": root} if cid == "K11" else None
+        got = run(root, "check_edited.py", stdin, env)
         got = "silent" if got == "none" else got
         ok = got == want
         fails += not ok

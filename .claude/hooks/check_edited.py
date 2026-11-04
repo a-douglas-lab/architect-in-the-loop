@@ -1,4 +1,6 @@
-"""PostToolUse hook: syntax-check a file after Claude edits it (ADR-011@v1 C1, as far as it goes today).
+"""PostToolUse hook: syntax-check a file after Claude edits it (ADR-011@v2 C1, as far as it goes today).
+
+CI runs the same check() on a pull request's changed files (scripts/check-changed.py).
 
 The repository has no build or formatter yet, so this checks what it can by file type and
 reports a failure next to the tool result, for Claude to fix. Its "decision": "block" can't undo
