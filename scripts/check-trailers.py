@@ -1,4 +1,4 @@
-"""Check that AI-authored commits carry a Co-Authored-By: Claude trailer (ADR-010@v1 C5).
+"""Check that AI-authored commits carry a Co-Authored-By: Claude trailer (ADR-010@v2 C5).
 
 Usage: python -I scripts/check-trailers.py <base> <head> <branch>
 On a branch named claude/*, every commit in base..head that isn't a merge must carry a

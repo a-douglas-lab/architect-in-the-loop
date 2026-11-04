@@ -1,9 +1,9 @@
 ---
 id: ADR-010
-version: 1
+version: 2
 title: The working model is designed around Andy's review attention, and dogfoods the product
 status: accepted
-date: 2026-10-21
+date: 2026-11-04
 decision-makers: [Andy Douglas]
 scope: [project, concern:delivery]
 precedence:
@@ -30,9 +30,9 @@ enforcement:
     ref: null
     state: manual
   - constraint: C5
-    mechanism: commit-message check for the Co-Authored-By trailer on AI-authored commits
-    ref: null
-    state: planned
+    mechanism: CI's trailer check on every non-merge commit of a claude/* branch, in each pull request; relies on agent branches being named claude/*, a convention no rule enforces
+    ref: scripts/check-trailers.py
+    state: enforced
   - constraint: C6
     mechanism: loop cards record tokens per reviewer run; there is no budget or alert yet (open)
     ref: docs/loops/cards
@@ -105,8 +105,9 @@ The naive option (an LLM with everything in its prompt) doesn't apply to how the
 
 ## Enforcement
 
-C5 becomes a commit-message check (planned with the Step 7 hooks). The rest rely on review. Two are unmet today. C2: no work has yet run in a worktree; track A runs in the main checkout (`git worktree list` shows only it). C3: so far only the Spec Kit skills are committed; the ADR, spike and acceptance-test skills, the reviewer subagent and the hooks are built in Step 7. For C6, loop cards record tokens per reviewer run; nothing sets or enforces a budget. How token use is monitored (C6) is open, so nothing enforces it yet.
+C5 is enforced in CI (4 Nov): every non-merge commit on a `claude/*` branch must carry a `Co-Authored-By` trailer naming Claude, and the ruleset requires CI to pass. CI can't tell an AI-authored commit by itself, so it relies on agent branches using the `claude/` prefix; an agent's commit on another branch, or the conflict resolution inside an agent's merge commit, isn't checked (`tests/ci/`). The rest rely on review. Two are unmet today. C2: no work has yet run in a worktree; track A runs in the main checkout (`git worktree list` shows only it). C3: so far only the Spec Kit skills are committed; the ADR, spike and acceptance-test skills, the reviewer subagent and the hooks are built in Step 7. For C6, loop cards record tokens per reviewer run; nothing sets or enforces a budget. How token use is monitored (C6) is open, so nothing enforces it yet.
 
 ## History
 
 - **v1** · 2026-10-21 · accepted · Andy Douglas: first version, recording D1's decisions of 5 Oct.
+- **v2** · 2026-11-04 · revision · approved by Andy Douglas in chat ("Approve, push to #16"): C5's enforcement is CI's trailer check, scoped to commits on `claude/*` branches with merge commits skipped (Andy, 4 Nov: "Commits on claude/* branches", "Skip merge commits"), and is now enforced.

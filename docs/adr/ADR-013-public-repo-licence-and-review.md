@@ -1,9 +1,9 @@
 ---
 id: ADR-013
-version: 1
+version: 2
 title: Public repositories, MIT licence, protected main, and review before anything is pushed while stages are hand-run
 status: accepted
-date: 2026-10-21
+date: 2026-11-04
 decision-makers: [Andy Douglas]
 scope: [project, concern:governance]
 precedence:
@@ -26,7 +26,7 @@ enforcement:
     ref: https://github.com/a-douglas-lab/eShop
     state: manual
   - constraint: C4
-    mechanism: GitHub rulesets "Protect main branch" in this repository (24726583) and the fork (24726584); deletion and force-push blocked, no bypass actors
+    mechanism: GitHub rulesets "Protect main" in this repository (24726583) and the fork (24726584); deletion and force-push blocked, no bypass actors
     ref: https://github.com/a-douglas-lab/architect-in-the-loop/rules/24726583
     state: enforced
   - constraint: C5
@@ -34,9 +34,9 @@ enforcement:
     ref: null
     state: manual
   - constraint: C6
-    mechanism: a "require a pull request before merging" rule in both main rulesets, planned for Step 7, for Andy to add; until then, habit
-    ref: null
-    state: planned
+    mechanism: the "Protect main" rulesets require a pull request before merging in both repositories (0 approvals, no bypass actors), and in this repository the CI job checks must pass; that Andy is the one who merges rests on discipline, because Claude sessions use his admin-capable credentials
+    ref: https://github.com/a-douglas-lab/architect-in-the-loop/rules/24726583
+    state: manual
   - constraint: C7
     mechanism: review when a stage's autonomy is raised (ADR-012@v1 C9)
     ref: null
@@ -144,8 +144,9 @@ The naive option (an LLM with everything in its prompt) doesn't apply.
 
 ## Enforcement
 
-C4 is enforced by the "Protect main branch" rulesets in this repository (24726583) and in the fork (24726584). Both block deletion and force-pushes and have no bypass actors. Neither requires a pull request or a review, so C6 is held only by habit until the "require a pull request before merging" rule is added in Step 7. C5 can't be enforced by GitHub, because a push is the event it would have to stop. It is held by the author's discipline and a working rule in Claude Code's memory for this project. C7 is checked when a stage's autonomy is raised: ADR-012@v1 C9 requires this revision first. C1 to C3 are true today and checked by review.
+C4 is enforced by the "Protect main" rulesets in this repository (24726583) and in the fork (24726584). Both block deletion and force-pushes and have no bypass actors. Since 4 Nov both also require a pull request (Andy added the rule), and this repository's requires the CI job `checks` to pass, so C6's pull-request half is enforced: the API reported a pull request with a failing check as blocked, and a direct push to `main` was refused (`tests/ci/`). C6 stays `manual` overall, because its other half isn't enforced. With 0 approvals required, the ruleset doesn't check who merges. Andy is the only collaborator, but Claude sessions act with his credentials, which have admin rights. On 4 Nov a session changed this ruleset through the API, at Andy's instruction. So a session could merge a pull request, or loosen the ruleset. That it doesn't rests on the author's discipline, as for C5. Whether agents get a token without admin rights is open. A direct push to the fork's `main` hasn't been tried. C5 can't be enforced by GitHub, because a push is the event it would have to stop. It is held by the author's discipline and a working rule in Claude Code's memory for this project. C7 is checked when a stage's autonomy is raised: ADR-012@v1 C9 requires this revision first. C1 to C3 are true today and checked by review.
 
 ## History
 
 - **v1** · 2026-10-21 · accepted · Andy Douglas: first version, recording D7 (decided 8 Oct). Rulings by Andy in chat on 21 Oct: "No push before review", meaning nothing is pushed, even a branch, before his local review; a "require a pull request" ruleset rule is recorded for Step 7; both rules apply while stages are hand-run, and this ADR is revised before any stage goes above level 2 ("yes, scope ADR-013 that way"); main changes only through a PR he merges; the reviewer's findings go on the loop card for his local review.
+- **v2** · 2026-11-04 · revision · approved by Andy Douglas in chat ("Approve, push to #16"): C6's pull-request half enforced by the rule Andy added to both rulesets on 4 Nov, with `checks` required in this repository; tested by a blocked pull request (C5). C6 stays manual overall, because who merges isn't enforced while sessions use Andy's admin-capable credentials (review run 2, after the approval). The refused direct push (VL-8) was recorded after the approval. Includes a correction: C4's mechanism names the ruleset "Protect main", checked against the API for both rulesets.
