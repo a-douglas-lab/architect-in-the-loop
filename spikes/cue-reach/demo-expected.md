@@ -39,3 +39,14 @@ Q8 is a prediction with low confidence. CUE may report the conflict only when th
 ## Measures
 
 For each case: exit code, the first error lines, and whether they name the clause's file and line. For the model: lines of CUE per clause. The run time is recorded but not judged.
+
+## Dated expectation, 2026-11-04, after review run 2
+
+Review run 2 found that Q8 had no control: `cue vet -c` fails on any model with no data, because `request` and `plan` are incomplete, so Q8's exit code proved nothing. Tried by hand on 4 Nov, `cue vet -c=false ./model`, which allows incomplete values, passed on the model alone and failed once the planted clash was added. From this date:
+
+| Case | Change | Expected |
+| --- | --- | --- |
+| Q8 | As before, run with `cue vet -c=false ./model` | Fail, with "conflicting values" naming `adr017.cue` and `adr099.cue` |
+| Q9 (control, new) | The model as committed, no clash, `cue vet -c=false ./model` | Pass |
+
+The clash in Q6 and Q8 is a planted test clause (`adr099.cue`), not a conflict between real ADRs.
