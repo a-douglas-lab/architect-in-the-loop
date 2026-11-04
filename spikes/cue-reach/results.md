@@ -37,6 +37,6 @@ The predictions were badly wrong in the direction that favours CUE. The author's
 - **The V class is broad by the method's definition.** It includes Markdown structure (ADR-000 C2) that needs parsing before any data check.
 - **No CUE was run.** Whether CUE's errors are usable, and what it costs in CI, is untested.
 
-## What would test the claim
+## What would test the claim, and the test
 
-A small CUE model of `#OutcomeRequest` and `#PlanCitations`. DEV-1, written as data, would be loaded against the 9 clauses those two definitions carry. A deliberately conflicting clause would then be added, to see unification catch it. This needs the CUE binary: `cue_v0.17.1_windows_arm64.zip`, 8.85 MB, from github.com/cue-lang/cue releases. Andy's approval is needed for the download.
+The test was a small CUE model of `#OutcomeRequest` and `#PlanCitations`, with DEV-1 loaded against them and a deliberately conflicting clause added. Andy approved the download ("Yes, download and run it"). 8 clauses from five ADRs were modelled. All 8 cases matched on pass or fail. A clash between two ADRs was caught from the definitions alone. One error didn't name its clause. See [demo-results.md](demo-results.md).
