@@ -1,0 +1,5 @@
+# Python dependencies for this repository's own checks, pinned (the rule-unit spike has its own).
+# scripts/adr.py uses them for the ADR front-matter schema (ADR-000 C1). Install into a venv:
+#   python -m venv .venv && .venv/Scripts/python -m pip install -r requirements.txt
+jsonschema==4.26.0
+pyyaml==6.0.3

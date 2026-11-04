@@ -27,7 +27,8 @@ def make_repo():
     shutil.copy(os.path.join(REPO, ".specify", "memory", "constitution.md"), os.path.join(repo, ".specify", "memory"))
     shutil.copy(os.path.join(REPO, "CLAUDE.md"), repo)
     os.makedirs(os.path.join(repo, "scripts"))
-    shutil.copy(os.path.join(REPO, "scripts", "adr.py"), os.path.join(repo, "scripts"))
+    for name in ("adr.py", "adr-front-matter.schema.json"):
+        shutil.copy(os.path.join(REPO, "scripts", name), os.path.join(repo, "scripts"))
     git(repo, "init", "-q", "-b", "main")
     git(repo, "-c", "core.autocrlf=false", "add", "-A")
     git(repo, "commit", "-q", "-m", "base")
@@ -162,6 +163,19 @@ CASES = [  # id, list of changes (callables on repo), expected ("pass" or "fail"
     ("A18", [lambda r: edit(r, ".specify/memory/constitution.md", sub(r"^(3\. \*\*Never edit acceptance tests)", r"\1 ever"))],
      "fail", ["C17"]),
     ("A19", [lambda r: edit(r, ADR5, lambda t: bump_with("update")(DECISION_WORD(t)))], "fail", ["C8"]),
+    # F: front-matter schema (dated expectation, 4 Nov). Front-matter-only edits of an accepted ADR
+    # also break C8 against the base, so F cases compare with HEAD itself (base = the change).
+    ("F0", [], "pass", []),
+    ("F1", [lambda r: edit(r, ADR5, sub(r"^backlog:.*\n", ""))], "fail", ["C1"]),
+    ("F2", [lambda r: edit(r, ADR5, sub(r"^status: accepted$", "status: approved"))], "fail", ["C1"]),
+    ("F3", [lambda r: edit(r, ADR5, sub(r"^version: 3$", "version: two"))], "fail", ["C1"]),
+    ("F4", [lambda r: edit(r, ADR5, sub(r"^date: .*$", "date: 4 Nov 2026"))], "fail", ["C1"]),
+    ("F5", [lambda r: edit(r, ADR5, sub(r"(constraint: C7\n(?:    .*\n){2}    state: )\w+", r"\1done"))], "fail", ["C1"]),
+    ("F6", [lambda r: edit(r, ADR5, sub(r"^  overrides:.*\n", ""))], "fail", ["C1"]),
+    ("F7", [lambda r: edit(r, ADR5, sub(r"^superseded-by: .*$", "superseded-by: ADR-5"))], "fail", ["C1"]),
+    ("F8", [lambda r: edit(r, ADR5, sub(r"^scope: .*$", "scope: project"))], "fail", ["C1"]),
+    ("F9", [lambda r: edit(r, ADR5, sub(r"^scope: \[", "scope: [[", ))], "fail", ["C1"]),
+    ("F10", [lambda r: edit(r, ADR5, sub(r"^(backlog:.*)$", r"\1\nowner: Andy Douglas"))], "pass", []),
 ]
 
 
@@ -173,7 +187,8 @@ def main():
             change(repo)
         git(repo, "add", "-A")
         git(repo, "commit", "-q", "--allow-empty", "-m", cid)
-        r = subprocess.run([sys.executable, "-I", os.path.join(repo, "scripts", "adr.py"), "check", "--base", "HEAD~1"],
+        base = "HEAD" if cid.startswith("F") else "HEAD~1"
+        r = subprocess.run([sys.executable, "-I", os.path.join(repo, "scripts", "adr.py"), "check", "--base", base],
                            cwd=repo, capture_output=True, text=True, encoding="utf-8")
         got = "pass" if r.returncode == 0 else "fail" if r.returncode == 1 else f"exit {r.returncode}"
         ok = got == want and all(rule in r.stderr for rule in rules)

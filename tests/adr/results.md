@@ -28,6 +28,14 @@ Command: `python -I tests/adr/test_adr.py`.
 | A14, A15, A16 | Fail, C10 and C14 | Fail, C10 and C14 |
 | A18 | Fail, C17 | Fail, C17 |
 
+## F. Front-matter schema, local (Windows 11, Python 3.13.5, fresh venv from `requirements.txt`)
+
+Run after the dated expectation was committed (`687b1e6`). 11 of 11 matched on the first run: F0 and F10 passed, and F1 to F9 failed on C1 (F9 without a crash). The A cases were re-run in the same venv: 20 of 20. F0 passing means all 19 ADRs already conform to the schema.
+
+The harness compares F cases with the change itself (`--base HEAD`), because a front-matter-only edit of an accepted ADR also breaks C8 against the original. That isolates C1.
+
+Without the libraries, `check` reports "C1: not checked: install requirements.txt" for each ADR and fails. CI installs them first.
+
 ## On the repository's real history
 
 - `scripts/adr.py check --base 624a523`, the commit Step 7 started from: "19 ADRs checked, 0 problems". Every ADR revision made in Step 7 passes C8 and C9. That covers ADR-010 v2, ADR-011 v2 and v3, ADR-013 v2, and ADR-016 v2 and v3, which the rule-unit spike session made.

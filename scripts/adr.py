@@ -4,12 +4,13 @@ Usage:
   python -I scripts/adr.py check [--base <ref>]   check every ADR, the index and the hard rules
   python -I scripts/adr.py index [--write]        print, or rewrite, the constitution's ADR index
 
-Checks the rules that need git and plain code: ADR-000@v3 C2, C3, C5, C8, C9 and ADR-009@v2
-C10, C14, C17. The front-matter schema (ADR-000@v3 C1) waits for the CUE versus JSON Schema
-research (Andy, 4 Nov: "Code checks now; CUE question researched first"), so front matter is
-read with line patterns here, not a YAML parser. check_file() is also run by the C1 hook and
-by CI's changed-files check on any edited ADR.
+Checks ADR-000@v3 C1 (front matter against adr-front-matter.schema.json, which needs the
+libraries in requirements.txt), C2, C3, C5, C8, C9 and ADR-009@v2 C10, C14, C17. The other
+checks read front matter with line patterns, so check_file() needs no libraries: the C1 hook
+and CI's changed-files check run it on any edited ADR.
 """
+import datetime
+import json
 import os
 import re
 import subprocess
@@ -127,11 +128,34 @@ def hard_rules():
     return re.findall(r"^\d+\. .+$", m.group(1) if m else "", re.M)
 
 
+def front_matter_problems(rel, text):
+    """ADR-000@v3 C1: front matter against the JSON Schema (Andy, 4 Nov: "JSON Schema")."""
+    try:  # imported here, so the C1 hook's per-file checks need no libraries
+        import jsonschema
+        import yaml
+    except ImportError:
+        return [f"{rel}: C1: not checked: install requirements.txt (jsonschema, pyyaml)"]
+    m = re.match(r"---\n(.*?)\n---\n", text.replace("\r\n", "\n"), re.S)
+    if not m:
+        return [f"{rel}: C1: no front matter"]
+    try:
+        data = yaml.safe_load(m.group(1))
+    except yaml.YAMLError as e:
+        return [f"{rel}: C1: front matter isn't valid YAML: {str(e).splitlines()[0]}"]
+    with open(os.path.join(ROOT, "scripts", "adr-front-matter.schema.json"), encoding="utf-8") as f:
+        schema = json.load(f)
+    if isinstance(data, dict) and isinstance(data.get("date"), (datetime.date, datetime.datetime)):
+        data["date"] = data["date"].isoformat()  # YAML reads an unquoted YYYY-MM-DD as a date
+    errors = sorted(jsonschema.Draft202012Validator(schema).iter_errors(data), key=lambda e: list(e.path))
+    return [f"{rel}: C1: {'/'.join(map(str, e.path)) or 'front matter'}: {e.message}" for e in errors]
+
+
 def check(base=None):
     problems, ids = [], {}
     for rel in adr_paths():
         text = read(rel)
         problems += check_file(rel, text)
+        problems += front_matter_problems(rel, text)
         ids.setdefault(parse(text)["id"], []).append(rel)
         if base:
             old = at_base(base, rel)
