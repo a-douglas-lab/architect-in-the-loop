@@ -45,6 +45,17 @@ All four jobs passed. C1 matches its expectation: green on both systems.
 
 **A misdiagnosis, corrected.** For several minutes GitHub's jobs API and `gh pr checks` reported `suites (ubuntu-latest)` and `pull request` as queued, with no runner, after `checks` had passed. The author read this as `checks` passing without its inputs, and told Andy so. The job logs show both jobs ran at 16:18, before `checks` started: the status display was lagging during the outage, and `checks` received real results. On that wrong reading, Andy ruled "require the leaf checks too". The ruleset now requires all four checks (set by the author through the API at Andy's instruction, then read back). While the lagging status still showed `pull request` as queued, PR #16 showed `BLOCKED`, then `CLEAN` once all four reported. Told of the correction, Andy ruled "Back to `checks` only". The leaf checks were removed through the API and the ruleset read back: it requires `checks` alone, from GitHub Actions.
 
-C2 and C5 have not run: each needs a push with Andy's approval.
+### C2 and C5 (PR #17, 4 Nov)
+
+Pushed with Andy's approval ("Push the C2 test branch"). The branch was `claude/step7-ci` plus one commit adding an empty `Architect-in-the-loop-evaluator/.keep`, force-added past `.gitignore`.
+
+| Case | Expected | Result | Match |
+| --- | --- | --- | --- |
+| C2 | Red: the guard step fails on both systems | `suites (ubuntu-latest)` and `suites (windows-latest)` failed at "Private-material guard on this tree", each logging "found private evaluation material in this working tree" with the placeholder's path; `checks` failed; `pull request` passed, which is correct because it doesn't run the guard | Yes |
+| C5 | Blocked (`mergeStateStatus` is `BLOCKED`) | `BLOCKED` (`mergeable` was `MERGEABLE`, meaning no conflicts). In the web page this shows as a greyed-out merge button, with no separate "blocked" banner | Yes |
+
+The PR was closed without merging, and `gh pr close --delete-branch` deleted the branch locally and on GitHub. This is VL-7's "a change written by a script that a hook can't see … caught at CI", for the guard's rule, and VL-6's "a deliberately failing pull request can't merge".
+
+Not run: VL-8's direct push to `main`, which is Andy's to run or approve.
 
 C2 and C5 have not run: each needs a push with Andy's approval, and they wait until Actions is healthy.

@@ -89,3 +89,7 @@ H8 gives "None" on Ubuntu because `os.path.normcase` doesn't fold case on POSIX,
 - **C3 is dropped** (Andy, 4 Nov). It would publish a commit that breaks ADR-010@v1 C5. T2 covers the script, and C1 covers the job in CI.
 - **C5 runs on C2's pull request before it is closed;** C2 is closed and its branch deleted after C5.
 - **Out of scope here:** the fork's ruleset (VL-8 covers both repositories; Andy adds both) and VL-7's `--no-verify` case, which skips nothing while no pre-commit hook exists. ADR-013@v1 C6 ("changes MUST reach `main` only through a pull request that Andy merges") becomes enforced by the ruleset Andy adds, not by this workflow.
+
+### V. Direct push to `main` (VL-8), dated 2026-11-04
+
+Approved by Andy: "Yes, test with a no-op push". From a throwaway local branch at `origin/main`, push one empty commit carrying the trailer straight to `main`: **refused by the remote**, citing the repository rule. `main` on GitHub is unchanged afterwards.
