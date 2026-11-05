@@ -60,6 +60,26 @@ CASES = {
             "fail", ["canon.cue", "payments.cue"], ["data.cue"]),
 }
 
+# Exploratory cases, run after run 2 and NOT pre-registered (review run 3 asked for them to be
+# reproducible): id -> (edits, cue vet arguments, package). Results go in domains-results.md.
+AUDIT = "\tif financial {\n\t\tretentionDays: >=2555\n\t}\n"
+PRIVACY = "\tif hasPII {\n\t\tretentionDays: <=365\n\t}\n"
+NO_VALUE = (PAY, "\tretentionDays: 2555\n", "")
+EXPLORATORY = {
+    "X6c canon drops the PII wrapper, payments drops classification": (
+        [(CANON, "\temail:      data.#PIIField", "\temail: {value: string}"),
+         (CANON, 'import "aitl.example/domains/policy/data"\n', ""),
+         (PAY, ', classification: "personal"', "")], ["-c"], None),
+    "I3a audit rule only": ([(DATA, "\t...\n}", AUDIT + "\t...\n}")], ["-c"], "payments"),
+    "I3p privacy rule only": ([(DATA, "\t...\n}", PRIVACY + "\t...\n}")], ["-c"], "payments"),
+    "I3n both rules, no retention value": ([(DATA, "\t...\n}", AUDIT + PRIVACY + "\t...\n}"), NO_VALUE], ["-c=false"], "payments"),
+    "I3na audit only, no retention value (control)": ([(DATA, "\t...\n}", AUDIT + "\t...\n}"), NO_VALUE], ["-c=false"], "payments"),
+    "S1 module-wide with -E": ([(CANON, "\ttrackingNumber: string", "\ttrackingNumber: int")], ["-c", "-E"], "..."),
+    "X3 module-wide with -E": ([(AUTH, "\tif auth == \"none\" {", "\tif admin {\n\t\tmfa: true\n\t}\n\tif auth == \"none\" {")],
+                               ["-c", "-E"], "..."),
+    "W2 module-wide with -E": ([(WF, "maxStepTimeoutHours: 24", "maxStepTimeoutHours: 1")], ["-c", "-E"], "..."),
+}
+
 PACKAGES = ["canon", "policy/auth", "policy/data", "capability/workflow", "ordering", "webhooks", "payments", "samepkg"]
 # Per-package mode (dated expectation after run 1): the packages expected to fail when each is vetted alone.
 # X6 is left out: its compile error was a fault in the case, replaced by X6b.
@@ -130,6 +150,24 @@ def main():
               + ("" if want_failing is None else f", expected {sorted(want_failing)}: {'match' if pkg_ok else 'MISMATCH'}"))
         for pkg, text in per_pkg.items():
             print(f"    [{pkg}] " + " | ".join(text.strip().splitlines()[:3]))
+        shutil.rmtree(root, ignore_errors=True)
+    print("\nExploratory cases (not pre-registered):")
+    for label, (edits, args, pkg) in EXPLORATORY.items():
+        root = tempfile.mkdtemp()
+        dst = os.path.join(root, "domains")
+        shutil.copytree(SRC, dst)
+        for rel, old, new in edits:
+            path = os.path.join(dst, rel)
+            text = open(path, encoding="utf-8").read()
+            assert text.count(old) == 1, (label, rel, old)
+            open(path, "w", encoding="utf-8").write(text.replace(old, new))
+        targets = ["./" + pkg] if pkg else ["./" + p for p in PACKAGES]
+        results = []
+        for target in targets:
+            r = subprocess.run([CUE, "vet", *args, target], cwd=dst, capture_output=True, text=True, encoding="utf-8")
+            first = (r.stderr + r.stdout).replace(dst, "").strip().splitlines()[:1]
+            results.append(f"{target} exit {r.returncode}" + (f" ({first[0]})" if first else ""))
+        print(f"  {label}: " + "; ".join(results))
         shutil.rmtree(root, ignore_errors=True)
     print("\nI1: packages importing canon (impact script):", impact(SRC, "canon"))
     print("I1: packages importing capability/workflow:", impact(SRC, "capability/workflow"))
