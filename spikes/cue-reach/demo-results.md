@@ -1,39 +1,47 @@
 # CUE demo: results
 
-Expectations: [demo-expected.md](demo-expected.md), committed before CUE was downloaded (`23dd744`).
+Expectations: [demo-expected.md](demo-expected.md), committed before CUE was downloaded (`23dd744`), with a dated Q8 and Q9 added after review run 2 (`c7c3db4`).
 
-- **The tool:** CUE v0.17.1 for Windows ARM64. The release has no checksums file; the downloaded zip's SHA-256, `db88b2c3…7102e51`, matched the digest GitHub publishes for the asset.
-- **The command:** `python -I spikes/cue-reach/run_demo.py`, run once, on 4 Nov.
+- **The tool:** CUE v0.17.1 for Windows ARM64. The release has no checksums file. The downloaded zip's SHA-256 was `db88b2c302be1829e653e20ea87e3f1adc10ae2052d58fe87d21d0ed97102e51`, which matched the digest GitHub publishes for the asset. That digest comes from the same host as the file, so it isn't an independent check.
+- **The model:** 8 clauses from six ADRs, in five files. ADR-000 C10 sits in `adr009.cue` with ADR-009 C13.
+- **The command:** `python -I spikes/cue-reach/run_demo.py`.
 
-## Results
+## Run 1 (4 Nov)
 
-| Case | Expected | Exit | Error, first lines (temporary paths shortened) | Match |
+Every case matched on exit code. Against the expectations as written, 7 of 8 matched. Q2's error didn't name the ADR-005 C6 constraint, though its expectation said it would. Of the six failing cases, five named their clause's file. The harness then compared exit codes only.
+
+## Run 2 (5 Nov), after review run 2
+
+Review run 2 found Q8 had no control. With `-c`, `cue vet` fails on any model given no data, because `request` and `plan` are incomplete. So Q8's exit code proved nothing; only its error text did. The runner now runs Q8 with `-c=false` and adds Q9, the same model with no clash. It also checks that each error names the expected files.
+
+| Case | Expected | Exit | Error, first lines | Match |
 | --- | --- | --- | --- | --- |
 | Q1 | Pass | 0 | | Yes |
-| Q2 | Fail, pointing at ADR-005 C6 | 1 | `request.areas_touched.2: conflicting values "ordering" and "basket"` … `"storefront-checkout" and "basket"`, citing `dev1.yaml` lines and `request.cue:26` | **Partly.** It fails, but the error doesn't name `adr005.cue`: `or(areas_listed)` reports the values it compared, not the clause |
-| Q3 | Fail, pointing at ADR-005 C1 | 1 | `request.id: invalid value "EVAL-3" (out of bound =~"^DEV-[1-3]$")`, citing `adr005.cue:8:7` | Yes |
-| Q4 | Fail, pointing at ADR-008 C8 | 1 | `request.examples.hidden: incompatible list lengths (0 and 1)`, citing `adr008.cue:6:10` | Yes |
-| Q5 | Fail, pointing at the citation format | 1 | `plan.citations.0: invalid value "ADR-005 C6" (out of bound =~"^ADR-[0-9]{3}@v[0-9]+ C[0-9]+$")`, citing `adr009.cue:7:17` | Yes |
-| Q6 | Fail, naming both values and both files | 1 | `#OutcomeRequest.stated_by: conflicting values "merchant" and "architecture-coordinator"`, citing `adr017.cue:4:29` and `adr099.cue:4:29` | Yes |
+| Q2 | Fail, naming `adr005.cue` | 1 | `request.areas_touched.2: conflicting values "ordering" and "basket"`, citing `dev1.yaml` and `request.cue`, not `adr005.cue` | **No**: the constraint `or(areas_listed)` reports the values it compared, not the clause |
+| Q3 | Fail, naming `adr005.cue` | 1 | `request.id: invalid value "EVAL-3" (out of bound =~"^DEV-[1-3]$")`, `adr005.cue:8:7` | Yes |
+| Q4 | Fail, naming `adr008.cue` | 1 | `request.examples.hidden: incompatible list lengths (0 and 1)`, `adr008.cue:6:10` | Yes |
+| Q5 | Fail, naming `adr009.cue` | 1 | `plan.citations.0: invalid value "ADR-005 C6" (out of bound …)`, `adr009.cue:7:17` | Yes |
+| Q6 | Fail, naming `adr017.cue` and `adr099.cue` | 1 | `#OutcomeRequest.stated_by: conflicting values "merchant" and "architecture-coordinator"`, both files | Yes |
 | Q7 | Pass | 0 | | Yes |
-| Q8 | Fail, with no data (low-confidence prediction) | 1 | The same conflict as Q6, from the definitions alone | Yes |
+| Q8 | Fail, naming both files, no data, `-c=false` | 1 | The same conflict as Q6 | Yes |
+| Q9 | Pass, no data, `-c=false` (control) | 0 | | Yes |
 
-All eight cases matched on pass or fail. Seven named the clause's file and line. Q2 named the values but not the clause.
+8 of 9 matched.
 
 ## Measures
 
-- **Size:** 23 lines of CUE for the 8 clauses, excluding comments, plus 19 for the shared definitions. ADR-017 C5 took 1 line; ADR-005 C1 and C6 together took 8.
-- **Time:** 0.06 to 0.13 seconds a case.
+- **Size:** 23 lines of CUE for the 8 clauses, excluding comments, plus 19 for the shared definitions.
+- **Time:** 0.06 to 0.16 seconds a case.
 
 ## What this shows
 
-- **Clauses from five ADRs, written as constraints on one shared outcome request, were checked together against DEV-1 before any code.** Each ADR's file adds to the definition, and loading the package loads them all.
-- **A clash between two ADRs was caught by unification, with no request at all (Q8).** The error named both files. That is the conflict detection the backlog lists as a limit (T6) and the original document chose CUE for. It held here because both clauses constrain the same field of the same definition. A clash expressed through differently named fields would not be caught.
-- **Error messages are usable, with one gap.** A constraint built from other fields (`or(areas_listed)`) reports values, not the clause. Naming each clause in its error would need a custom message, or a check wrapped around it.
+- **Clauses from six ADRs, written as constraints on a shared outcome request and plan, were checked together against DEV-1, before any code.** Each ADR's file adds to the definitions, and loading the package loads them all.
+- **A planted clash was caught by unification from the definitions alone (Q8, against its control Q9), naming both files.** It was `adr099.cue`, a test clause the runner writes, not a conflict between real ADRs. It is a literal against a literal on one field, the easiest case for unification. A conflict expressed through different fields wouldn't be caught.
+- **Error messages are usable, with one gap.** A constraint built from other fields reports values, not its clause (Q2).
 
 ## Limits
 
-- **8 clauses of 173, chosen because they model cleanly.** They are not a random sample.
-- **DEV-1's examples are placeholders.** The outcome request's shape is the author's invention: no such record exists yet.
-- **One run, on Windows only.** CI cost, the Linux binary and the CUE learning curve for anyone else are untested.
-- **Not compared with JSON Schema or OPA on the same clauses.** JSON Schema has no unification, so it would need a separate cross-ADR check for Q6 and Q8.
+- **8 clauses of 173, chosen because they model cleanly.**
+- **The outcome request's shape is the author's invention, and DEV-1's examples are placeholders.** The model also checks only fields the request declares about itself (`areas_touched`). ADR-005 C6 governs what was actually changed, which needs the diff.
+- **Windows only.** CI cost, the Linux binary and the learning curve for others are untested.
+- **Not compared with JSON Schema or OPA** on the same clauses.

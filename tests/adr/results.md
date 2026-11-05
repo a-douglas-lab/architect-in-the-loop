@@ -66,3 +66,11 @@ Run after the dated expectations were committed (`6d83ffe`), in the venv with `r
 Every existing History line already matched the stricter C8 format, so nothing in the repository was rejected. `check --base origin/main` and `check --base 624a523`: 0 problems. Hook tests: 29 of 29.
 
 **Corrections to the record above.** Harness run 1 had one harness fault, the guessed file name, not two; the A18 crash was a validator fault (encoding). Review run 1 also found that the earlier "0 problems on the real history" was checked by the reviewer without the schema libraries; with them installed it is still 0.
+
+## After review run 2 (5 Nov)
+
+- **A25 didn't test what it claimed.** Without the schema libraries it still failed on "C14", because the old index-mismatch message contains "C14". So the new YAML cross-check was untested. Fix, in the harness only: A25 regenerates the index after its change, so only the cross-check can catch it, and the harness requires its message ("reads differently as YAML").
+- **The C9 withdrawn check moved out of the per-file checks,** so the C1 hook does exactly what ADR-000 v4's Enforcement section says (C2, C3's file-name rule and C5). `check()` still runs it, so A20 and A21 are unchanged.
+- **C8's "who" is checked by format only:** text, a colon, then a summary. A line with no approver passes if its summary has a colon in it. Whether the named person approved is still review's job (ADR-000 C11).
+
+Run: 37 of 37 in 123 seconds, in the venv with `requirements.txt`. Hook tests: 29 of 29. `check --base origin/main`: 0 problems.

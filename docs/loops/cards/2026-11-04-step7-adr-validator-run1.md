@@ -6,7 +6,7 @@
 | Outcome | None: project work, Step 7 item 2 |
 | Run | 1 |
 | Date | 2026-11-04 |
-| Autonomy level | 1, drafted: the agent built; Andy ruled three times and approved three ADR texts |
+| Autonomy level | 1, drafted: the agent built; Andy ruled three times, approved three ADR texts and the ADR-000 mechanism texts, asked for CUE's reach to be measured, and approved the CUE download |
 | Session | Same session as the [CI card](2026-11-04-step7-ci-run1.md) |
 | Previous card for this stage | [Step 7 CI, run 1](2026-11-04-step7-ci-run1.md) |
 
@@ -32,8 +32,9 @@ This run turns ADR-000's and ADR-009's mechanical rules into a check that CI and
 4. Checked every ADR revision made in Step 7 against the commit Step 7 started from: 0 problems.
 5. Wired the per-file checks into the C1 hook (K12 to K14) and the full check into CI.
 6. Andy approved ADR-000 v4 and ADR-009 v3's Enforcement text. The validator accepted both, and its own state and ref update.
-7. CUE desk research: 1 of 171 constraints is data-shaped. Andy chose JSON Schema. Its expectations were committed (`687b1e6`), then F passed 11 of 11.
+7. CUE desk research: the author counted 1 of 171 constraints as data-shaped, later corrected (173 constraints; see step 9). Andy chose JSON Schema. Its expectations were committed (`687b1e6`), then F passed 11 of 11.
 8. Amended ADR-000 v4 for C1, with Andy's approval.
+9. At Andy's request ("yes measure CUEs real reach"), classified all 173 constraints, predictions first: 22 (13%) share a field, 69 (40%) are checkable as data today. Then a CUE demo ("Yes, download and run it"): 8 clauses from six ADRs against DEV-1, 8 of 9 cases matched, a planted clash caught. Review run 2 corrected an overstated headline (32%) and a misattributed quote.
 
 ## 5. Feedback loop
 
@@ -49,7 +50,7 @@ This run turns ADR-000's and ADR-009's mechanical rules into a check that CI and
 
 | Check | Type | Pass criterion | Result |
 | --- | --- | --- | --- |
-| A0–A19 | Deterministic | Match expected | 20 of 20 on run 2 |
+| A0–A25 | Deterministic | Match expected | 20 of 20 on run 2; A0–A25 37 of 37 with F, after review runs 1 and 2 |
 | F0–F10 | Deterministic | Match expected | 11 of 11 |
 | Hook units with K12–K14 | Deterministic | Match expected | 29 of 29 |
 | The validator on Step 7's real revisions | Deterministic | 0 problems | 0 problems |

@@ -173,8 +173,11 @@ CASES = [  # id, list of changes (callables on repo), expected ("pass" or "fail"
     ("A23", [lambda r: edit(r, ADR5, lambda t: DECISION_WORD(t).replace("version: 3\n", "version: 4\n", 1).rstrip("\n")
                             + "\n- **v4** · 2026-11-04 · revision · x\n")], "fail", ["C8"]),
     ("A24", [lambda r: edit(r, "CLAUDE.md", sub(r"^## Hard rules$", "## Rules"))], "fail", ["C17"]),
+    # A25 regenerates the index after the change, so only the YAML cross-check can catch it (review run 2:
+    # without this, the old index message also contained "C14" and the new check went untested)
     ("A25", [lambda r: edit(r, ADR5, sub(r"^scope: \[project, subject, domain:ordering\]$",
-                                         "scope:\n  - project\n  - subject\n  - domain:ordering"))], "fail", ["C14"]),
+                                         "scope:\n  - project\n  - subject\n  - domain:ordering")), write_index],
+     "fail", ["reads differently as YAML"]),
     # F: front-matter schema (dated expectation, 4 Nov). Front-matter-only edits of an accepted ADR
     # also break C8 against the base, so F cases compare with HEAD itself (base = the change).
     ("F0", [], "pass", []),

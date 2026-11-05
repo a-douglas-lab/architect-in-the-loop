@@ -24,11 +24,11 @@ ROWS = [
     ("ADR-000", "C9", "R", "git history of the ADR", "yes", "no", "", "reuse for a different rule is judgement"),
     ("ADR-000", "C10", "V", "citations in specs, plans and traces", "partly", "yes", "PlanCitations", ""),
     ("ADR-000", "C11", "R", "History line approver", "partly", "no", "", "the approval itself happens in chat; 'correction doesn't change the decision' is judgement"),
-    ("ADR-000", "C12", "V", "where each ADR file lives", "yes", "no", "", "subject or project ADR is a judgement"),
+    ("ADR-000", "C12", "J", "where each ADR file lives", "yes", "no", "", "review run 2: V to J, subject or project ADR is the substance"),
     ("ADR-000", "C13", "V", "front matter tier and exceptions", "yes", "no", "AdrFrontMatter", "'project-wide' is a judgement"),
     ("ADR-001", "C1", "J", "capability code and prompts", "no", "no", "", "partly mechanical with a deny-list of subject terms from the glossary"),
     ("ADR-001", "C2", "R", "capability load traces", "no", "no", "", ""),
-    ("ADR-001", "C3", "V", "capability dependency graph", "no", "no", "", "an architecture test would export it"),
+    ("ADR-001", "C3", "J", "capability dependency graph", "no", "no", "", "review run 2: V to J, 'spread through the core' needs judgement"),
     ("ADR-001", "C4", "J", "specs and code", "partly", "yes", "", ""),
     ("ADR-002", "C1", "V", ".gitmodules", "yes", "no", "", ""),
     ("ADR-002", "C2", "V", "the fork's git history (merge base)", "yes", "no", "", ""),
@@ -48,7 +48,7 @@ ROWS = [
     ("ADR-005", "C2", "X", "none: needs the private labels", "no", "no", "", ""),
     ("ADR-005", "C3", "J", "diff against spec", "partly", "no", "", ""),
     ("ADR-005", "C4", "J", "plan and diff", "partly", "yes", "", "'preferred state' is judgement"),
-    ("ADR-005", "C5", "V", "new domain's folders against the template", "no", "yes", "", ""),
+    ("ADR-005", "C5", "J", "new domain's folders against the template", "no", "yes", "", "review run 2: V to J, 'follow the template' is more than layout"),
     ("ADR-005", "C6", "V", "changed paths against the outcome's listed areas", "partly", "yes", "OutcomeRequest", "the area list is Markdown today"),
     ("ADR-005", "C7", "R", "evaluation run records", "no", "no", "EvaluationRun", ""),
     ("ADR-006", "C1", "J", "the evidence line", "no", "no", "", ""),
@@ -73,7 +73,7 @@ ROWS = [
     ("ADR-008", "C4", "R", "authorship of acceptance tests", "partly", "no", "", ""),
     ("ADR-008", "C5", "R", "commit order: tests before the capability", "partly", "no", "", ""),
     ("ADR-008", "C6", "R", "capability input manifest", "no", "no", "", ""),
-    ("ADR-008", "C7", "R", "test results against the baseline", "no", "yes", "", "tests run before code"),
+    ("ADR-008", "C7", "R", "test results against the baseline", "no", "no", "", "review run 2: pre_code to no, results aren't the request or plan"),
     ("ADR-008", "C8", "V", "outcome request: visible and hidden example sets", "no", "yes", "OutcomeRequest", ""),
     ("ADR-008", "C9", "X", "none: an absence", "no", "no", "", ""),
     ("ADR-008", "C10", "R", "mutation test results", "no", "no", "", ""),
@@ -97,7 +97,7 @@ ROWS = [
     ("ADR-009", "C5", "V", "installed extensions against reviews and pins", "partly", "no", "", ""),
     ("ADR-009", "C6", "R", "git history of specs/", "yes", "no", "", ""),
     ("ADR-009", "C7", "J", "specs and ADRs", "partly", "no", "", ""),
-    ("ADR-009", "C8", "V", "the plan's ADR list", "partly", "yes", "PlanCitations", ""),
+    ("ADR-009", "C8", "V", "the plan's ADR list", "partly", "yes", "PlanCitations", "'that apply' is judgement"),
     ("ADR-009", "C9", "X", "none: what an agent loaded", "no", "no", "", ""),
     ("ADR-009", "C10", "V", "the constitution's index", "yes", "no", "AdrFrontMatter", ""),
     ("ADR-009", "C11", "V", "citations in the constitution", "partly", "no", "", ""),
@@ -155,7 +155,7 @@ ROWS = [
     ("ADR-015", "C9", "R", "flag change records", "no", "no", "FeatureFlags", ""),
     ("ADR-015", "C10", "V", "split record: scenario", "no", "yes", "SplitRecord", ""),
     ("ADR-015", "C11", "R", "approval record", "no", "yes", "SplitRecord", ""),
-    ("ADR-015", "C12", "V", "split record against the scenario table", "no", "yes", "SplitRecord", ""),
+    ("ADR-015", "C12", "J", "split record against the scenario table", "no", "yes", "SplitRecord", "review run 2: V to J, depends on what the decision says"),
     ("ADR-015", "C13", "J", "what the outcome asked for", "no", "yes", "", ""),
     ("ADR-015", "C14", "R", "security escalation records", "no", "no", "", ""),
     ("ADR-016", "C1", "R", "diff and domain map", "no", "no", "", ""),
@@ -184,10 +184,30 @@ ROWS = [
     ("ADR-018", "C2", "J", "milestones", "yes", "no", "", ""),
     ("ADR-018", "C3", "J", "decisions about ideas", "no", "no", "", ""),
     ("ADR-018", "C4", "R", "flag records", "no", "no", "", ""),
-    ("ADR-018", "C5", "V", "README text", "yes", "no", "", ""),
+    ("ADR-018", "C5", "J", "README text", "yes", "no", "", "review run 2: V to J, recognising a prior-work statement needs reading"),
     ("ADR-018", "C6", "J", "decisions about ideas", "no", "no", "", ""),
     ("ADR-018", "C7", "J", "decisions about advice", "no", "no", "", ""),
 ]
+
+
+# Field-level sharing, the measure README.md predicted (5%): clauses that constrain the same field
+# of a shared definition as another clause. Added after review run 2 found that the first results
+# reported definition-level sharing (32%) instead. One rater, as for the kinds.
+FIELDS = {
+    ("ADR-015", "C1"): "SplitRecord.scenario", ("ADR-015", "C10"): "SplitRecord.scenario",
+    ("ADR-015", "C12"): "SplitRecord.scenario",
+    ("ADR-000", "C1"): "AdrFrontMatter.*", ("ADR-000", "C3"): "AdrFrontMatter.id",
+    ("ADR-000", "C13"): "AdrFrontMatter.precedence", ("ADR-009", "C10"): "AdrFrontMatter.title",
+    ("ADR-009", "C14"): "AdrFrontMatter.title",
+    ("ADR-002", "C5"): "EvaluationRun.baseline", ("ADR-005", "C7"): "EvaluationRun.baseline",
+    ("ADR-008", "C17"): "EvaluationRun.baseline",
+    ("ADR-006", "C3"): "Preregistration.published", ("ADR-008", "C21"): "Preregistration.published",
+    ("ADR-000", "C10"): "PlanCitations.citations", ("ADR-009", "C13"): "PlanCitations.citations",
+    ("ADR-007", "C1"): "EvaluationSet.outcomes", ("ADR-007", "C3"): "EvaluationSet.outcomes",
+    ("ADR-007", "C4"): "EvaluationSet.outcomes",
+    ("ADR-015", "C7"): "FeatureFlags.state", ("ADR-015", "C8"): "FeatureFlags.state",
+    ("ADR-016", "C10"): "SarifReport.version", ("ADR-016", "C17"): "SarifReport.version",
+}
 
 
 def active_constraints():
@@ -229,6 +249,11 @@ def main():
     print("CUE could check it once the record exists (V or R, any):", share(lambda r: r[2] in "VR"))
     print("pre_code yes:", share(lambda r: r[5] == "yes"))
     print("  of which V or R:", share(lambda r: r[5] == "yes" and r[2] in "VR"))
+    # "AdrFrontMatter.*" (ADR-000 C1 requires every field) overlaps every other front-matter field
+    def overlaps(f, g):
+        return f == g or f.endswith(".*") and g.startswith(f[:-1]) or g.endswith(".*") and f.startswith(g[:-1])
+    shared_field = [k for k, f in FIELDS.items() if any(overlaps(f, g) for j, g in FIELDS.items() if j != k)]
+    print(f"shared field (README's measure): {len(shared_field)} ({100 * len(shared_field) / n:.0f}%)")
     print("shared definition (2+ clauses):", share(lambda r: r[6] and sum(1 for s in ROWS if s[6] == r[6]) > 1))
     defs = {}
     for r in ROWS:

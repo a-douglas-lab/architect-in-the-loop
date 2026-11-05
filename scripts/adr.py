@@ -93,7 +93,13 @@ def check_file(path, text):
         problems.append(f"C5: enforcement entry {c} names no constraint")
     for c in sorted({c for c in entries if entries.count(c) > 1}):
         problems.append(f"C5: constraint {c} has more than one enforcement entry")
-    # ADR-000@v3 C9: a withdrawn constraint is marked withdrawn in both places
+    return [f"{path}: {p}" for p in problems]
+
+
+def withdrawn_problems(path, text):
+    """ADR-000@v3 C9: a withdrawn constraint is marked withdrawn in both places. Run by check() only,
+    not by the C1 hook, as ADR-000 v4's Enforcement section says."""
+    a, problems = parse(text), []
     for c in sorted(set(a["withdrawn_text"]) - set(a["withdrawn_state"])):
         problems.append(f"C9: constraint {c} is marked withdrawn, but its enforcement state isn't withdrawn")
     for c in sorted(set(a["withdrawn_state"]) - set(a["withdrawn_text"])):
@@ -189,6 +195,7 @@ def check(base=None):
     for rel in adr_paths():
         text = read(rel)
         problems += check_file(rel, text)
+        problems += withdrawn_problems(rel, text)
         problems += front_matter_problems(rel, text)
         ids.setdefault(parse(text)["id"], []).append(rel)
         if base:

@@ -34,15 +34,19 @@ def add_model(text):
 CONFLICT = 'package aitl\n\n// A test clause that clashes with ADR-017@v1 C5\n#OutcomeRequest: stated_by: "merchant"\n'
 COMPATIBLE = 'package aitl\n\n// A test clause that is compatible with ADR-017@v1 C5\n#OutcomeRequest: stated_by: string\n'
 
-CASES = [  # id, change, use data?, expected exit (0 pass, nonzero fail)
-    ("Q1", None, True, "pass"),
-    ("Q2", change_data(r"^  areas_touched: \[(.*)\]$", r"  areas_touched: [\1, basket]"), True, "fail"),
-    ("Q3", change_data(r"^  id: DEV-1$", "  id: EVAL-3"), True, "fail"),
-    ("Q4", change_data(r"^    hidden: \[.*\]$", "    hidden: []"), True, "fail"),
-    ("Q5", change_data(r'"ADR-005@v3 C6"', '"ADR-005 C6"'), True, "fail"),
-    ("Q6", add_model(CONFLICT), True, "fail"),
-    ("Q7", add_model(COMPATIBLE), True, "pass"),
-    ("Q8", add_model(CONFLICT), False, "fail"),
+# id, change, use data?, expected (pass or fail), files the error must name (the clause's own files).
+# Q8 runs with -c=false and Q9 is its control (dated expectation after review run 2): with -c, any
+# model with no data fails as incomplete, so Q8's first run proved nothing by its exit code.
+CASES = [
+    ("Q1", None, True, "pass", []),
+    ("Q2", change_data(r"^  areas_touched: \[(.*)\]$", r"  areas_touched: [\1, basket]"), True, "fail", ["adr005.cue"]),
+    ("Q3", change_data(r"^  id: DEV-1$", "  id: EVAL-3"), True, "fail", ["adr005.cue"]),
+    ("Q4", change_data(r"^    hidden: \[.*\]$", "    hidden: []"), True, "fail", ["adr008.cue"]),
+    ("Q5", change_data(r'"ADR-005@v3 C6"', '"ADR-005 C6"'), True, "fail", ["adr009.cue"]),
+    ("Q6", add_model(CONFLICT), True, "fail", ["adr017.cue", "adr099.cue"]),
+    ("Q7", add_model(COMPATIBLE), True, "pass", []),
+    ("Q8", add_model(CONFLICT), False, "fail", ["adr017.cue", "adr099.cue"]),
+    ("Q9", None, False, "pass", []),
 ]
 
 
@@ -50,20 +54,23 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")
     print(subprocess.run([CUE, "version"], capture_output=True, text=True).stdout.splitlines()[0])
     fails = 0
-    for cid, change, use_data, want in CASES:
+    for cid, change, use_data, want, names in CASES:
         root = tempfile.mkdtemp()
         shutil.copytree(os.path.join(HERE, "model"), os.path.join(root, "model"))
         shutil.copytree(os.path.join(HERE, "data"), os.path.join(root, "data"))
         if change:
             change(root)
-        cmd = [CUE, "vet", "-c", "./model"] + (["data/dev1.yaml"] if use_data else [])
+        cmd = [CUE, "vet", "-c" if use_data else "-c=false", "./model"] + (["data/dev1.yaml"] if use_data else [])
         start = time.perf_counter()
         r = subprocess.run(cmd, cwd=root, capture_output=True, text=True, encoding="utf-8")
         took = time.perf_counter() - start
         got = "pass" if r.returncode == 0 else "fail"
-        ok = got == want
+        missing = [n for n in names if n not in r.stderr + r.stdout]
+        ok = got == want and not missing
         fails += not ok
-        print(f"\n{cid}: exit {r.returncode} ({got}), expected {want}: {'match' if ok else 'MISMATCH'}; {took:.2f}s")
+        print(f"\n{cid}: exit {r.returncode} ({got}), expected {want}"
+              f"{' naming ' + ', '.join(names) if names else ''}: {'match' if ok else 'MISMATCH'}"
+              f"{' (not named: ' + ', '.join(missing) + ')' if missing else ''}; {took:.2f}s")
         for line in (r.stderr or r.stdout).strip().splitlines()[:8]:
             print("    " + line.replace(root, "<tmp>"))
         shutil.rmtree(root, ignore_errors=True)
