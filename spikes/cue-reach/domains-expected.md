@@ -61,3 +61,12 @@ Confidence: H high, M medium, L low.
 - **Changes that break other domains (S1, S2, S4, S6, S7, X3, X5, W2, W3, I3, I4):** CUE flags them, and its errors name the domains affected.
 - **Modelling pitfalls (S3):** whether the convention matters, in practice.
 - **Limits (I1, I2):** what CUE doesn't do. Finding the affected domains is a graph question. A change in meaning is invisible to shape checks.
+
+## Dated expectations, 2026-11-05, after run 1
+
+Run 1 used one `cue vet -c ./...` for the whole module and checked file names in its output. 16 of 22 matched. Three findings from run 1 change the method. The expectations above stay as written.
+
+- **`cue vet ./...` doesn't report every failing package.** In S1, X3 and W2 it reported one domain. Checked by hand one package at a time (`cue vet -c ./webhooks` and so on), webhooks failed in S1, payments in X3, and both ordering and payments in W2. **Per-package mode, new:** every case is also run once for each package. The affected domains are the packages that fail.
+- **Expected failing packages in per-package mode:** S1: ordering and webhooks. X3: ordering and payments. W2: ordering and payments. W3: ordering and payments. I3: payments. The other failing cases: the domains their errors already named in run 1.
+- **X6 didn't test its scenario.** Removing canon's only use of `policy/data` left an unused import, a compile error ("imported and not used"), so CUE never reached the PII rule. **X6b, new:** the same change, and the import removed. Expected: payments fails ("field not allowed" on `classification`), naming canon and payments, **not** the data policy (low confidence).
+- **I3's error names only the two policy rules,** both in `data.cue`. The affected domain shows only in the field path (`events.captured`). Per-package mode will show which domain fails.
