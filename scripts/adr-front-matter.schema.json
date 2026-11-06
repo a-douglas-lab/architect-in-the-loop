@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "adr-front-matter.schema.json",
+  "title": "ADR front matter (ADR-000@v3 C1)",
+  "description": "Fields and values from docs/adr/template.md. Fields beyond the template's are allowed.",
+  "type": "object",
+  "required": ["id", "version", "title", "status", "date", "decision-makers", "scope", "precedence",
+               "supersedes", "superseded-by", "exceptions", "enforcement", "backlog"],
+  "$defs": {
+    "adrId": {"type": "string", "pattern": "^ADR-\\d{3}$"},
+    "strings": {"type": "array", "items": {"type": "string"}}
+  },
+  "properties": {
+    "id": {"$ref": "#/$defs/adrId"},
+    "version": {"type": "integer", "minimum": 1},
+    "title": {"type": "string", "minLength": 1},
+    "status": {"enum": ["proposed", "accepted", "rejected", "deprecated", "superseded"]},
+    "date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+    "decision-makers": {"$ref": "#/$defs/strings", "minItems": 1},
+    "scope": {"$ref": "#/$defs/strings"},
+    "precedence": {
+      "type": "object",
+      "required": ["tier", "overrides"],
+      "properties": {
+        "tier": {"enum": ["cross-cutting", "domain", "component"]},
+        "overrides": {"type": "array", "items": {"$ref": "#/$defs/adrId"}}
+      }
+    },
+    "supersedes": {"type": "array", "items": {"$ref": "#/$defs/adrId"}},
+    "superseded-by": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/adrId"}]},
+    "exceptions": {"enum": ["allowed", "not-allowed"]},
+    "enforcement": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["constraint", "mechanism", "ref", "state"],
+        "properties": {
+          "constraint": {"type": "string", "pattern": "^C\\d+$"},
+          "mechanism": {"type": "string"},
+          "ref": {"type": ["string", "null"]},
+          "state": {"enum": ["enforced", "planned", "manual", "withdrawn"]}
+        }
+      }
+    },
+    "backlog": {"$ref": "#/$defs/strings"}
+  }
+}

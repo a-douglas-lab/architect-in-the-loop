@@ -1,0 +1,17 @@
+# DEV-1 from docs/outcomes/development-outcomes.md, written as data. The areas are DEV-1's listed
+# areas; the examples are placeholders, because DEV-1's examples aren't written yet.
+request:
+  id: DEV-1
+  outcome: Customers can add a note to their order at checkout
+  stated_by: architecture-coordinator
+  kind: development
+  areas_listed: [ordering, storefront-checkout]
+  areas_touched: [ordering, storefront-checkout]
+  examples:
+    visible: [placeholder visible example]
+    hidden: [placeholder hidden example]
+  applies:
+    ADR-016: false
+plan:
+  adrs: [ADR-005, ADR-008, ADR-016]
+  citations: ["ADR-005@v3 C6", "ADR-008@v1 C8", "ADR-016@v3 C15"]

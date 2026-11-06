@@ -6,8 +6,10 @@ The repository has no build or formatter yet, so this checks what it can by file
 reports a failure next to the tool result, for Claude to fix. Its "decision": "block" can't undo
 anything: the edit has already happened. When the capability has code, its build and format join here.
 """
+import importlib.util
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -24,9 +26,28 @@ def find_bash():
     return shutil.which("bash")
 
 
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+
+
+def check_adr(path):
+    """ADR-000@v3 C2, C3 and C5 on an edited ADR, with the validator's own check_file()."""
+    validator = os.path.join(ROOT, "scripts", "adr.py")
+    if not os.path.isfile(validator):
+        return None
+    spec = importlib.util.spec_from_file_location("adr", validator)
+    adr = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(adr)
+    with open(path, encoding="utf-8") as f:
+        problems = adr.check_file(os.path.basename(path), f.read())
+    return "; ".join(problems) or None
+
+
 def check(path):
     """Return an error message, or None if the file passes or has no check."""
     ext = os.path.splitext(path)[1].lower()
+    norm = path.replace("\\", "/")
+    if re.search(r"(^|/)docs/adr/ADR-[^/]*\.md\Z", norm):
+        return check_adr(path)
     if ext == ".json":
         try:
             with open(path, encoding="utf-8-sig") as f:

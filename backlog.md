@@ -452,6 +452,8 @@ The model has no pass or fail test. Against an assumed 200,000-token window, loa
 3. **Enforcement.** On 1 Nov, before ADR-009 v2, 2 of 161 active constraints were enforced. If constraints grow faster than checks, ADRs become prose again.
 4. **Human attention.** ADR acceptance is human, so ADR volume is review volume.
 
+**The index's cost, measured (4 Nov), for the T6 ADR.** Andy asked whether the index would bloat without solving the search for specific clauses. It doesn't solve that search, and isn't meant to: ADR-009@v2 C10 makes it ID, title and scope, and clause-level selection is the rule units' job (glossary terms select units; the MCP server returns them). It does grow with the estate, and it is always loaded, because it lives in the constitution. Today it is 19 rows and 3,407 characters: about 850 tokens, or 45 per ADR, at 4 characters a token. At the scaling model's sizes that is about 5,000 tokens at 117 ADRs and about 23,000 at 520. Proposed for the T6 ADR: at scale, the index moves behind the rule-unit server as a lookup, instead of living in the constitution. That would revise ADR-009. Andy, 4 Nov: "Record for the T6 ADR". Item 2's generator writes the index wherever it lives.
+
 **Parallel problems (1 Nov).** Where constraints live is a retrieval problem, and tool discovery and progressive disclosure solve the same one. Checked in their docs: skills keep descriptions in context and load bodies on invocation, or by a `paths` pattern; MCP tool search keeps tool names in context and loads definitions on search; path-scoped rules in `.claude/rules/` load when matching files are touched; adrkit selects decisions deterministically, by an `affects` glob or a `@adr` marker, with no embeddings. Its design is worth borrowing; installing it would need a source review and an ADR (ADR-009@v2 C4, C5).
 
 **Four routes, by kind of rule (proposed; the judgement row decided by Andy, 2 Nov):**
@@ -691,6 +693,26 @@ Proposed principles:
 
 **Gap this exposes:** ADR-011 treats hooks as the control, yet no CI exists, so no planned hook check has an unbypassable backstop. Step 7 needs CI and required checks as well as hooks. The outcomes that close this are Q6.
 
+**CUE, checked 4 Nov (for the ADR front-matter schema, Step 7 item 2).**
+- **CUE itself:** v0.17.1 (16 Jul 2026), Apache-2.0, before 1.0, with Windows ARM64 and Linux binaries. `cue vet` checks YAML against a schema, but Markdown front matter would need extracting first. The only Python binding found (pycue) is alpha and shells out to the binary.
+- **Its distinctive case is unification:** contradictory constraints fail to unify. That needs constraints written as data, on the same field. The author first counted 1 value constraint of 171 (ADR-016 C17, SARIF 2.1.0). *Corrected the same day:* there are 173 active constraints, because a case-insensitive filter had dropped two. A full classification at Andy's request ([spikes/cue-reach/](spikes/cue-reach/results.md); one rater, seven corrections from review run 2) found:
+  - 136 of 173 (79%) concern a value, a structure or a record that could be data;
+  - 69 (40%) have that record today, at least partly;
+  - 22 (13%) constrain a field another clause also constrains, which is where unification can compare clauses.
+
+  A first write-up headlined 32% (clauses in a shared definition), which overstated unification's reach; review run 2 caught it.
+- **Andy's ruling, word for word:** CUE's unification case "rests on contracts, proposals and policy, to be evaluated where those exist". The author had added a list of places (impact records, event schemas, the subject's ADRs in Phase 2) and later credited a shortened version to Andy. Neither traces to him, and both are withdrawn. *From the classification:* most plan-time clauses fall on two records that don't exist yet, the outcome request and the split record.
+- **Tested (4 Nov, Andy: "Yes, download and run it"):** CUE v0.17.1 checked 8 clauses from six ADRs. They were written as constraints on a shared outcome request and plan, and checked against DEV-1 as data. 8 of 9 cases matched in the second run ([demo](spikes/cue-reach/demo-results.md)). A planted test clause clashing with ADR-017 C5 was caught by unification from the definitions alone, against a control, with both files named. It was a literal against a literal on one field; no real conflict between ADRs was found or tested. One error named values but not its clause. Not compared with JSON Schema or OPA on the same clauses. Q1's question stays open.
+- **Across domains (5 Nov).** Andy asked whether CUE resolves "a change that impacts another domain". He asked for "domain specific changes, cross cutting changes (e.g., authentication, authorisation, data platform), shared types/canonical types, capabilities like workflow". [Results](spikes/cue-reach/domains-results.md), on an invented model:
+  - **Breaking changes to shared types, cross-cutting policies and the workflow capability failed the domains that use them,** when each package was checked on its own. The pass or fail of all 22 cases was predicted. The failing domains per case were written after the first run, so matching them reproduces that run rather than confirming a prediction. Two earlier predictions of which domains fail were wrong.
+  - **A conflict between two invented cross-cutting rules** (audit and privacy retention) was detected at rule level, against a control, for an event carrying both flags. No conflict between real ADRs has been tested.
+  - **Only under two conditions:**
+    - domains import and refine shared definitions rather than redeclaring them (the same removal was missed in one package);
+    - each package is checked on its own. `cue vet ./...` reported one failing domain where several failed, with or without `-E`.
+  - **Not caught:** a change in meaning with the same type; a canonical type stepping out from under a cross-cutting rule (exploratory, everything passed); and which domains a change affects. That needs the import graph; no CUE command lists it (the Go API is unchecked).
+  - So CUE could be a compatibility check on change, beside an impact step (T7, Q3), not an impact analyser.
+- **Decided (Andy, 4 Nov):** "JSON Schema; record CUE finding in Q1". The front-matter schema uses JSON Schema.
+
 **Open:** does CUE earn its learning curve over JSON Schema plus OPA for the proposal and policy rows? Is NetArchTest or ArchUnitNET better maintained and more expressive today? Can the Aspire app model be checked reliably in tests?
 
 Output: the enforcement section of each baseline ADR (the ADR template, T2, defines the field), plus the published "share of ADR clauses enforced deterministically" metric. Each mechanism is tested blocking a violation when it is built, in the phase that builds it (*Andy, 2 Nov*; Q6). Rule units (T6, proposed) would give each mechanism one testable shape.
@@ -783,6 +805,8 @@ Where a final layer that can't be bypassed exists, it is CI plus branch protecti
 - Results: [tests/ci/results.md](tests/ci/results.md).
 
 **Progress (4 Nov):** VL-6 is met for this repository. CI runs on every pull request, the ruleset requires `checks`, and the API reported a deliberately failing pull request (#17) as blocked. CI in the fork remains a Phase 2 question. VL-7 is met for the guard's rule: a file that shell commands force-added past `.gitignore`, which no hook saw, was caught at CI. `--no-verify` skips nothing while there is no pre-commit hook. VL-8 is met for this repository: a direct push to `main` was refused. The fork's ruleset requires a pull request, but no push to it has been tried. Recorded in ADR-010 v2 (C5) and ADR-013 v2 (C6). **Open:** Claude sessions use Andy's admin-capable credentials, so a session could merge or loosen the ruleset; whether agents get a token without admin rights is not decided (review run 2).
+
+**VL-9, progress (4 Nov):** the ADR validator (`scripts/adr.py`) enforces ADR-000 C2, C3, C5, C8 and C9 and ADR-009 C10, C14 and C17, and its tests show each failure caught ([tests/adr/](tests/adr/results.md)). It runs in the C1 hook on edited ADRs and in CI. Recorded in ADR-000 v4 and ADR-009 v3. ADR-000 C1, the front-matter schema, came after research. Andy, 4 Nov: "Code checks now; CUE question researched first", then "JSON Schema; record CUE finding in Q1". It is `scripts/adr-front-matter.schema.json`, and its 11 cases pass. VL-9 is met locally; its CI run is pending.
 
 **Proposed principles** are under Q1. **Depends on:** the WSL2 question (D1, open). Without the sandbox, a script can get past every local layer, which is why VL-6 and VL-7 matter.
 

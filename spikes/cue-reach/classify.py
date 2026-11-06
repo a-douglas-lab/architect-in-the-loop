@@ -1,0 +1,267 @@
+"""Write clauses.csv and print the reach measures. Usage: python -I spikes/cue-reach/classify.py
+
+Classifications are the author's judgements, one rater, made after the predictions in README.md
+were committed. Kinds and columns are defined there. `shared` names a CUE definition that two or
+more clauses would constrain, so unification could compare them.
+"""
+import csv
+import os
+import re
+import subprocess
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+
+# (adr, constraint, kind, witness, exists, pre_code, shared, note)
+ROWS = [
+    ("ADR-000", "C1", "V", "ADR front matter", "yes", "no", "AdrFrontMatter", ""),
+    ("ADR-000", "C2", "V", "ADR Markdown sections", "yes", "no", "", "Markdown, not data: needs a parser first"),
+    ("ADR-000", "C3", "V", "ADR file names and front matter", "yes", "no", "AdrFrontMatter", ""),
+    ("ADR-000", "C5", "V", "ADR front matter and Constraints section", "yes", "no", "", ""),
+    ("ADR-000", "C6", "J", "ADR constraint text", "yes", "no", "", "modal verbs are mechanical; 'single checkable statement' isn't"),
+    ("ADR-000", "C7", "J", "ADR Alternatives section", "yes", "no", "", ""),
+    ("ADR-000", "C8", "R", "git history of the ADR and its History lines", "yes", "no", "", ""),
+    ("ADR-000", "C9", "R", "git history of the ADR", "yes", "no", "", "reuse for a different rule is judgement"),
+    ("ADR-000", "C10", "V", "citations in specs, plans and traces", "partly", "yes", "PlanCitations", ""),
+    ("ADR-000", "C11", "R", "History line approver", "partly", "no", "", "the approval itself happens in chat; 'correction doesn't change the decision' is judgement"),
+    ("ADR-000", "C12", "J", "where each ADR file lives", "yes", "no", "", "review run 2: V to J, subject or project ADR is the substance"),
+    ("ADR-000", "C13", "V", "front matter tier and exceptions", "yes", "no", "AdrFrontMatter", "'project-wide' is a judgement"),
+    ("ADR-001", "C1", "J", "capability code and prompts", "no", "no", "", "partly mechanical with a deny-list of subject terms from the glossary"),
+    ("ADR-001", "C2", "R", "capability load traces", "no", "no", "", ""),
+    ("ADR-001", "C3", "J", "capability dependency graph", "no", "no", "", "review run 2: V to J, 'spread through the core' needs judgement"),
+    ("ADR-001", "C4", "J", "specs and code", "partly", "yes", "", ""),
+    ("ADR-002", "C1", "V", ".gitmodules", "yes", "no", "", ""),
+    ("ADR-002", "C2", "V", "the fork's git history (merge base)", "yes", "no", "", ""),
+    ("ADR-002", "C3", "V", "this repository's tree", "yes", "no", "", ""),
+    ("ADR-002", "C4", "R", "the fork's tag history", "partly", "no", "", ""),
+    ("ADR-002", "C5", "R", "evaluation run records", "no", "no", "EvaluationRun", ""),
+    ("ADR-002", "C6", "R", "commits in the fork", "yes", "no", "", ""),
+    ("ADR-003", "C1", "V", "the trees of both repositories", "yes", "no", "", ""),
+    ("ADR-003", "C2", "R", "capability configuration and traces", "no", "no", "", ""),
+    ("ADR-003", "C3", "V", "capability code", "no", "no", "", ""),
+    ("ADR-004", "C1", "J", "specs", "partly", "yes", "", ""),
+    ("ADR-004", "C2", "J", "specs", "partly", "yes", "", ""),
+    ("ADR-004", "C3", "J", "capability code", "no", "no", "", ""),
+    ("ADR-004", "C4", "V", "eShop configuration (UseFoundry)", "yes", "no", "EshopConfig", ""),
+    ("ADR-004", "C5", "V", "eShop AppHost (useOllama)", "partly", "no", "EshopConfig", "set in C#, not a data file"),
+    ("ADR-005", "C1", "R", "outcome ID on the spec folder or PR", "partly", "yes", "OutcomeRequest", ""),
+    ("ADR-005", "C2", "X", "none: needs the private labels", "no", "no", "", ""),
+    ("ADR-005", "C3", "J", "diff against spec", "partly", "no", "", ""),
+    ("ADR-005", "C4", "J", "plan and diff", "partly", "yes", "", "'preferred state' is judgement"),
+    ("ADR-005", "C5", "J", "new domain's folders against the template", "no", "yes", "", "review run 2: V to J, 'follow the template' is more than layout"),
+    ("ADR-005", "C6", "V", "changed paths against the outcome's listed areas", "partly", "yes", "OutcomeRequest", "the area list is Markdown today"),
+    ("ADR-005", "C7", "R", "evaluation run records", "no", "no", "EvaluationRun", ""),
+    ("ADR-006", "C1", "J", "the evidence line", "no", "no", "", ""),
+    ("ADR-006", "C2", "R", "provenance of published numbers", "no", "no", "", ""),
+    ("ADR-006", "C3", "V", "publication against pre-registered measures", "no", "no", "Preregistration", ""),
+    ("ADR-006", "C4", "R", "decision record", "no", "no", "", ""),
+    ("ADR-006", "C5", "R", "result records per run", "no", "no", "", ""),
+    ("ADR-007", "C1", "V", "evaluation set (private)", "no", "no", "EvaluationSet", ""),
+    ("ADR-007", "C2", "R", "outcome IDs on build runs", "partly", "yes", "OutcomeRequest", ""),
+    ("ADR-007", "C3", "V", "evaluation set composition (private)", "no", "no", "EvaluationSet", ""),
+    ("ADR-007", "C4", "V", "evaluation set categories (private)", "no", "no", "EvaluationSet", ""),
+    ("ADR-007", "C5", "R", "authorship of the outcomes (private)", "no", "no", "", ""),
+    ("ADR-007", "C6", "V", "where the outcomes live", "no", "no", "", "private: not checkable from here"),
+    ("ADR-007", "C7", "V", "scoring code's dependencies", "no", "no", "", ""),
+    ("ADR-007", "C8", "V", "label schema (private)", "no", "no", "Labels", "'written by hand' is R"),
+    ("ADR-007", "C9", "J", "how LLMs are used in scoring", "no", "no", "", ""),
+    ("ADR-007", "C10", "V", "label schema (private)", "no", "no", "Labels", ""),
+    ("ADR-007", "C11", "V", "label schema (private)", "no", "no", "Labels", "'acceptable alternatives' is judgement"),
+    ("ADR-008", "C1", "R", "authorship and timestamps of test cases", "partly", "no", "", ""),
+    ("ADR-008", "C2", "R", "who built the drivers", "no", "no", "", ""),
+    ("ADR-008", "C3", "V", "drivers' dependency graph", "no", "no", "", ""),
+    ("ADR-008", "C4", "R", "authorship of acceptance tests", "partly", "no", "", ""),
+    ("ADR-008", "C5", "R", "commit order: tests before the capability", "partly", "no", "", ""),
+    ("ADR-008", "C6", "R", "capability input manifest", "no", "no", "", ""),
+    ("ADR-008", "C7", "R", "test results against the baseline", "no", "no", "", "review run 2: pre_code to no, results aren't the request or plan"),
+    ("ADR-008", "C8", "V", "outcome request: visible and hidden example sets", "no", "yes", "OutcomeRequest", ""),
+    ("ADR-008", "C9", "X", "none: an absence", "no", "no", "", ""),
+    ("ADR-008", "C10", "R", "mutation test results", "no", "no", "", ""),
+    ("ADR-008", "C11", "R", "commit hash and timestamp before the run", "partly", "no", "Preregistration", ""),
+    ("ADR-008", "C12", "V", "definition of done in the spec", "partly", "yes", "", ""),
+    ("ADR-008", "C13", "V", "test sets of both runs", "no", "no", "EvaluationRun", ""),
+    ("ADR-008", "C14", "R", "failing results before pre-registration", "no", "no", "", ""),
+    ("ADR-008", "C15", "J", "withdrawal record and criteria", "no", "no", "", ""),
+    ("ADR-008", "C16", "R", "order of mutation proof and evaluation tests", "partly", "no", "", ""),
+    ("ADR-008", "C17", "R", "evaluation run records", "no", "no", "EvaluationRun", ""),
+    ("ADR-008", "C18", "R", "authorship of test files", "no", "no", "", ""),
+    ("ADR-008", "C19", "V", "pre-registration document", "no", "no", "Preregistration", ""),
+    ("ADR-008", "C20", "V", "withdrawal records for both runs", "no", "no", "", ""),
+    ("ADR-008", "C21", "V", "publication contents", "no", "no", "Preregistration", ""),
+    ("ADR-008", "C22", "R", "acceptance results after the change", "partly", "no", "", ""),
+    ("ADR-008", "C23", "R", "order of dry run and evaluation tests", "partly", "no", "", ""),
+    ("ADR-009", "C1", "J", "how work was done", "partly", "no", "", ""),
+    ("ADR-009", "C2", "V", "installed Spec Kit version", "yes", "no", "", ""),
+    ("ADR-009", "C3", "R", "files in each feature folder and converge reports", "partly", "no", "", ""),
+    ("ADR-009", "C4", "V", "Spec Kit's record of presets and extensions", "partly", "no", "", "how Spec Kit records them is unconfirmed"),
+    ("ADR-009", "C5", "V", "installed extensions against reviews and pins", "partly", "no", "", ""),
+    ("ADR-009", "C6", "R", "git history of specs/", "yes", "no", "", ""),
+    ("ADR-009", "C7", "J", "specs and ADRs", "partly", "no", "", ""),
+    ("ADR-009", "C8", "V", "the plan's ADR list", "partly", "yes", "PlanCitations", "'that apply' is judgement"),
+    ("ADR-009", "C9", "X", "none: what an agent loaded", "no", "no", "", ""),
+    ("ADR-009", "C10", "V", "the constitution's index", "yes", "no", "AdrFrontMatter", ""),
+    ("ADR-009", "C11", "V", "citations in the constitution", "partly", "no", "", ""),
+    ("ADR-009", "C12", "J", "a conflict", "no", "no", "", ""),
+    ("ADR-009", "C13", "V", "the plan's citations", "partly", "yes", "PlanCitations", "'that apply' is judgement"),
+    ("ADR-009", "C14", "V", "the index against front matter", "yes", "no", "AdrFrontMatter", ""),
+    ("ADR-009", "C15", "J", "constitution text", "yes", "no", "", ""),
+    ("ADR-009", "C16", "R", "constitution history and version", "partly", "no", "", ""),
+    ("ADR-009", "C17", "V", "constitution and CLAUDE.md text", "yes", "no", "", ""),
+    ("ADR-010", "C1", "R", "sessions and worktrees in use", "partly", "no", "", ""),
+    ("ADR-010", "C2", "R", "sessions and worktrees", "partly", "no", "", ""),
+    ("ADR-010", "C3", "V", "this repository's tree", "yes", "no", "", ""),
+    ("ADR-010", "C4", "V", "backlog status against ADRs' backlog fields", "partly", "no", "", "the backlog is Markdown"),
+    ("ADR-010", "C5", "R", "commit trailers", "yes", "no", "", ""),
+    ("ADR-010", "C6", "R", "token records", "partly", "no", "", ""),
+    ("ADR-011", "C1", "V", "hook configuration", "yes", "no", "ClaudeSettings", ""),
+    ("ADR-011", "C2", "V", "ask rules in settings", "yes", "no", "ClaudeSettings", ""),
+    ("ADR-011", "C3", "V", "hook configuration and policy", "yes", "no", "ClaudeSettings", ""),
+    ("ADR-011", "C4", "V", "user settings", "partly", "no", "ClaudeSettings", "outside this repository"),
+    ("ADR-011", "C5", "V", "settings", "yes", "no", "ClaudeSettings", ""),
+    ("ADR-011", "C6", "V", "user settings deny rules", "partly", "no", "ClaudeSettings", "outside this repository"),
+    ("ADR-011", "C7", "V", "this repository's tree", "yes", "no", "", ""),
+    ("ADR-012", "C1", "R", "loop cards and automation history", "partly", "no", "", ""),
+    ("ADR-012", "C2", "R", "autonomy levels and loop cards", "partly", "no", "", "the readiness criteria need judgement"),
+    ("ADR-012", "C3", "V", "loop card fields", "partly", "no", "", "Markdown"),
+    ("ADR-012", "C4", "R", "review runs on loop cards", "partly", "no", "", ""),
+    ("ADR-012", "C5", "X", "none: what the reviewer saw", "no", "no", "", ""),
+    ("ADR-012", "C6", "R", "loop cards and PR descriptions", "partly", "no", "", ""),
+    ("ADR-012", "C7", "R", "PR review records", "partly", "no", "", ""),
+    ("ADR-012", "C8", "R", "eval sets and their runs", "no", "no", "", ""),
+    ("ADR-012", "C9", "V", "stage autonomy levels and ADR-013's version", "no", "no", "", ""),
+    ("ADR-012", "C10", "R", "commit order: expected results before PR", "yes", "no", "", ""),
+    ("ADR-013", "C1", "V", "repository visibility (GitHub API)", "yes", "no", "", ""),
+    ("ADR-013", "C2", "V", "licence files", "yes", "no", "", ""),
+    ("ADR-013", "C3", "V", "fork visibility and licence", "yes", "no", "", ""),
+    ("ADR-013", "C4", "V", "rulesets (GitHub API)", "yes", "no", "Ruleset", ""),
+    ("ADR-013", "C5", "X", "none: local review leaves no record", "no", "no", "", ""),
+    ("ADR-013", "C6", "R", "merged PRs (GitHub API)", "yes", "no", "Ruleset", ""),
+    ("ADR-013", "C7", "R", "order of ADR revision and autonomy change", "partly", "no", "", ""),
+    ("ADR-014", "C1", "V", "capability architecture", "no", "no", "", ""),
+    ("ADR-014", "C2", "R", "evaluation scoring records", "no", "no", "", ""),
+    ("ADR-014", "C3", "V", "rubric files", "no", "no", "Rubric", ""),
+    ("ADR-014", "C4", "R", "calibration records", "no", "no", "", ""),
+    ("ADR-014", "C5", "R", "label review records", "no", "no", "", ""),
+    ("ADR-014", "C6", "V", "rubric file locations", "no", "no", "Rubric", ""),
+    ("ADR-014", "C7", "V", "rubric file locations", "no", "no", "Rubric", ""),
+    ("ADR-015", "C1", "V", "split record: scenario", "no", "yes", "SplitRecord", ""),
+    ("ADR-015", "C2", "V", "split record: the five rules' results", "no", "yes", "SplitRecord", ""),
+    ("ADR-015", "C3", "R", "test results of the delivered part", "no", "no", "", ""),
+    ("ADR-015", "C4", "V", "split record: dependency between parts", "no", "yes", "SplitRecord", ""),
+    ("ADR-015", "C5", "R", "approval record", "no", "yes", "SplitRecord", ""),
+    ("ADR-015", "C6", "V", "split record: risk rungs", "no", "yes", "SplitRecord", "a numeric comparison"),
+    ("ADR-015", "C7", "V", "feature flag states", "no", "no", "FeatureFlags", ""),
+    ("ADR-015", "C8", "V", "feature flag definitions", "no", "no", "FeatureFlags", ""),
+    ("ADR-015", "C9", "R", "flag change records", "no", "no", "FeatureFlags", ""),
+    ("ADR-015", "C10", "V", "split record: scenario", "no", "yes", "SplitRecord", ""),
+    ("ADR-015", "C11", "R", "approval record", "no", "yes", "SplitRecord", ""),
+    ("ADR-015", "C12", "J", "split record against the scenario table", "no", "yes", "SplitRecord", "review run 2: V to J, depends on what the decision says"),
+    ("ADR-015", "C13", "J", "what the outcome asked for", "no", "yes", "", ""),
+    ("ADR-015", "C14", "R", "security escalation records", "no", "no", "", ""),
+    ("ADR-016", "C1", "R", "diff and domain map", "no", "no", "", ""),
+    ("ADR-016", "C2", "V", "file sets of improvement and behavioural commits", "partly", "no", "", ""),
+    ("ADR-016", "C3", "R", "commit classification", "partly", "no", "", ""),
+    ("ADR-016", "C4", "V", "test and mutation results before and after", "no", "no", "", "a numeric comparison"),
+    ("ADR-016", "C5", "V", "budget thresholds", "no", "yes", "", "a number"),
+    ("ADR-016", "C6", "J", "how value is measured", "no", "no", "", ""),
+    ("ADR-016", "C7", "R", "proposed improvement outcomes", "no", "yes", "", ""),
+    ("ADR-016", "C8", "V", "violation counts before and after", "no", "no", "", "a numeric comparison"),
+    ("ADR-016", "C9", "J", "how a security defect was handled", "no", "no", "", ""),
+    ("ADR-016", "C10", "V", "analyser output format", "no", "no", "SarifReport", ""),
+    ("ADR-016", "C11", "V", "SARIF results' rule IDs", "no", "no", "SarifReport", ""),
+    ("ADR-016", "C12", "V", "change reports", "no", "no", "", ""),
+    ("ADR-016", "C13", "J", "project claims", "no", "no", "", ""),
+    ("ADR-016", "C14", "V", "package references", "no", "no", "", ""),
+    ("ADR-016", "C15", "R", "outcome type against where the ADR is applied", "no", "yes", "OutcomeRequest", ""),
+    ("ADR-016", "C16", "V", "repository text", "partly", "no", "", ""),
+    ("ADR-016", "C17", "V", "SARIF version", "no", "no", "SarifReport", ""),
+    ("ADR-017", "C1", "J", "capability architecture", "no", "no", "", ""),
+    ("ADR-017", "C2", "J", "capability interface", "no", "no", "", ""),
+    ("ADR-017", "C3", "V", "capability project files", "no", "no", "", ""),
+    ("ADR-017", "C4", "V", "capability package.json", "no", "no", "", ""),
+    ("ADR-017", "C5", "R", "outcome request author", "no", "yes", "OutcomeRequest", ""),
+    ("ADR-018", "C1", "J", "roadmap", "yes", "no", "", ""),
+    ("ADR-018", "C2", "J", "milestones", "yes", "no", "", ""),
+    ("ADR-018", "C3", "J", "decisions about ideas", "no", "no", "", ""),
+    ("ADR-018", "C4", "R", "flag records", "no", "no", "", ""),
+    ("ADR-018", "C5", "J", "README text", "yes", "no", "", "review run 2: V to J, recognising a prior-work statement needs reading"),
+    ("ADR-018", "C6", "J", "decisions about ideas", "no", "no", "", ""),
+    ("ADR-018", "C7", "J", "decisions about advice", "no", "no", "", ""),
+]
+
+
+# Field-level sharing, the measure README.md predicted (5%): clauses that constrain the same field
+# of a shared definition as another clause. Added after review run 2 found that the first results
+# reported definition-level sharing (32%) instead. One rater, as for the kinds.
+FIELDS = {
+    ("ADR-015", "C1"): "SplitRecord.scenario", ("ADR-015", "C10"): "SplitRecord.scenario",
+    ("ADR-015", "C12"): "SplitRecord.scenario",
+    ("ADR-000", "C1"): "AdrFrontMatter.*", ("ADR-000", "C3"): "AdrFrontMatter.id",
+    ("ADR-000", "C13"): "AdrFrontMatter.precedence", ("ADR-009", "C10"): "AdrFrontMatter.title",
+    ("ADR-009", "C14"): "AdrFrontMatter.title",
+    ("ADR-002", "C5"): "EvaluationRun.baseline", ("ADR-005", "C7"): "EvaluationRun.baseline",
+    ("ADR-008", "C17"): "EvaluationRun.baseline",
+    ("ADR-006", "C3"): "Preregistration.published", ("ADR-008", "C21"): "Preregistration.published",
+    ("ADR-000", "C10"): "PlanCitations.citations", ("ADR-009", "C13"): "PlanCitations.citations",
+    ("ADR-007", "C1"): "EvaluationSet.outcomes", ("ADR-007", "C3"): "EvaluationSet.outcomes",
+    ("ADR-007", "C4"): "EvaluationSet.outcomes",
+    ("ADR-015", "C7"): "FeatureFlags.state", ("ADR-015", "C8"): "FeatureFlags.state",
+    ("ADR-016", "C10"): "SarifReport.version", ("ADR-016", "C17"): "SarifReport.version",
+}
+
+
+def active_constraints():
+    names = subprocess.run(["git", "ls-tree", "--name-only", "67b1bd4", "docs/adr/"],
+                           capture_output=True, text=True, check=True).stdout.split()
+    found = []
+    for f in sorted(names):
+        if not os.path.basename(f).startswith("ADR-"):
+            continue
+        t = subprocess.run(["git", "show", "67b1bd4:" + f], capture_output=True, text=True,
+                           encoding="utf-8", check=True).stdout
+        sec = re.search(r"^## Constraints\s*$(.*?)(?=^## )", t, re.M | re.S).group(1)
+        found += [(os.path.basename(f)[:7], c) for c, txt in re.findall(r"^- \*\*(C\d+):\*\* (.*)$", sec, re.M)
+                  if not txt.startswith("*Withdrawn")]
+    return found
+
+
+def main():
+    sys.stdout.reconfigure(encoding="utf-8")
+    keys = [(r[0], r[1]) for r in ROWS]
+    expected = active_constraints()
+    assert sorted(keys) == sorted(expected), (set(expected) - set(keys), set(keys) - set(expected))
+    with open(os.path.join(HERE, "clauses.csv"), "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["adr", "constraint", "kind", "witness", "exists", "pre_code", "shared", "note"])
+        w.writerows(ROWS)
+    n = len(ROWS)
+
+    def share(pred):
+        k = sum(1 for r in ROWS if pred(r))
+        return f"{k} ({100 * k / n:.0f}%)"
+
+    print(f"clauses: {n}")
+    for kind in "VRJX":
+        print(f"kind {kind}: {share(lambda r, k=kind: r[2] == k)}")
+    print("CUE can check it today (V or R, witness yes or partly):",
+          share(lambda r: r[2] in "VR" and r[4] in ("yes", "partly")))
+    print("  of which the witness exists fully:", share(lambda r: r[2] in "VR" and r[4] == "yes"))
+    print("CUE could check it once the record exists (V or R, any):", share(lambda r: r[2] in "VR"))
+    print("pre_code yes:", share(lambda r: r[5] == "yes"))
+    print("  of which V or R:", share(lambda r: r[5] == "yes" and r[2] in "VR"))
+    # "AdrFrontMatter.*" (ADR-000 C1 requires every field) overlaps every other front-matter field
+    def overlaps(f, g):
+        return f == g or f.endswith(".*") and g.startswith(f[:-1]) or g.endswith(".*") and f.startswith(g[:-1])
+    shared_field = [k for k, f in FIELDS.items() if any(overlaps(f, g) for j, g in FIELDS.items() if j != k)]
+    print(f"shared field (README's measure): {len(shared_field)} ({100 * len(shared_field) / n:.0f}%)")
+    print("shared definition (2+ clauses):", share(lambda r: r[6] and sum(1 for s in ROWS if s[6] == r[6]) > 1))
+    defs = {}
+    for r in ROWS:
+        if r[6]:
+            defs.setdefault(r[6], []).append(f"{r[0]} {r[1]}")
+    for d, cs in sorted(defs.items(), key=lambda x: -len(x[1])):
+        print(f"  #{d}: {len(cs)}: {', '.join(cs)}")
+
+
+if __name__ == "__main__":
+    main()
